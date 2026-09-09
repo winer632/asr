@@ -24,6 +24,32 @@
 
 如果只做四层 TCP 映射、不提供 HTTPS 终止，应在 L40S 配置 `TLS_KEY_FILE` 和 `TLS_CERT_FILE`，此时同一个 `5173` 端口直接提供 HTTPS/WSS。外部端口可与 5173 不同。不要把 TLS 请求直接转发到仍为 HTTP 的端口。
 
+## 当前办公网入口的 HTTPS 配置
+
+当前映射为 `101.89.57.55:18005 → 10.120.65.10:5173`。如果在 L40S 上终止 HTTPS，可以保留这一映射，使用 [nginx-l40s-https.conf.example](nginx-l40s-https.conf.example)：
+
+```text
+同事浏览器 https://101.89.57.55:18005
+  → L40S Nginx HTTPS/WSS :5173
+  → L40S Node.js HTTP/WS 127.0.0.1:5174
+  → ASR_BASE_URL 指定的模型服务
+```
+
+这是待接入证书的配置模板；仅提交模板不会自动将现有 HTTP 服务切换成 HTTPS。
+
+接入步骤：
+
+1. 准备浏览器信任、SAN 包含 `101.89.57.55` 的 IP 证书及完整证书链，分别存放到 `/etc/asr/tls/fullchain.pem` 和 `/etc/asr/tls/privkey.pem`。私钥只允许服务器管理员读取。如果使用域名证书，应将访问地址、Nginx 的 `server_name`、跳转地址和 `PUBLIC_ORIGIN` 一起改为该域名。
+2. 在 `/etc/asr/asr.env` 设置 `HOST=127.0.0.1`、`PORT=5174`、`PUBLIC_ORIGIN=https://101.89.57.55:18005`，移除 Node.js 的 `TLS_KEY_FILE` / `TLS_CERT_FILE` 配置。HTTPS 由 Nginx 处理。
+3. 确认没有进行中的录音，安装上述 Nginx 配置、执行 `sudo nginx -t`，重启 `asr-web` 释放 5173，然后重载 Nginx。
+4. 访问 `https://101.89.57.55:18005/`，确认浏览器证书验证通过，再授权麦克风。旧 HTTP 地址会通过 308 跳转到同一外部端口的 HTTPS 地址。该跳转使用 Nginx 的 [497 错误处理](https://nginx.org/en/docs/http/ngx_http_ssl_module.html#error_processing)。
+
+HTTP 响应头、CORS 设置或删除前端安全连接检查都不能让普通 HTTP 页面获得麦克风权限。也不将关闭浏览器安全保护或跳过证书警告作为部署方案。
+
+如果没有域名，Let's Encrypt 已提供 [IP 证书](https://letsencrypt.org/2026/01/15/6day-and-ip-general-availability)，但需要从公网完成 HTTP-01（TCP 80）或 TLS-ALPN-01（TCP 443）验证，当前 18005 映射不能替代这些验证端口。IP 证书有效期为六天，需要同时配置自动续期并保留验证路径。也可使用公司已向测试设备分发信任的内部 CA 签发证书。
+
+HTTPS 解决浏览器录音权限；模型连通性需要独立满足。若 `/api/status` 的 `upstreamHealthy` 为 `false`，应放通 L40S 到 `10.210.1.23:19003` 的路径，或将 `ASR_BASE_URL` 改成 L40S 可访问的 ASR 映射地址。
+
 ## systemd 安装
 
 需要 `/usr/bin/node` 为 Node.js 22.13+，以及 npm、git。以下为首次部署步骤；已有目录时先检查状态，保留配置和录音。VAD 使用包内自带的 CPU 运行库，安装时设置 `ONNXRUNTIME_NODE_INSTALL=skip`，避免额外下载本项目不用的 CUDA 运行库。

@@ -1,0 +1,26 @@
+# Install in /etc/nginx/sites-available/asr-web after trusted certificates exist.
+# Keep the existing TCP mapping: 101.89.57.55:18005 -> 10.120.65.10:5173.
+# Move Node.js to HOST=127.0.0.1, PORT=5174 and configure:
+# PUBLIC_ORIGIN=https://101.89.57.55:18005
+server {
+    listen 5173 ssl;
+    server_name 101.89.57.55;
+
+    ssl_certificate /etc/asr/tls/fullchain.pem;
+    ssl_certificate_key /etc/asr/tls/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    # Preserve the external port when an existing HTTP bookmark is opened.
+    error_page 497 =308 https://101.89.57.55:18005$request_uri;
+
+    location / {
+        proxy_pass http://127.0.0.1:5174;
+        proxy_http_version 1.1;
+        proxy_set_header Host $http_host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+        proxy_buffering off;
+    }
+}
