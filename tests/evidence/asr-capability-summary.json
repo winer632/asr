@@ -1,0 +1,74 @@
+[
+  {
+    "name": "mandarin_1",
+    "reference": "你好，今天我们测试普通话语音识别。请把我说的话转换成文字。",
+    "voice": "Tingting",
+    "audio_seconds": 6.357,
+    "language": "Chinese",
+    "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+    "partial_count": 3,
+    "first_partial_seconds_from_audio_start": 2.086,
+    "final_seconds_after_audio_end": 0.07,
+    "request_id": "723b2fba-05ee-4c28-b399-fc240fa7c282"
+  },
+  {
+    "name": "cantonese_1",
+    "reference": "你好，我而家講緊廣東話。今日天氣幾好，我想出去飲茶，你有冇時間一齊去呀？",
+    "voice": "Sinji",
+    "audio_seconds": 8.521,
+    "language": "Cantonese",
+    "text": "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？",
+    "partial_count": 4,
+    "first_partial_seconds_from_audio_start": 2.315,
+    "final_seconds_after_audio_end": 0.27,
+    "request_id": "16d04b99-c794-4bf0-8c70-d2810ba931b2"
+  },
+  {
+    "name": "english_1",
+    "reference": "Hello, this is a test of automatic speech recognition. Please turn my voice into text.",
+    "voice": "Samantha",
+    "audio_seconds": 5.407,
+    "language": "English",
+    "text": "Hello. This is a test of automatic speech recognition. Please turn my voice into text.",
+    "partial_count": 2,
+    "first_partial_seconds_from_audio_start": 2.123,
+    "final_seconds_after_audio_end": 0.095,
+    "request_id": "90d4a9e1-929a-4bad-9e7c-f43caa8536eb"
+  },
+  {
+    "name": "mandarin_2",
+    "reference": "会议改到明天下午三点，请提前十分钟到场。",
+    "voice": "Tingting",
+    "audio_seconds": 4.748,
+    "language": "Chinese",
+    "text": "会议改到明天下午三点，请提前十分钟到场。",
+    "partial_count": 2,
+    "first_partial_seconds_from_audio_start": 2.088,
+    "final_seconds_after_audio_end": 0.074,
+    "request_id": "45b1c6dc-8816-4e64-bf91-06e7b3b09174"
+  },
+  {
+    "name": "cantonese_2",
+    "reference": "唔該幫我睇下，呢個網頁可唔可以一路錄音，一路將我講嘅嘢變成文字？",
+    "voice": "Sinji",
+    "audio_seconds": 6.943,
+    "language": "Cantonese",
+    "text": "唔该，帮我睇下呢个网页可唔可以一路录音，一路将我讲嘅嘢变成文字。",
+    "partial_count": 3,
+    "first_partial_seconds_from_audio_start": 2.115,
+    "final_seconds_after_audio_end": 0.083,
+    "request_id": "3e3c5aa9-6087-435f-80b8-ed2d852a73fa"
+  },
+  {
+    "name": "english_2",
+    "reference": "The meeting has moved to three o'clock tomorrow afternoon. Please arrive ten minutes early.",
+    "voice": "Samantha",
+    "audio_seconds": 4.633,
+    "language": "English",
+    "text": "The meeting has moved to three o'clock tomorrow afternoon. Please arrive ten minutes early.",
+    "partial_count": 2,
+    "first_partial_seconds_from_audio_start": 2.11,
+    "final_seconds_after_audio_end": 0.07,
+    "request_id": "a41f8a3a-0733-4700-8599-4de96a0541e9"
+  }
+]

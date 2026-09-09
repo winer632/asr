@@ -1,0 +1,32 @@
+[
+  {
+    "name": "control_mixed_zh",
+    "endpoint": "/infer",
+    "method": "POST",
+    "request_bytes": 40184,
+    "status": 200,
+    "content_type": "application/json",
+    "body": "{\"request_id\":\"a810b25d-531c-41fc-928b-785aae26d60b\",\"language\":\"Chinese\",\"text\":\"请帮我确认。\"}",
+    "seconds": 0.1428
+  },
+  {
+    "name": "control_mixed_sentence_zh_hint",
+    "endpoint": "/infer",
+    "method": "POST",
+    "request_bytes": 125732,
+    "status": 200,
+    "content_type": "application/json",
+    "body": "{\"request_id\":\"b8e80ce2-4835-4572-8cbb-0ea3851ef0c4\",\"language\":\"Chinese\",\"text\":\"请帮我确认。The meeting starts at three。唔好迟到啊！\"}",
+    "seconds": 0.201
+  },
+  {
+    "name": "control_mixed_sentence",
+    "endpoint": "/infer",
+    "method": "POST",
+    "request_bytes": 125636,
+    "status": 200,
+    "content_type": "application/json",
+    "body": "{\"request_id\":\"62b56470-cfb5-45c5-8cfb-42a8a8d4cfa5\",\"language\":\"Chinese\",\"text\":\"请帮我确认。The meeting starts at three。唔好迟到啊！\"}",
+    "seconds": 0.2142
+  }
+]

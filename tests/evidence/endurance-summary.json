@@ -1,0 +1,63 @@
+{
+  "testedAt": "2026-09-09T04:17:21.471Z",
+  "durationSeconds": 600,
+  "segments": 73,
+  "finalResults": 73,
+  "interfaceErrors": 0,
+  "languages": [
+    "Cantonese",
+    "Chinese",
+    "English"
+  ],
+  "maxSegmentSeconds": 49.5,
+  "memory": [
+    {
+      "elapsed": 0,
+      "rssMiB": 89.71875
+    },
+    {
+      "elapsed": 60,
+      "rssMiB": 98.5
+    },
+    {
+      "elapsed": 120,
+      "rssMiB": 95.984375
+    },
+    {
+      "elapsed": 180,
+      "rssMiB": 90.34375
+    },
+    {
+      "elapsed": 240,
+      "rssMiB": 90.453125
+    },
+    {
+      "elapsed": 300,
+      "rssMiB": 94.265625
+    },
+    {
+      "elapsed": 360,
+      "rssMiB": 89.515625
+    },
+    {
+      "elapsed": 420,
+      "rssMiB": 82.90625
+    },
+    {
+      "elapsed": 480,
+      "rssMiB": 89.359375
+    },
+    {
+      "elapsed": 540,
+      "rssMiB": 88.65625
+    },
+    {
+      "elapsed": 600,
+      "rssMiB": 93.78125
+    }
+  ],
+  "inputSha256": "61a7a086e97e744cfec998a6518b6126c8a165b6f5d8824c921f82a705c616ef",
+  "savedPcmSha256": "61a7a086e97e744cfec998a6518b6126c8a165b6f5d8824c921f82a705c616ef",
+  "exactAudioMatch": true,
+  "note": "Real-time 10-minute synthetic speech test. RSS is the local bridge, not the remote ASR server."
+}

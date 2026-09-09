@@ -1,0 +1,136 @@
+{
+  "formats": [
+    {
+      "name": "curl_mime_mp4",
+      "mime": "video/mp4",
+      "returncode": 0,
+      "response": "HTTP/1.1 500 Internal Server Error\ndate: Wed, 09 Sep 2026 04:22:52 GMT\nserver: uvicorn\nx-request-id: 8d9d2879-cef7-46d4-bea5-5cb956ed9783\ncontent-length: 93\ncontent-type: application/json\n\n{\"request_id\":\"8d9d2879-cef7-46d4-bea5-5cb956ed9783\",\"error\":\"upstream transcription failed\"}",
+      "stderr": "",
+      "seconds": 0.08949183400545735
+    },
+    {
+      "name": "curl_mime_m4a",
+      "mime": "audio/mp4",
+      "returncode": 0,
+      "response": "HTTP/1.1 500 Internal Server Error\ndate: Wed, 09 Sep 2026 04:22:52 GMT\nserver: uvicorn\nx-request-id: 19dd329d-f2b0-415b-8201-925927bdc5e4\ncontent-length: 93\ncontent-type: application/json\n\n{\"request_id\":\"19dd329d-f2b0-415b-8201-925927bdc5e4\",\"error\":\"upstream transcription failed\"}",
+      "stderr": "",
+      "seconds": 0.09515562499291264
+    },
+    {
+      "name": "curl_mime_mpeg",
+      "mime": "video/mpeg",
+      "returncode": 0,
+      "response": "HTTP/1.1 500 Internal Server Error\ndate: Wed, 09 Sep 2026 04:22:52 GMT\nserver: uvicorn\nx-request-id: fd0a9391-53dd-4e7e-9196-0eb2e085252c\ncontent-length: 93\ncontent-type: application/json\n\n{\"request_id\":\"fd0a9391-53dd-4e7e-9196-0eb2e085252c\",\"error\":\"upstream transcription failed\"}",
+      "stderr": "",
+      "seconds": 0.08991170799708925
+    },
+    {
+      "name": "curl_mime_webm",
+      "mime": "audio/webm",
+      "returncode": 0,
+      "response": "HTTP/1.1 500 Internal Server Error\ndate: Wed, 09 Sep 2026 04:22:52 GMT\nserver: uvicorn\nx-request-id: 8fbb1b41-5bb9-499a-b313-738a54c39ce4\ncontent-length: 93\ncontent-type: application/json\n\n{\"request_id\":\"8fbb1b41-5bb9-499a-b313-738a54c39ce4\",\"error\":\"upstream transcription failed\"}",
+      "stderr": "",
+      "seconds": 0.10574883299705107
+    },
+    {
+      "name": "curl_mime_wav",
+      "mime": "audio/wav",
+      "returncode": 0,
+      "response": "HTTP/1.1 200 OK\ndate: Wed, 09 Sep 2026 04:22:52 GMT\nserver: uvicorn\nx-request-id: 621ef73e-2002-48a2-8d21-5fe87a927470\ncontent-length: 171\ncontent-type: application/json\n\n{\"request_id\":\"621ef73e-2002-48a2-8d21-5fe87a927470\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "stderr": "",
+      "seconds": 0.2516528330015717
+    }
+  ],
+  "concurrent_open_sessions": [
+    {
+      "number": 1,
+      "event": {
+        "type": "started",
+        "chunk_seconds": 2.0,
+        "max_audio_seconds": 60,
+        "request_id": "33104ec9-6665-42f1-b6f6-7ab08c1c5ff6",
+        "session_id": "slots-0ab80be48830474fa4156c3119faef4b"
+      }
+    },
+    {
+      "number": 2,
+      "event": {
+        "type": "started",
+        "chunk_seconds": 2.0,
+        "max_audio_seconds": 60,
+        "request_id": "91534922-7180-4261-a37a-2b8850a4ddc8",
+        "session_id": "slots-41d61cb67a594f3890eebf0adecd203d"
+      }
+    },
+    {
+      "number": 3,
+      "event": {
+        "type": "started",
+        "chunk_seconds": 2.0,
+        "max_audio_seconds": 60,
+        "request_id": "87ea598b-0721-40e2-ae09-82d968935816",
+        "session_id": "slots-40340d1f69044fef993840419bf2f89e"
+      }
+    },
+    {
+      "number": 4,
+      "event": {
+        "type": "started",
+        "chunk_seconds": 2.0,
+        "max_audio_seconds": 60,
+        "request_id": "e3a5a02e-b6b4-49f8-84b6-7b2f6ff4cbf5",
+        "session_id": "slots-7e2abfdc9fee46b3ae30f4395ee44e16"
+      }
+    },
+    {
+      "number": 5,
+      "event": {
+        "type": "started",
+        "chunk_seconds": 2.0,
+        "max_audio_seconds": 60,
+        "request_id": "33a4e104-35b2-4071-8437-db29c960f56f",
+        "session_id": "slots-d93a8bcc720440d7b28fd68b6ec180d3"
+      }
+    },
+    {
+      "number": 6,
+      "event": {
+        "type": "started",
+        "chunk_seconds": 2.0,
+        "max_audio_seconds": 60,
+        "request_id": "e6b42bb8-12e3-4535-baa4-966ec4c5b252",
+        "session_id": "slots-86a17837ee184540be93dfaa037565f4"
+      }
+    },
+    {
+      "number": 7,
+      "event": {
+        "type": "started",
+        "chunk_seconds": 2.0,
+        "max_audio_seconds": 60,
+        "request_id": "320f81a9-1e31-46fa-a451-bc87c53ed9e0",
+        "session_id": "slots-dfa0953d688e4a6e9b0394ce9c894196"
+      }
+    },
+    {
+      "number": 8,
+      "event": {
+        "type": "started",
+        "chunk_seconds": 2.0,
+        "max_audio_seconds": 60,
+        "request_id": "94cd7a37-c255-408e-9c73-ed2b50ade1e8",
+        "session_id": "slots-67a4aac158ba4b42ba105c7cb1392bc3"
+      }
+    },
+    {
+      "number": 9,
+      "event": {
+        "type": "started",
+        "chunk_seconds": 2.0,
+        "max_audio_seconds": 60,
+        "request_id": "afc09c75-4d4a-4c71-a95f-66f06dc4ffe5",
+        "session_id": "slots-524c2182638f4e2db07175fb54a39e8e"
+      }
+    }
+  ]
+}

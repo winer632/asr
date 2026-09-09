@@ -1,0 +1,421 @@
+{
+  "testedAt": "2026-09-09T03:44:21.419Z",
+  "results": [
+    {
+      "name": "english_1",
+      "recordingId": "2026-09-09T03-43-47-478Z-e583bbd3",
+      "inputSeconds": 7.4065,
+      "finals": [
+        {
+          "type": "final",
+          "id": "web-aa862f73-e4f2-4582-960f-6a9cc68288f2",
+          "text": "Hello. This is a test of automatic speech recognition. Please turn my voice into text.",
+          "language": "English",
+          "requestId": "daa97ff5-dbba-4ce2-ab7e-5d2a9f7b6c08"
+        }
+      ],
+      "firstPartialSeconds": 3.1175,
+      "exactFullAudioMatch": true,
+      "savedPairs": 1,
+      "messages": [
+        {
+          "seconds": 0.0078,
+          "event": {
+            "type": "ready"
+          }
+        },
+        {
+          "seconds": 1.4404000000000001,
+          "event": {
+            "type": "segment",
+            "id": "web-aa862f73-e4f2-4582-960f-6a9cc68288f2",
+            "startMs": 980
+          }
+        },
+        {
+          "seconds": 3.1175,
+          "event": {
+            "type": "partial",
+            "id": "web-aa862f73-e4f2-4582-960f-6a9cc68288f2",
+            "text": "Hello. This is a test of automatic.",
+            "language": "English",
+            "requestId": "daa97ff5-dbba-4ce2-ab7e-5d2a9f7b6c08"
+          }
+        },
+        {
+          "seconds": 5.1512,
+          "event": {
+            "type": "partial",
+            "id": "web-aa862f73-e4f2-4582-960f-6a9cc68288f2",
+            "text": "Hello. This is a test of automatic speech recognition. Please turn.",
+            "language": "English",
+            "requestId": "daa97ff5-dbba-4ce2-ab7e-5d2a9f7b6c08"
+          }
+        },
+        {
+          "seconds": 7.0964,
+          "event": {
+            "type": "partial",
+            "id": "web-aa862f73-e4f2-4582-960f-6a9cc68288f2",
+            "text": "Hello. This is a test of automatic speech recognition. Please turn my voice into text.",
+            "language": "English",
+            "requestId": "daa97ff5-dbba-4ce2-ab7e-5d2a9f7b6c08"
+          }
+        },
+        {
+          "seconds": 7.1669,
+          "event": {
+            "type": "final",
+            "id": "web-aa862f73-e4f2-4582-960f-6a9cc68288f2",
+            "text": "Hello. This is a test of automatic speech recognition. Please turn my voice into text.",
+            "language": "English",
+            "requestId": "daa97ff5-dbba-4ce2-ab7e-5d2a9f7b6c08"
+          }
+        },
+        {
+          "seconds": 7.4299,
+          "event": {
+            "type": "stopped"
+          }
+        }
+      ]
+    },
+    {
+      "name": "mandarin_1",
+      "recordingId": "2026-09-09T03-43-47-475Z-b960b931",
+      "inputSeconds": 8.3570625,
+      "finals": [
+        {
+          "type": "final",
+          "id": "web-c89a45ac-aaf9-4417-89d8-643e66dffd68",
+          "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+          "language": "Chinese",
+          "requestId": "5b72edd8-3862-4606-91d6-cf2a35fc248b"
+        }
+      ],
+      "firstPartialSeconds": 3.0881999999999996,
+      "exactFullAudioMatch": true,
+      "savedPairs": 1,
+      "messages": [
+        {
+          "seconds": 0.012,
+          "event": {
+            "type": "ready"
+          }
+        },
+        {
+          "seconds": 1.4298,
+          "event": {
+            "type": "segment",
+            "id": "web-c89a45ac-aaf9-4417-89d8-643e66dffd68",
+            "startMs": 980
+          }
+        },
+        {
+          "seconds": 3.0881999999999996,
+          "event": {
+            "type": "partial",
+            "id": "web-c89a45ac-aaf9-4417-89d8-643e66dffd68",
+            "text": "你好，今天我们测试。",
+            "language": "Chinese",
+            "requestId": "5b72edd8-3862-4606-91d6-cf2a35fc248b"
+          }
+        },
+        {
+          "seconds": 5.133,
+          "event": {
+            "type": "partial",
+            "id": "web-c89a45ac-aaf9-4417-89d8-643e66dffd68",
+            "text": "你好，今天我们测试普通话语音识别。",
+            "language": "Chinese",
+            "requestId": "5b72edd8-3862-4606-91d6-cf2a35fc248b"
+          }
+        },
+        {
+          "seconds": 7.1093,
+          "event": {
+            "type": "partial",
+            "id": "web-c89a45ac-aaf9-4417-89d8-643e66dffd68",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成为。",
+            "language": "Chinese",
+            "requestId": "5b72edd8-3862-4606-91d6-cf2a35fc248b"
+          }
+        },
+        {
+          "seconds": 8.3089,
+          "event": {
+            "type": "final",
+            "id": "web-c89a45ac-aaf9-4417-89d8-643e66dffd68",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+            "language": "Chinese",
+            "requestId": "5b72edd8-3862-4606-91d6-cf2a35fc248b"
+          }
+        },
+        {
+          "seconds": 8.3784,
+          "event": {
+            "type": "stopped"
+          }
+        }
+      ]
+    },
+    {
+      "name": "cantonese_1",
+      "recordingId": "2026-09-09T03-43-47-477Z-42212918",
+      "inputSeconds": 10.5205,
+      "finals": [
+        {
+          "type": "final",
+          "id": "web-b2164344-1a26-4143-b0d8-799945a02184",
+          "text": "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？",
+          "language": "Cantonese",
+          "requestId": "d94c72bd-6b2d-4243-8e0b-b2fde037af19"
+        }
+      ],
+      "firstPartialSeconds": 3.1114,
+      "exactFullAudioMatch": true,
+      "savedPairs": 1,
+      "messages": [
+        {
+          "seconds": 0.0089,
+          "event": {
+            "type": "ready"
+          }
+        },
+        {
+          "seconds": 1.4385999999999999,
+          "event": {
+            "type": "segment",
+            "id": "web-b2164344-1a26-4143-b0d8-799945a02184",
+            "startMs": 980
+          }
+        },
+        {
+          "seconds": 3.1114,
+          "event": {
+            "type": "partial",
+            "id": "web-b2164344-1a26-4143-b0d8-799945a02184",
+            "text": "你好，我而家讲紧。",
+            "language": "Cantonese",
+            "requestId": "d94c72bd-6b2d-4243-8e0b-b2fde037af19"
+          }
+        },
+        {
+          "seconds": 5.1514,
+          "event": {
+            "type": "partial",
+            "id": "web-b2164344-1a26-4143-b0d8-799945a02184",
+            "text": "你好，我而家讲紧广东话。今日天气几？",
+            "language": "Cantonese",
+            "requestId": "d94c72bd-6b2d-4243-8e0b-b2fde037af19"
+          }
+        },
+        {
+          "seconds": 7.1114,
+          "event": {
+            "type": "partial",
+            "id": "web-b2164344-1a26-4143-b0d8-799945a02184",
+            "text": "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶。",
+            "language": "Cantonese",
+            "requestId": "d94c72bd-6b2d-4243-8e0b-b2fde037af19"
+          }
+        },
+        {
+          "seconds": 9.1319,
+          "event": {
+            "type": "partial",
+            "id": "web-b2164344-1a26-4143-b0d8-799945a02184",
+            "text": "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐？",
+            "language": "Cantonese",
+            "requestId": "d94c72bd-6b2d-4243-8e0b-b2fde037af19"
+          }
+        },
+        {
+          "seconds": 10.3934,
+          "event": {
+            "type": "final",
+            "id": "web-b2164344-1a26-4143-b0d8-799945a02184",
+            "text": "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？",
+            "language": "Cantonese",
+            "requestId": "d94c72bd-6b2d-4243-8e0b-b2fde037af19"
+          }
+        },
+        {
+          "seconds": 10.537700000000001,
+          "event": {
+            "type": "stopped"
+          }
+        }
+      ]
+    },
+    {
+      "name": "continuous_language_switch",
+      "recordingId": "2026-09-09T03-43-58-044Z-396f8232",
+      "inputSeconds": 23.324,
+      "finals": [
+        {
+          "type": "final",
+          "id": "web-26f2c39d-f079-4e2b-b822-7e4353fa818a",
+          "text": "会议改到明天下午三点，请提前十分钟到场。",
+          "language": "Chinese",
+          "requestId": "1b6d410c-3550-48be-887e-6f0c6ab3e9c6"
+        },
+        {
+          "type": "final",
+          "id": "web-fc66f996-b460-40d0-84ab-d322c84cee6a",
+          "text": "唔该，帮我睇下呢个网页可唔可以一路录音，一路将我讲嘅嘢变成文字。",
+          "language": "Cantonese",
+          "requestId": "ffd2e84f-317b-45b7-8ea7-77f27ba23d0f"
+        },
+        {
+          "type": "final",
+          "id": "web-172e13b0-e449-4e5f-935a-e8a5dd2a9978",
+          "text": "The meeting has moved to three o'clock tomorrow afternoon. Please arrive ten minutes early.",
+          "language": "English",
+          "requestId": "e63753a7-d3be-43d5-8d7c-3e36e6771be6"
+        }
+      ],
+      "firstPartialSeconds": 3.0816999999999997,
+      "exactFullAudioMatch": true,
+      "savedPairs": 3,
+      "messages": [
+        {
+          "seconds": 0.0034,
+          "event": {
+            "type": "ready"
+          }
+        },
+        {
+          "seconds": 1.4179000000000002,
+          "event": {
+            "type": "segment",
+            "id": "web-26f2c39d-f079-4e2b-b822-7e4353fa818a",
+            "startMs": 980
+          }
+        },
+        {
+          "seconds": 3.0816999999999997,
+          "event": {
+            "type": "partial",
+            "id": "web-26f2c39d-f079-4e2b-b822-7e4353fa818a",
+            "text": "会议改到明天下午三。",
+            "language": "Chinese",
+            "requestId": "1b6d410c-3550-48be-887e-6f0c6ab3e9c6"
+          }
+        },
+        {
+          "seconds": 5.1031,
+          "event": {
+            "type": "partial",
+            "id": "web-26f2c39d-f079-4e2b-b822-7e4353fa818a",
+            "text": "会议改到明天下午三点，请提前十分钟。",
+            "language": "Chinese",
+            "requestId": "1b6d410c-3550-48be-887e-6f0c6ab3e9c6"
+          }
+        },
+        {
+          "seconds": 6.6816,
+          "event": {
+            "type": "final",
+            "id": "web-26f2c39d-f079-4e2b-b822-7e4353fa818a",
+            "text": "会议改到明天下午三点，请提前十分钟到场。",
+            "language": "Chinese",
+            "requestId": "1b6d410c-3550-48be-887e-6f0c6ab3e9c6"
+          }
+        },
+        {
+          "seconds": 8.2166,
+          "event": {
+            "type": "segment",
+            "id": "web-fc66f996-b460-40d0-84ab-d322c84cee6a",
+            "startMs": 7730
+          }
+        },
+        {
+          "seconds": 9.9035,
+          "event": {
+            "type": "partial",
+            "id": "web-fc66f996-b460-40d0-84ab-d322c84cee6a",
+            "text": "唔该，帮我睇下呢个。",
+            "language": "Cantonese",
+            "requestId": "ffd2e84f-317b-45b7-8ea7-77f27ba23d0f"
+          }
+        },
+        {
+          "seconds": 11.9529,
+          "event": {
+            "type": "partial",
+            "id": "web-fc66f996-b460-40d0-84ab-d322c84cee6a",
+            "text": "唔该，帮我睇下呢个网页可唔可以一路录音。",
+            "language": "Cantonese",
+            "requestId": "ffd2e84f-317b-45b7-8ea7-77f27ba23d0f"
+          }
+        },
+        {
+          "seconds": 13.914299999999999,
+          "event": {
+            "type": "partial",
+            "id": "web-fc66f996-b460-40d0-84ab-d322c84cee6a",
+            "text": "唔该，帮我睇下呢个网页可唔可以一路录音，一路将我讲嘅嘢。",
+            "language": "Cantonese",
+            "requestId": "ffd2e84f-317b-45b7-8ea7-77f27ba23d0f"
+          }
+        },
+        {
+          "seconds": 15.5791,
+          "event": {
+            "type": "final",
+            "id": "web-fc66f996-b460-40d0-84ab-d322c84cee6a",
+            "text": "唔该，帮我睇下呢个网页可唔可以一路录音，一路将我讲嘅嘢变成文字。",
+            "language": "Cantonese",
+            "requestId": "ffd2e84f-317b-45b7-8ea7-77f27ba23d0f"
+          }
+        },
+        {
+          "seconds": 17.1094,
+          "event": {
+            "type": "segment",
+            "id": "web-172e13b0-e449-4e5f-935a-e8a5dd2a9978",
+            "startMs": 16670
+          }
+        },
+        {
+          "seconds": 18.8027,
+          "event": {
+            "type": "partial",
+            "id": "web-172e13b0-e449-4e5f-935a-e8a5dd2a9978",
+            "text": "The meeting has moved to three o'clock tomorrow.",
+            "language": "English",
+            "requestId": "e63753a7-d3be-43d5-8d7c-3e36e6771be6"
+          }
+        },
+        {
+          "seconds": 20.8377,
+          "event": {
+            "type": "partial",
+            "id": "web-172e13b0-e449-4e5f-935a-e8a5dd2a9978",
+            "text": "The meeting has moved to three o'clock tomorrow afternoon. Please arrive ten minutes.",
+            "language": "English",
+            "requestId": "e63753a7-d3be-43d5-8d7c-3e36e6771be6"
+          }
+        },
+        {
+          "seconds": 22.279,
+          "event": {
+            "type": "final",
+            "id": "web-172e13b0-e449-4e5f-935a-e8a5dd2a9978",
+            "text": "The meeting has moved to three o'clock tomorrow afternoon. Please arrive ten minutes early.",
+            "language": "English",
+            "requestId": "e63753a7-d3be-43d5-8d7c-3e36e6771be6"
+          }
+        },
+        {
+          "seconds": 23.3371,
+          "event": {
+            "type": "stopped"
+          }
+        }
+      ]
+    }
+  ]
+}

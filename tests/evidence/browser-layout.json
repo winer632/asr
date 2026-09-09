@@ -1,0 +1,69 @@
+{
+  "testType": "Desktop Chrome viewport emulation, not physical mobile devices",
+  "docs": [
+    {
+      "width": 320,
+      "documentWidth": 320,
+      "bodyFont": "16px",
+      "mobileMenu": true
+    },
+    {
+      "width": 390,
+      "documentWidth": 390,
+      "bodyFont": "16px",
+      "mobileMenu": true
+    },
+    {
+      "width": 430,
+      "documentWidth": 430,
+      "bodyFont": "16px",
+      "mobileMenu": true
+    },
+    {
+      "width": 768,
+      "documentWidth": 768,
+      "bodyFont": "16px",
+      "mobileMenu": false
+    },
+    {
+      "width": 1280,
+      "documentWidth": 1280,
+      "bodyFont": "16px",
+      "mobileMenu": false
+    }
+  ],
+  "app": [
+    {
+      "width": 320,
+      "documentWidth": 320,
+      "recordButtonWithinViewport": true,
+      "recordButtonHeight": 52
+    },
+    {
+      "width": 390,
+      "documentWidth": 390,
+      "recordButtonWithinViewport": true,
+      "recordButtonHeight": 52
+    },
+    {
+      "width": 430,
+      "documentWidth": 430,
+      "recordButtonWithinViewport": true,
+      "recordButtonHeight": 52
+    },
+    {
+      "width": 768,
+      "documentWidth": 768,
+      "recordButtonWithinViewport": true,
+      "recordButtonHeight": 52
+    },
+    {
+      "width": 1280,
+      "documentWidth": 1280,
+      "recordButtonWithinViewport": true,
+      "recordButtonHeight": 52
+    }
+  ],
+  "consoleErrors": [],
+  "physicalPhonesTested": false
+}

@@ -1,0 +1,1991 @@
+{
+  "tested_at": "2026-09-09T04:00:08.729438+00:00",
+  "base_url": "http://10.210.1.23:19003",
+  "results": [
+    {
+      "name": "rest_wav",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 203690,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"42e80861-47a1-4240-ae71-69e4bc52b1e9\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.2497
+    },
+    {
+      "name": "rest_with_session",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 203925,
+      "status": 400,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"deb6b11d-51de-4e60-b0c4-a58e8e36965d\",\"error\":\"language must be zh, en or yue; omit it for automatic detection\"}",
+      "seconds": 0.1057
+    },
+    {
+      "name": "rest_no_file",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 43,
+      "status": 500,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"50ac5f3b-72b9-4605-827e-e0dec4f651f6\",\"error\":\"missing audio upload; expected one of fields: audio, file\"}",
+      "seconds": 0.0787
+    },
+    {
+      "name": "rest_json_empty",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 2,
+      "status": 500,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"59d6d1d2-a2b8-466c-b81b-d4bae74f66be\",\"error\":\"missing audio upload; expected one of fields: audio, file\"}",
+      "seconds": 0.072
+    },
+    {
+      "name": "compat_model",
+      "endpoint": "/v1/audio/transcriptions",
+      "method": "POST",
+      "request_bytes": 203793,
+      "status": 400,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"d9df881b-faea-4c69-9185-eefd68c13aa4\",\"error\":\"model field is not supported; the service selects the model internally\"}",
+      "seconds": 0.0978
+    },
+    {
+      "name": "compat_sse",
+      "endpoint": "/v1/audio/transcriptions",
+      "method": "POST",
+      "request_bytes": 203890,
+      "status": 502,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"8fc7e0fd-6fd1-47ed-8990-21833b75bbf4\",\"error\":\"upstream response did not contain a transcription result\"}",
+      "seconds": 0.2421
+    },
+    {
+      "name": "infer_get",
+      "endpoint": "/infer",
+      "method": "GET",
+      "request_bytes": 0,
+      "status": 405,
+      "content_type": "application/json",
+      "body": "{\"detail\":\"Method Not Allowed\"}",
+      "seconds": 0.0889
+    },
+    {
+      "name": "start_empty_id",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0401,
+          "message": {
+            "type": "error",
+            "code": "invalid_start",
+            "message": "session_id must contain 1-128 letters, digits, _ or -",
+            "request_id": "7c93f4e7-dc74-4389-b0a9-d796f708f798",
+            "session_id": null
+          }
+        }
+      ],
+      "status": "rejected_start",
+      "start": {
+        "type": "start",
+        "session_id": "",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "seconds": 0.0486
+    },
+    {
+      "name": "start_long_id",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0294,
+          "message": {
+            "type": "error",
+            "code": "invalid_start",
+            "message": "session_id must contain 1-128 letters, digits, _ or -",
+            "request_id": "9a9951be-109d-41ba-8aae-fd5c063694df",
+            "session_id": null
+          }
+        }
+      ],
+      "status": "rejected_start",
+      "start": {
+        "type": "start",
+        "session_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "seconds": 0.0392
+    },
+    {
+      "name": "start_unicode_id",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0268,
+          "message": {
+            "type": "error",
+            "code": "invalid_start",
+            "message": "session_id must contain 1-128 letters, digits, _ or -",
+            "request_id": "493ca127-4c96-44bf-8465-20c68afcd659",
+            "session_id": null
+          }
+        }
+      ],
+      "status": "rejected_start",
+      "start": {
+        "type": "start",
+        "session_id": "测试",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "seconds": 0.034
+    },
+    {
+      "name": "start_unknown_field",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0242,
+          "message": {
+            "type": "error",
+            "code": "invalid_start",
+            "message": "expected start with supported fields only",
+            "request_id": "f54853a0-50fa-4e7f-985b-96d5a31573d1",
+            "session_id": null
+          }
+        }
+      ],
+      "status": "rejected_start",
+      "start": {
+        "type": "start",
+        "session_id": "probe-f94cd8e5f0ba4f63aa2272c3ff657dfb",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le",
+        "chunk_seconds": 1
+      },
+      "seconds": 0.0306
+    },
+    {
+      "name": "start_resume_flag",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0263,
+          "message": {
+            "type": "error",
+            "code": "invalid_start",
+            "message": "expected start with supported fields only",
+            "request_id": "a45569aa-9af0-4b3c-998f-179ff94477dc",
+            "session_id": null
+          }
+        }
+      ],
+      "status": "rejected_start",
+      "start": {
+        "type": "start",
+        "session_id": "probe-2a774027b037412bbf28f631b16405b4",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le",
+        "resume": true
+      },
+      "seconds": 0.0345
+    },
+    {
+      "name": "start_wrong_type",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0288,
+          "message": {
+            "type": "error",
+            "code": "invalid_start",
+            "message": "expected start with supported fields only",
+            "request_id": "06c927aa-de35-4a7f-b838-88d872b1c35b",
+            "session_id": null
+          }
+        }
+      ],
+      "status": "rejected_start",
+      "start": {
+        "type": "hello",
+        "session_id": "probe-01d6c61749cb4022a56ef7b90eb9565a",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "seconds": 0.0367
+    },
+    {
+      "name": "start_null_language",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0277,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "0f717983-add8-40a3-b727-514ea6b802b3",
+            "session_id": "probe-f99eaabbe98e4c149273e2140d3ec711"
+          }
+        },
+        {
+          "seconds": 0.0402,
+          "message": {
+            "type": "final",
+            "sequence": 0,
+            "audio_seconds": 0.0,
+            "language": "",
+            "text": "",
+            "request_id": "0f717983-add8-40a3-b727-514ea6b802b3",
+            "session_id": "probe-f99eaabbe98e4c149273e2140d3ec711"
+          }
+        }
+      ],
+      "status": "final",
+      "start": {
+        "type": "start",
+        "session_id": "probe-f99eaabbe98e4c149273e2140d3ec711",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le",
+        "language": null
+      },
+      "audio_send_start": 0.0283,
+      "audio_send_end": 0.0283,
+      "final_after_send_seconds": 0.0119,
+      "seconds": 0.0487
+    },
+    {
+      "name": "start_language_zh",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0275,
+          "message": {
+            "type": "error",
+            "code": "invalid_language",
+            "message": "language must be Chinese, English or Cantonese; omit it for automatic detection",
+            "request_id": "85b8af20-21f4-4b28-be5f-b548669140a6",
+            "session_id": null
+          }
+        }
+      ],
+      "status": "rejected_start",
+      "start": {
+        "type": "start",
+        "session_id": "probe-80285db8cc874c999059060c5c2b8caa",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le",
+        "language": "zh"
+      },
+      "seconds": 0.0351
+    },
+    {
+      "name": "start_json_null",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.042,
+          "message": {
+            "type": "error",
+            "code": "invalid_message",
+            "message": "expected a JSON object",
+            "request_id": "11fb5a45-5920-4d4c-8165-327b5d424bbd",
+            "session_id": null
+          }
+        }
+      ],
+      "status": "rejected_start",
+      "start": {
+        "type": "start",
+        "session_id": "probe-9dbcd547c7714a35ade3421fc5eb693c",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "seconds": 0.0528
+    },
+    {
+      "name": "start_json_array",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.027,
+          "message": {
+            "type": "error",
+            "code": "invalid_message",
+            "message": "expected a JSON object",
+            "request_id": "3fdbca1a-1833-47ba-aa99-0add8f56c222",
+            "session_id": null
+          }
+        }
+      ],
+      "status": "rejected_start",
+      "start": {
+        "type": "start",
+        "session_id": "probe-6441ba02b3134d9cb3d11ece7303fa04",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "seconds": 0.0344
+    },
+    {
+      "name": "start_malformed_json",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0255,
+          "message": {
+            "type": "error",
+            "code": "invalid_message",
+            "message": "expected a JSON object",
+            "request_id": "8ce8d04f-3de5-4732-b2b6-bc0a878d0c5c",
+            "session_id": null
+          }
+        }
+      ],
+      "status": "rejected_start",
+      "start": {
+        "type": "start",
+        "session_id": "probe-5c7a51a42eee4fa2a443aa9c49ae239e",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "seconds": 0.0337
+    },
+    {
+      "name": "binary_before_start",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.027,
+          "message": {
+            "type": "error",
+            "code": "invalid_start",
+            "message": "first message must be start JSON",
+            "request_id": "38ca1e3d-38c9-4d18-afaf-680ee8cf1954",
+            "session_id": null
+          }
+        }
+      ],
+      "status": "rejected_start",
+      "start": {
+        "type": "start",
+        "session_id": "probe-57a5c69e18e34ac6a6ab9189c958ba0c",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "seconds": 0.0344
+    },
+    {
+      "name": "odd_pcm_byte",
+      "input_seconds": 3.125e-05,
+      "pcm_bytes": 1,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0273,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "e01d8e4a-3f91-4da3-b3ca-ad9839941c8f",
+            "session_id": "probe-3f36610aa4574d86a2ddeae2344d7e31"
+          }
+        },
+        {
+          "seconds": 0.0358,
+          "message": {
+            "type": "error",
+            "code": "invalid_audio",
+            "message": "binary message must contain 2-65536 bytes, aligned to PCM16 samples",
+            "request_id": "e01d8e4a-3f91-4da3-b3ca-ad9839941c8f",
+            "session_id": "probe-3f36610aa4574d86a2ddeae2344d7e31"
+          }
+        }
+      ],
+      "status": "error",
+      "start": {
+        "type": "start",
+        "session_id": "probe-3f36610aa4574d86a2ddeae2344d7e31",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0276,
+      "audio_send_end": 0.0279,
+      "final_after_send_seconds": 0.008,
+      "seconds": 0.0436
+    },
+    {
+      "name": "wrong_finish_control",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0327,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "3e9b0fb6-c78b-40aa-87f7-bcc106f84c09",
+            "session_id": "probe-9db4f177fb3a4f4a894d08ef79748bc2"
+          }
+        },
+        {
+          "seconds": 0.0446,
+          "message": {
+            "type": "error",
+            "code": "invalid_message",
+            "message": "expected binary PCM audio or {\"type\":\"end\"}",
+            "request_id": "3e9b0fb6-c78b-40aa-87f7-bcc106f84c09",
+            "session_id": "probe-9db4f177fb3a4f4a894d08ef79748bc2"
+          }
+        }
+      ],
+      "status": "error",
+      "start": {
+        "type": "start",
+        "session_id": "probe-9db4f177fb3a4f4a894d08ef79748bc2",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0331,
+      "audio_send_end": 0.0331,
+      "final_after_send_seconds": 0.0115,
+      "seconds": 0.0534
+    },
+    {
+      "name": "empty_audio",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0268,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "83beb252-633d-43bf-88ae-7c2fc0f02371",
+            "session_id": "probe-e73270b6a7bc45778796d5cac23a8382"
+          }
+        },
+        {
+          "seconds": 0.0357,
+          "message": {
+            "type": "final",
+            "sequence": 0,
+            "audio_seconds": 0.0,
+            "language": "",
+            "text": "",
+            "request_id": "83beb252-633d-43bf-88ae-7c2fc0f02371",
+            "session_id": "probe-e73270b6a7bc45778796d5cac23a8382"
+          }
+        }
+      ],
+      "status": "final",
+      "start": {
+        "type": "start",
+        "session_id": "probe-e73270b6a7bc45778796d5cac23a8382",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0271,
+      "audio_send_end": 0.0272,
+      "final_after_send_seconds": 0.0085,
+      "seconds": 0.0481
+    },
+    {
+      "name": "silence_5_seconds",
+      "input_seconds": 5.0,
+      "pcm_bytes": 160000,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0245,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "d45b7003-e27c-40bc-8256-54afee12efb4",
+            "session_id": "probe-1ec5914924614be1b1839f7012f6ebd5"
+          }
+        },
+        {
+          "seconds": 0.1113,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "",
+            "text": "",
+            "request_id": "d45b7003-e27c-40bc-8256-54afee12efb4",
+            "session_id": "probe-1ec5914924614be1b1839f7012f6ebd5"
+          }
+        },
+        {
+          "seconds": 0.1541,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "",
+            "text": "",
+            "request_id": "d45b7003-e27c-40bc-8256-54afee12efb4",
+            "session_id": "probe-1ec5914924614be1b1839f7012f6ebd5"
+          }
+        },
+        {
+          "seconds": 0.1966,
+          "message": {
+            "type": "final",
+            "sequence": 3,
+            "audio_seconds": 5.0,
+            "language": "",
+            "text": "",
+            "request_id": "d45b7003-e27c-40bc-8256-54afee12efb4",
+            "session_id": "probe-1ec5914924614be1b1839f7012f6ebd5"
+          }
+        }
+      ],
+      "status": "final",
+      "start": {
+        "type": "start",
+        "session_id": "probe-1ec5914924614be1b1839f7012f6ebd5",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0247,
+      "first_partial_seconds": 0.0866,
+      "audio_send_end": 0.1253,
+      "final_after_send_seconds": 0.0713,
+      "seconds": 0.2033
+    },
+    {
+      "name": "no_authorization",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [],
+      "status": "handshake_rejected",
+      "start": {
+        "type": "start",
+        "session_id": "probe-60dad06f14e34e27b48987b512aa2233",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "http_status": 403,
+      "seconds": 0.0172
+    },
+    {
+      "name": "concurrency8_1",
+      "input_seconds": 6.3570625,
+      "pcm_bytes": 203426,
+      "pace": 1,
+      "events": [
+        {
+          "seconds": 0.0524,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "4cc11f95-60e2-4692-aeb7-dcda5897e986",
+            "session_id": "probe-9047ca308d464541b70e051dbf8d12e2"
+          }
+        },
+        {
+          "seconds": 2.2722,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试。",
+            "request_id": "4cc11f95-60e2-4692-aeb7-dcda5897e986",
+            "session_id": "probe-9047ca308d464541b70e051dbf8d12e2"
+          }
+        },
+        {
+          "seconds": 4.2985,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别。",
+            "request_id": "4cc11f95-60e2-4692-aeb7-dcda5897e986",
+            "session_id": "probe-9047ca308d464541b70e051dbf8d12e2"
+          }
+        },
+        {
+          "seconds": 6.1696,
+          "message": {
+            "type": "partial",
+            "sequence": 3,
+            "audio_seconds": 6.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文。",
+            "request_id": "4cc11f95-60e2-4692-aeb7-dcda5897e986",
+            "session_id": "probe-9047ca308d464541b70e051dbf8d12e2"
+          }
+        },
+        {
+          "seconds": 6.4859,
+          "message": {
+            "type": "final",
+            "sequence": 4,
+            "audio_seconds": 6.3570625,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+            "request_id": "4cc11f95-60e2-4692-aeb7-dcda5897e986",
+            "session_id": "probe-9047ca308d464541b70e051dbf8d12e2"
+          }
+        }
+      ],
+      "status": "final",
+      "start": {
+        "type": "start",
+        "session_id": "probe-9047ca308d464541b70e051dbf8d12e2",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0693,
+      "first_partial_seconds": 2.2029,
+      "audio_send_end": 6.4315,
+      "final_after_send_seconds": 0.0544,
+      "seconds": 6.4937
+    },
+    {
+      "name": "concurrency8_2",
+      "input_seconds": 8.5205,
+      "pcm_bytes": 272656,
+      "pace": 1,
+      "events": [
+        {
+          "seconds": 0.0274,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "f3021e26-1dec-45aa-a5f5-2f323ef7a72d",
+            "session_id": "probe-93ef1829f5df4a98a74701bc581a2754"
+          }
+        },
+        {
+          "seconds": 2.2873,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "Cantonese",
+            "text": "你好，我而家讲紧。",
+            "request_id": "f3021e26-1dec-45aa-a5f5-2f323ef7a72d",
+            "session_id": "probe-93ef1829f5df4a98a74701bc581a2754"
+          }
+        },
+        {
+          "seconds": 4.2783,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "Cantonese",
+            "text": "你好，我而家讲紧广东话。今日天气几？",
+            "request_id": "f3021e26-1dec-45aa-a5f5-2f323ef7a72d",
+            "session_id": "probe-93ef1829f5df4a98a74701bc581a2754"
+          }
+        },
+        {
+          "seconds": 6.1486,
+          "message": {
+            "type": "partial",
+            "sequence": 3,
+            "audio_seconds": 6.0,
+            "language": "Cantonese",
+            "text": "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶。",
+            "request_id": "f3021e26-1dec-45aa-a5f5-2f323ef7a72d",
+            "session_id": "probe-93ef1829f5df4a98a74701bc581a2754"
+          }
+        },
+        {
+          "seconds": 8.1641,
+          "message": {
+            "type": "partial",
+            "sequence": 4,
+            "audio_seconds": 8.0,
+            "language": "Cantonese",
+            "text": "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去？",
+            "request_id": "f3021e26-1dec-45aa-a5f5-2f323ef7a72d",
+            "session_id": "probe-93ef1829f5df4a98a74701bc581a2754"
+          }
+        },
+        {
+          "seconds": 8.6405,
+          "message": {
+            "type": "final",
+            "sequence": 5,
+            "audio_seconds": 8.5205,
+            "language": "Cantonese",
+            "text": "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？",
+            "request_id": "f3021e26-1dec-45aa-a5f5-2f323ef7a72d",
+            "session_id": "probe-93ef1829f5df4a98a74701bc581a2754"
+          }
+        }
+      ],
+      "status": "final",
+      "start": {
+        "type": "start",
+        "session_id": "probe-93ef1829f5df4a98a74701bc581a2754",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0606,
+      "first_partial_seconds": 2.2267,
+      "audio_send_end": 8.5863,
+      "final_after_send_seconds": 0.0542,
+      "seconds": 8.6476
+    },
+    {
+      "name": "concurrency8_3",
+      "input_seconds": 5.4065,
+      "pcm_bytes": 173008,
+      "pace": 1,
+      "events": [
+        {
+          "seconds": 0.037,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "bc110972-f825-4174-aa14-735e187e41af",
+            "session_id": "probe-71184e7ebbea498daee204cea6e58ca0"
+          }
+        },
+        {
+          "seconds": 2.2773,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "English",
+            "text": "Hello. This is a test of automatic.",
+            "request_id": "bc110972-f825-4174-aa14-735e187e41af",
+            "session_id": "probe-71184e7ebbea498daee204cea6e58ca0"
+          }
+        },
+        {
+          "seconds": 4.2662,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "English",
+            "text": "Hello. This is a test of automatic speech recognition. Please turn.",
+            "request_id": "bc110972-f825-4174-aa14-735e187e41af",
+            "session_id": "probe-71184e7ebbea498daee204cea6e58ca0"
+          }
+        },
+        {
+          "seconds": 5.5456,
+          "message": {
+            "type": "final",
+            "sequence": 3,
+            "audio_seconds": 5.4065,
+            "language": "English",
+            "text": "Hello. This is a test of automatic speech recognition. Please turn my voice into text.",
+            "request_id": "bc110972-f825-4174-aa14-735e187e41af",
+            "session_id": "probe-71184e7ebbea498daee204cea6e58ca0"
+          }
+        }
+      ],
+      "status": "final",
+      "start": {
+        "type": "start",
+        "session_id": "probe-71184e7ebbea498daee204cea6e58ca0",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0623,
+      "first_partial_seconds": 2.215,
+      "audio_send_end": 5.4695,
+      "final_after_send_seconds": 0.0761,
+      "seconds": 5.5534
+    },
+    {
+      "name": "concurrency8_4",
+      "input_seconds": 4.7479375,
+      "pcm_bytes": 151934,
+      "pace": 1,
+      "events": [
+        {
+          "seconds": 0.0347,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "34d54666-76ab-463f-a1b9-c77e2b7cc65f",
+            "session_id": "probe-588c8a14d43546fdab89530446a8c767"
+          }
+        },
+        {
+          "seconds": 2.244,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "Chinese",
+            "text": "会议改到明天下午三。",
+            "request_id": "34d54666-76ab-463f-a1b9-c77e2b7cc65f",
+            "session_id": "probe-588c8a14d43546fdab89530446a8c767"
+          }
+        },
+        {
+          "seconds": 4.2945,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "Chinese",
+            "text": "会议改到明天下午三点，请提前十分钟。",
+            "request_id": "34d54666-76ab-463f-a1b9-c77e2b7cc65f",
+            "session_id": "probe-588c8a14d43546fdab89530446a8c767"
+          }
+        },
+        {
+          "seconds": 4.8649,
+          "message": {
+            "type": "final",
+            "sequence": 3,
+            "audio_seconds": 4.7479375,
+            "language": "Chinese",
+            "text": "会议改到明天下午三点，请提前十分钟到场。",
+            "request_id": "34d54666-76ab-463f-a1b9-c77e2b7cc65f",
+            "session_id": "probe-588c8a14d43546fdab89530446a8c767"
+          }
+        }
+      ],
+      "status": "final",
+      "start": {
+        "type": "start",
+        "session_id": "probe-588c8a14d43546fdab89530446a8c767",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0593,
+      "first_partial_seconds": 2.1847,
+      "audio_send_end": 4.8125,
+      "final_after_send_seconds": 0.0524,
+      "seconds": 4.872
+    },
+    {
+      "name": "concurrency8_5",
+      "input_seconds": 6.9431875,
+      "pcm_bytes": 222182,
+      "pace": 1,
+      "events": [
+        {
+          "seconds": 0.0333,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "7e9693f1-257d-49f1-aafb-ddfbe4ecd47f",
+            "session_id": "probe-9df472d7f11e46ffb0a14bc07bfe2699"
+          }
+        },
+        {
+          "seconds": 2.1888,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "Cantonese",
+            "text": "唔该，帮我睇下呢个。",
+            "request_id": "7e9693f1-257d-49f1-aafb-ddfbe4ecd47f",
+            "session_id": "probe-9df472d7f11e46ffb0a14bc07bfe2699"
+          }
+        },
+        {
+          "seconds": 4.2627,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "Cantonese",
+            "text": "唔该，帮我睇下呢个网页可唔可以一路录音。",
+            "request_id": "7e9693f1-257d-49f1-aafb-ddfbe4ecd47f",
+            "session_id": "probe-9df472d7f11e46ffb0a14bc07bfe2699"
+          }
+        },
+        {
+          "seconds": 6.1753,
+          "message": {
+            "type": "partial",
+            "sequence": 3,
+            "audio_seconds": 6.0,
+            "language": "Cantonese",
+            "text": "唔该，帮我睇下呢个网页可唔可以一路录音，一路将我讲嘅嘢。",
+            "request_id": "7e9693f1-257d-49f1-aafb-ddfbe4ecd47f",
+            "session_id": "probe-9df472d7f11e46ffb0a14bc07bfe2699"
+          }
+        },
+        {
+          "seconds": 7.0633,
+          "message": {
+            "type": "final",
+            "sequence": 4,
+            "audio_seconds": 6.9431875,
+            "language": "Cantonese",
+            "text": "唔该，帮我睇下呢个网页可唔可以一路录音，一路将我讲嘅嘢变成文字。",
+            "request_id": "7e9693f1-257d-49f1-aafb-ddfbe4ecd47f",
+            "session_id": "probe-9df472d7f11e46ffb0a14bc07bfe2699"
+          }
+        }
+      ],
+      "status": "final",
+      "start": {
+        "type": "start",
+        "session_id": "probe-9df472d7f11e46ffb0a14bc07bfe2699",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0582,
+      "first_partial_seconds": 2.1306,
+      "audio_send_end": 7.0049,
+      "final_after_send_seconds": 0.0584,
+      "seconds": 7.0701
+    },
+    {
+      "name": "concurrency8_6",
+      "input_seconds": 4.632875,
+      "pcm_bytes": 148252,
+      "pace": 1,
+      "events": [
+        {
+          "seconds": 0.0501,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "66224795-1fa1-4e33-be05-59f70de35552",
+            "session_id": "probe-29d75631ac094837a70fa1f88a93572a"
+          }
+        },
+        {
+          "seconds": 2.1812,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "English",
+            "text": "The meeting has moved to three o'clock tomorrow.",
+            "request_id": "66224795-1fa1-4e33-be05-59f70de35552",
+            "session_id": "probe-29d75631ac094837a70fa1f88a93572a"
+          }
+        },
+        {
+          "seconds": 4.2547,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "English",
+            "text": "The meeting has moved to three o'clock tomorrow afternoon. Please arrive ten minutes.",
+            "request_id": "66224795-1fa1-4e33-be05-59f70de35552",
+            "session_id": "probe-29d75631ac094837a70fa1f88a93572a"
+          }
+        },
+        {
+          "seconds": 4.7437,
+          "message": {
+            "type": "final",
+            "sequence": 3,
+            "audio_seconds": 4.632875,
+            "language": "English",
+            "text": "The meeting has moved to three o'clock tomorrow afternoon. Please arrive ten minutes early.",
+            "request_id": "66224795-1fa1-4e33-be05-59f70de35552",
+            "session_id": "probe-29d75631ac094837a70fa1f88a93572a"
+          }
+        }
+      ],
+      "status": "final",
+      "start": {
+        "type": "start",
+        "session_id": "probe-29d75631ac094837a70fa1f88a93572a",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0505,
+      "first_partial_seconds": 2.1307,
+      "audio_send_end": 4.6888,
+      "final_after_send_seconds": 0.0549,
+      "seconds": 4.7528
+    },
+    {
+      "name": "concurrency8_7",
+      "input_seconds": 6.3570625,
+      "pcm_bytes": 203426,
+      "pace": 1,
+      "events": [
+        {
+          "seconds": 0.0354,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "7474207f-d263-4369-88eb-3f15964d1b9a",
+            "session_id": "probe-2dc161bae0c14cd0bc1a2319c65784ea"
+          }
+        },
+        {
+          "seconds": 2.1462,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试。",
+            "request_id": "7474207f-d263-4369-88eb-3f15964d1b9a",
+            "session_id": "probe-2dc161bae0c14cd0bc1a2319c65784ea"
+          }
+        },
+        {
+          "seconds": 4.1467,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别。",
+            "request_id": "7474207f-d263-4369-88eb-3f15964d1b9a",
+            "session_id": "probe-2dc161bae0c14cd0bc1a2319c65784ea"
+          }
+        },
+        {
+          "seconds": 6.1545,
+          "message": {
+            "type": "partial",
+            "sequence": 3,
+            "audio_seconds": 6.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文。",
+            "request_id": "7474207f-d263-4369-88eb-3f15964d1b9a",
+            "session_id": "probe-2dc161bae0c14cd0bc1a2319c65784ea"
+          }
+        },
+        {
+          "seconds": 6.4665,
+          "message": {
+            "type": "final",
+            "sequence": 4,
+            "audio_seconds": 6.3570625,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+            "request_id": "7474207f-d263-4369-88eb-3f15964d1b9a",
+            "session_id": "probe-2dc161bae0c14cd0bc1a2319c65784ea"
+          }
+        }
+      ],
+      "status": "final",
+      "start": {
+        "type": "start",
+        "session_id": "probe-2dc161bae0c14cd0bc1a2319c65784ea",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0546,
+      "first_partial_seconds": 2.0916,
+      "audio_send_end": 6.4173,
+      "final_after_send_seconds": 0.0492,
+      "seconds": 6.4747
+    },
+    {
+      "name": "concurrency8_8",
+      "input_seconds": 5.4065,
+      "pcm_bytes": 173008,
+      "pace": 1,
+      "events": [
+        {
+          "seconds": 0.0268,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "7cf45de7-d661-40da-b33d-5f0575ddb91c",
+            "session_id": "probe-335aa1cb8ac84a5f988d0488d2cb85df"
+          }
+        },
+        {
+          "seconds": 2.1659,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "English",
+            "text": "Hello. This is a test of automatic.",
+            "request_id": "7cf45de7-d661-40da-b33d-5f0575ddb91c",
+            "session_id": "probe-335aa1cb8ac84a5f988d0488d2cb85df"
+          }
+        },
+        {
+          "seconds": 4.2961,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "English",
+            "text": "Hello. This is a test of automatic speech recognition. Please turn.",
+            "request_id": "7cf45de7-d661-40da-b33d-5f0575ddb91c",
+            "session_id": "probe-335aa1cb8ac84a5f988d0488d2cb85df"
+          }
+        },
+        {
+          "seconds": 5.5365,
+          "message": {
+            "type": "final",
+            "sequence": 3,
+            "audio_seconds": 5.4065,
+            "language": "English",
+            "text": "Hello. This is a test of automatic speech recognition. Please turn my voice into text.",
+            "request_id": "7cf45de7-d661-40da-b33d-5f0575ddb91c",
+            "session_id": "probe-335aa1cb8ac84a5f988d0488d2cb85df"
+          }
+        }
+      ],
+      "status": "final",
+      "start": {
+        "type": "start",
+        "session_id": "probe-335aa1cb8ac84a5f988d0488d2cb85df",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.049,
+      "first_partial_seconds": 2.1169,
+      "audio_send_end": 5.4569,
+      "final_after_send_seconds": 0.0796,
+      "seconds": 5.5448
+    },
+    {
+      "name": "duration_59_9",
+      "input_seconds": 59.9,
+      "pcm_bytes": 1916800,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0244,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "8925e58b-3920-4b27-ae47-6d47f6002d70",
+            "session_id": "probe-ce7fbbf1455f4f24b1af621b60999c8c"
+          }
+        },
+        {
+          "seconds": 0.1258,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试。",
+            "request_id": "8925e58b-3920-4b27-ae47-6d47f6002d70",
+            "session_id": "probe-ce7fbbf1455f4f24b1af621b60999c8c"
+          }
+        },
+        {
+          "seconds": 0.2076,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别。",
+            "request_id": "8925e58b-3920-4b27-ae47-6d47f6002d70",
+            "session_id": "probe-ce7fbbf1455f4f24b1af621b60999c8c"
+          }
+        },
+        {
+          "seconds": 0.2892,
+          "message": {
+            "type": "partial",
+            "sequence": 3,
+            "audio_seconds": 6.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文。",
+            "request_id": "8925e58b-3920-4b27-ae47-6d47f6002d70",
+            "session_id": "probe-ce7fbbf1455f4f24b1af621b60999c8c"
+          }
+        },
+        {
+          "seconds": 0.3462,
+          "message": {
+            "type": "partial",
+            "sequence": 4,
+            "audio_seconds": 8.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+            "request_id": "8925e58b-3920-4b27-ae47-6d47f6002d70",
+            "session_id": "probe-ce7fbbf1455f4f24b1af621b60999c8c"
+          }
+        },
+        {
+          "seconds": 0.3953,
+          "message": {
+            "type": "error",
+            "code": "overloaded",
+            "message": "audio buffer full; send audio at real-time speed",
+            "request_id": "8925e58b-3920-4b27-ae47-6d47f6002d70",
+            "session_id": "probe-ce7fbbf1455f4f24b1af621b60999c8c"
+          }
+        }
+      ],
+      "status": "error",
+      "start": {
+        "type": "start",
+        "session_id": "probe-ce7fbbf1455f4f24b1af621b60999c8c",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0248,
+      "first_partial_seconds": 0.101,
+      "sender_error": "received 1013 (try again later); then sent 1013 (try again later)",
+      "seconds": 0.4056
+    },
+    {
+      "name": "duration_60_0",
+      "input_seconds": 60.0,
+      "pcm_bytes": 1920000,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0226,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "2df05298-5401-4a98-ac6e-6e17a3baa77b",
+            "session_id": "probe-7e40bef0fdd64beea18310e4ed1d645c"
+          }
+        },
+        {
+          "seconds": 0.1249,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试。",
+            "request_id": "2df05298-5401-4a98-ac6e-6e17a3baa77b",
+            "session_id": "probe-7e40bef0fdd64beea18310e4ed1d645c"
+          }
+        },
+        {
+          "seconds": 0.2061,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别。",
+            "request_id": "2df05298-5401-4a98-ac6e-6e17a3baa77b",
+            "session_id": "probe-7e40bef0fdd64beea18310e4ed1d645c"
+          }
+        },
+        {
+          "seconds": 0.2877,
+          "message": {
+            "type": "partial",
+            "sequence": 3,
+            "audio_seconds": 6.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文。",
+            "request_id": "2df05298-5401-4a98-ac6e-6e17a3baa77b",
+            "session_id": "probe-7e40bef0fdd64beea18310e4ed1d645c"
+          }
+        },
+        {
+          "seconds": 0.328,
+          "message": {
+            "type": "partial",
+            "sequence": 4,
+            "audio_seconds": 8.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+            "request_id": "2df05298-5401-4a98-ac6e-6e17a3baa77b",
+            "session_id": "probe-7e40bef0fdd64beea18310e4ed1d645c"
+          }
+        },
+        {
+          "seconds": 0.371,
+          "message": {
+            "type": "partial",
+            "sequence": 5,
+            "audio_seconds": 10.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+            "request_id": "2df05298-5401-4a98-ac6e-6e17a3baa77b",
+            "session_id": "probe-7e40bef0fdd64beea18310e4ed1d645c"
+          }
+        },
+        {
+          "seconds": 0.4331,
+          "message": {
+            "type": "partial",
+            "sequence": 6,
+            "audio_seconds": 12.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+            "request_id": "2df05298-5401-4a98-ac6e-6e17a3baa77b",
+            "session_id": "probe-7e40bef0fdd64beea18310e4ed1d645c"
+          }
+        },
+        {
+          "seconds": 0.4758,
+          "message": {
+            "type": "error",
+            "code": "overloaded",
+            "message": "audio buffer full; send audio at real-time speed",
+            "request_id": "2df05298-5401-4a98-ac6e-6e17a3baa77b",
+            "session_id": "probe-7e40bef0fdd64beea18310e4ed1d645c"
+          }
+        }
+      ],
+      "status": "error",
+      "start": {
+        "type": "start",
+        "session_id": "probe-7e40bef0fdd64beea18310e4ed1d645c",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0229,
+      "first_partial_seconds": 0.102,
+      "sender_error": "received 1013 (try again later); then sent 1013 (try again later)",
+      "seconds": 0.4837
+    },
+    {
+      "name": "duration_60_1",
+      "input_seconds": 60.1,
+      "pcm_bytes": 1923200,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0253,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "cd15ad0d-123b-44ee-8b69-3146354c04e9",
+            "session_id": "probe-63b1b15bd79945e68caa351a1fa6a9eb"
+          }
+        },
+        {
+          "seconds": 0.128,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试。",
+            "request_id": "cd15ad0d-123b-44ee-8b69-3146354c04e9",
+            "session_id": "probe-63b1b15bd79945e68caa351a1fa6a9eb"
+          }
+        },
+        {
+          "seconds": 0.212,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别。",
+            "request_id": "cd15ad0d-123b-44ee-8b69-3146354c04e9",
+            "session_id": "probe-63b1b15bd79945e68caa351a1fa6a9eb"
+          }
+        },
+        {
+          "seconds": 0.291,
+          "message": {
+            "type": "partial",
+            "sequence": 3,
+            "audio_seconds": 6.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文。",
+            "request_id": "cd15ad0d-123b-44ee-8b69-3146354c04e9",
+            "session_id": "probe-63b1b15bd79945e68caa351a1fa6a9eb"
+          }
+        },
+        {
+          "seconds": 0.332,
+          "message": {
+            "type": "partial",
+            "sequence": 4,
+            "audio_seconds": 8.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+            "request_id": "cd15ad0d-123b-44ee-8b69-3146354c04e9",
+            "session_id": "probe-63b1b15bd79945e68caa351a1fa6a9eb"
+          }
+        },
+        {
+          "seconds": 0.3731,
+          "message": {
+            "type": "partial",
+            "sequence": 5,
+            "audio_seconds": 10.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+            "request_id": "cd15ad0d-123b-44ee-8b69-3146354c04e9",
+            "session_id": "probe-63b1b15bd79945e68caa351a1fa6a9eb"
+          }
+        },
+        {
+          "seconds": 0.4153,
+          "message": {
+            "type": "partial",
+            "sequence": 6,
+            "audio_seconds": 12.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+            "request_id": "cd15ad0d-123b-44ee-8b69-3146354c04e9",
+            "session_id": "probe-63b1b15bd79945e68caa351a1fa6a9eb"
+          }
+        },
+        {
+          "seconds": 0.457,
+          "message": {
+            "type": "partial",
+            "sequence": 7,
+            "audio_seconds": 14.0,
+            "language": "Chinese",
+            "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+            "request_id": "cd15ad0d-123b-44ee-8b69-3146354c04e9",
+            "session_id": "probe-63b1b15bd79945e68caa351a1fa6a9eb"
+          }
+        },
+        {
+          "seconds": 0.5189,
+          "message": {
+            "type": "error",
+            "code": "overloaded",
+            "message": "audio buffer full; send audio at real-time speed",
+            "request_id": "cd15ad0d-123b-44ee-8b69-3146354c04e9",
+            "session_id": "probe-63b1b15bd79945e68caa351a1fa6a9eb"
+          }
+        }
+      ],
+      "status": "error",
+      "start": {
+        "type": "start",
+        "session_id": "probe-63b1b15bd79945e68caa351a1fa6a9eb",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0257,
+      "first_partial_seconds": 0.1024,
+      "sender_error": "received 1013 (try again later); then sent 1013 (try again later)",
+      "seconds": 0.528
+    },
+    {
+      "name": "single_binary_60_seconds",
+      "input_seconds": 60.0,
+      "pcm_bytes": 1920000,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0246,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "f5615ed0-27a9-4ec5-89b9-26aee5e8a6be",
+            "session_id": "probe-3c16f88e37ac4b7ab759534e801ab6c5"
+          }
+        }
+      ],
+      "status": "connection_closed",
+      "start": {
+        "type": "start",
+        "session_id": "probe-3c16f88e37ac4b7ab759534e801ab6c5",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.025,
+      "sender_error": "no close frame received or sent",
+      "close_code": null,
+      "error": "no close frame received or sent",
+      "seconds": 1.2613
+    },
+    {
+      "name": "repeat_id_first",
+      "input_seconds": 4.7479375,
+      "pcm_bytes": 151934,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0288,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "f46ea59e-33e1-4dff-bb96-4c91d5186cfd",
+            "session_id": "replay-56f274173658481ca28ea133798f0e4a"
+          }
+        },
+        {
+          "seconds": 0.1458,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "Chinese",
+            "text": "会议改到明天下午三。",
+            "request_id": "f46ea59e-33e1-4dff-bb96-4c91d5186cfd",
+            "session_id": "replay-56f274173658481ca28ea133798f0e4a"
+          }
+        },
+        {
+          "seconds": 0.2345,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "Chinese",
+            "text": "会议改到明天下午三点，请提前十分钟。",
+            "request_id": "f46ea59e-33e1-4dff-bb96-4c91d5186cfd",
+            "session_id": "replay-56f274173658481ca28ea133798f0e4a"
+          }
+        },
+        {
+          "seconds": 0.2809,
+          "message": {
+            "type": "final",
+            "sequence": 3,
+            "audio_seconds": 4.7479375,
+            "language": "Chinese",
+            "text": "会议改到明天下午三点，请提前十分钟到场。",
+            "request_id": "f46ea59e-33e1-4dff-bb96-4c91d5186cfd",
+            "session_id": "replay-56f274173658481ca28ea133798f0e4a"
+          }
+        }
+      ],
+      "status": "final",
+      "start": {
+        "type": "start",
+        "session_id": "replay-56f274173658481ca28ea133798f0e4a",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0292,
+      "audio_send_end": 0.1245,
+      "first_partial_seconds": 0.1166,
+      "final_after_send_seconds": 0.1565,
+      "seconds": 0.2884
+    },
+    {
+      "name": "repeat_id_second",
+      "input_seconds": 4.632875,
+      "pcm_bytes": 148252,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0248,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "f07d8a6c-0423-487f-8eba-123b9b40434f",
+            "session_id": "replay-56f274173658481ca28ea133798f0e4a"
+          }
+        },
+        {
+          "seconds": 0.1557,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "English",
+            "text": "The meeting has moved to three o'clock tomorrow.",
+            "request_id": "f07d8a6c-0423-487f-8eba-123b9b40434f",
+            "session_id": "replay-56f274173658481ca28ea133798f0e4a"
+          }
+        },
+        {
+          "seconds": 0.2775,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "English",
+            "text": "The meeting has moved to three o'clock tomorrow afternoon. Please arrive ten minutes.",
+            "request_id": "f07d8a6c-0423-487f-8eba-123b9b40434f",
+            "session_id": "replay-56f274173658481ca28ea133798f0e4a"
+          }
+        },
+        {
+          "seconds": 0.3245,
+          "message": {
+            "type": "final",
+            "sequence": 3,
+            "audio_seconds": 4.632875,
+            "language": "English",
+            "text": "The meeting has moved to three o'clock tomorrow afternoon. Please arrive ten minutes early.",
+            "request_id": "f07d8a6c-0423-487f-8eba-123b9b40434f",
+            "session_id": "replay-56f274173658481ca28ea133798f0e4a"
+          }
+        }
+      ],
+      "status": "final",
+      "start": {
+        "type": "start",
+        "session_id": "replay-56f274173658481ca28ea133798f0e4a",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0252,
+      "audio_send_end": 0.1181,
+      "first_partial_seconds": 0.1305,
+      "final_after_send_seconds": 0.2064,
+      "seconds": 0.332
+    },
+    {
+      "name": "duplicate_id_a",
+      "input_seconds": 4.632875,
+      "pcm_bytes": 148252,
+      "pace": 1,
+      "events": [
+        {
+          "seconds": 0.0284,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "bc5c9af3-ed3e-4933-a911-60e35799830e",
+            "session_id": "duplicate-539d51d005e84bd29790defd76fb83be"
+          }
+        },
+        {
+          "seconds": 2.1257,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "English",
+            "text": "The meeting has moved to three o'clock tomorrow.",
+            "request_id": "bc5c9af3-ed3e-4933-a911-60e35799830e",
+            "session_id": "duplicate-539d51d005e84bd29790defd76fb83be"
+          }
+        },
+        {
+          "seconds": 4.1597,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "English",
+            "text": "The meeting has moved to three o'clock tomorrow afternoon. Please arrive ten minutes.",
+            "request_id": "bc5c9af3-ed3e-4933-a911-60e35799830e",
+            "session_id": "duplicate-539d51d005e84bd29790defd76fb83be"
+          }
+        },
+        {
+          "seconds": 4.7187,
+          "message": {
+            "type": "final",
+            "sequence": 3,
+            "audio_seconds": 4.632875,
+            "language": "English",
+            "text": "The meeting has moved to three o'clock tomorrow afternoon. Please arrive ten minutes early.",
+            "request_id": "bc5c9af3-ed3e-4933-a911-60e35799830e",
+            "session_id": "duplicate-539d51d005e84bd29790defd76fb83be"
+          }
+        }
+      ],
+      "status": "final",
+      "start": {
+        "type": "start",
+        "session_id": "duplicate-539d51d005e84bd29790defd76fb83be",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0287,
+      "first_partial_seconds": 2.0971,
+      "audio_send_end": 4.6655,
+      "final_after_send_seconds": 0.0532,
+      "seconds": 4.726
+    },
+    {
+      "name": "duplicate_id_b",
+      "input_seconds": 4.632875,
+      "pcm_bytes": 148252,
+      "pace": 1,
+      "events": [
+        {
+          "seconds": 0.0264,
+          "message": {
+            "type": "error",
+            "code": "session_conflict",
+            "message": "session_id is already active",
+            "request_id": "b1a234ab-ed9f-4310-a45c-900f02926183",
+            "session_id": "duplicate-539d51d005e84bd29790defd76fb83be"
+          }
+        }
+      ],
+      "status": "rejected_start",
+      "start": {
+        "type": "start",
+        "session_id": "duplicate-539d51d005e84bd29790defd76fb83be",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "seconds": 0.0343
+    },
+    {
+      "name": "disconnect_prefix",
+      "input_seconds": 3.0,
+      "pcm_bytes": 96000,
+      "pace": 1,
+      "events": [
+        {
+          "seconds": 0.0248,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "4e980a16-0007-48c4-a35e-ae16ad4fb4b3",
+            "session_id": "resume-54e14d3fa01546e6afe8ee6aa2e8d393"
+          }
+        },
+        {
+          "seconds": 2.1208,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "English",
+            "text": "Hello. This is a test of automatic.",
+            "request_id": "4e980a16-0007-48c4-a35e-ae16ad4fb4b3",
+            "session_id": "resume-54e14d3fa01546e6afe8ee6aa2e8d393"
+          }
+        }
+      ],
+      "status": "client_disconnect",
+      "start": {
+        "type": "start",
+        "session_id": "resume-54e14d3fa01546e6afe8ee6aa2e8d393",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0252,
+      "first_partial_seconds": 2.0957,
+      "audio_send_end": 3.0307,
+      "close_code": 1000,
+      "error": "sent 1000 (OK) probe disconnect; then received 1000 (OK) probe disconnect",
+      "seconds": 3.0428
+    },
+    {
+      "name": "reconnect_same_id",
+      "input_seconds": 6.9431875,
+      "pcm_bytes": 222182,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0272,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "ee81db9c-6315-4ac8-a3c0-9879f46d86bd",
+            "session_id": "resume-54e14d3fa01546e6afe8ee6aa2e8d393"
+          }
+        },
+        {
+          "seconds": 0.1607,
+          "message": {
+            "type": "partial",
+            "sequence": 1,
+            "audio_seconds": 2.0,
+            "language": "Cantonese",
+            "text": "唔该，帮我睇下呢个。",
+            "request_id": "ee81db9c-6315-4ac8-a3c0-9879f46d86bd",
+            "session_id": "resume-54e14d3fa01546e6afe8ee6aa2e8d393"
+          }
+        },
+        {
+          "seconds": 0.2829,
+          "message": {
+            "type": "partial",
+            "sequence": 2,
+            "audio_seconds": 4.0,
+            "language": "Cantonese",
+            "text": "唔该，帮我睇下呢个网页可唔可以一路录音。",
+            "request_id": "ee81db9c-6315-4ac8-a3c0-9879f46d86bd",
+            "session_id": "resume-54e14d3fa01546e6afe8ee6aa2e8d393"
+          }
+        },
+        {
+          "seconds": 0.3772,
+          "message": {
+            "type": "partial",
+            "sequence": 3,
+            "audio_seconds": 6.0,
+            "language": "Cantonese",
+            "text": "唔该，帮我睇下呢个网页可唔可以一路录音，一路将我讲嘅嘢。",
+            "request_id": "ee81db9c-6315-4ac8-a3c0-9879f46d86bd",
+            "session_id": "resume-54e14d3fa01546e6afe8ee6aa2e8d393"
+          }
+        },
+        {
+          "seconds": 0.4302,
+          "message": {
+            "type": "final",
+            "sequence": 4,
+            "audio_seconds": 6.9431875,
+            "language": "Cantonese",
+            "text": "唔该，帮我睇下呢个网页可唔可以一路录音，一路将我讲嘅嘢变成文字。",
+            "request_id": "ee81db9c-6315-4ac8-a3c0-9879f46d86bd",
+            "session_id": "resume-54e14d3fa01546e6afe8ee6aa2e8d393"
+          }
+        }
+      ],
+      "status": "final",
+      "start": {
+        "type": "start",
+        "session_id": "resume-54e14d3fa01546e6afe8ee6aa2e8d393",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "audio_send_start": 0.0276,
+      "first_partial_seconds": 0.1332,
+      "audio_send_end": 0.1668,
+      "final_after_send_seconds": 0.2634,
+      "seconds": 0.4391
+    },
+    {
+      "name": "idle_before_start_35s",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 10.0348,
+          "message": {
+            "type": "error",
+            "code": "timeout",
+            "message": "stream timed out",
+            "request_id": "1224fff6-eb02-4e0f-854b-702e870d647d",
+            "session_id": null
+          }
+        }
+      ],
+      "status": "idle_observed",
+      "start": {
+        "type": "start",
+        "session_id": "probe-22de6435c3c8439a9481a4cf0ff319ae",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "seconds": 10.0419
+    },
+    {
+      "name": "idle_after_start_35s",
+      "input_seconds": 0.0,
+      "pcm_bytes": 0,
+      "pace": 0.02,
+      "events": [
+        {
+          "seconds": 0.0332,
+          "message": {
+            "type": "started",
+            "chunk_seconds": 2.0,
+            "max_audio_seconds": 60,
+            "request_id": "dceadbc5-d5a9-43db-b08e-2e7e18fa02b9",
+            "session_id": "probe-50ad6cb4d3bd40169c5c21a8abcdb4ed"
+          }
+        },
+        {
+          "seconds": 30.1047,
+          "message": {
+            "type": "error",
+            "code": "timeout",
+            "message": "stream timed out",
+            "request_id": "dceadbc5-d5a9-43db-b08e-2e7e18fa02b9",
+            "session_id": "probe-50ad6cb4d3bd40169c5c21a8abcdb4ed"
+          }
+        }
+      ],
+      "status": "idle_observed",
+      "start": {
+        "type": "start",
+        "session_id": "probe-50ad6cb4d3bd40169c5c21a8abcdb4ed",
+        "sample_rate": 16000,
+        "channels": 1,
+        "format": "pcm_s16le"
+      },
+      "seconds": 30.1127
+    }
+  ]
+}

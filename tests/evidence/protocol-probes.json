@@ -1,0 +1,145 @@
+[
+  {
+    "case": "minimal",
+    "fields": {},
+    "auth": true,
+    "events": [
+      {
+        "type": "started",
+        "chunk_seconds": 2.0,
+        "max_audio_seconds": 60,
+        "request_id": "1b1555b0-520b-4c08-b5a9-e4ce58375bf4",
+        "session_id": "docs-5529fe4ac7934060b555782ea16a47a1"
+      }
+    ]
+  },
+  {
+    "case": "no_auth",
+    "fields": {},
+    "auth": false,
+    "events": [
+      {
+        "exception": "server rejected WebSocket connection: HTTP 403"
+      }
+    ]
+  },
+  {
+    "case": "bad_format",
+    "fields": {
+      "format": "mp3"
+    },
+    "auth": true,
+    "events": [
+      {
+        "type": "error",
+        "code": "invalid_audio_format",
+        "message": "expected pcm_s16le, 16000 Hz, mono",
+        "request_id": "ca182dc1-6c88-4914-ab08-7c8d45f5ba1d",
+        "session_id": null
+      }
+    ]
+  },
+  {
+    "case": "bad_rate",
+    "fields": {
+      "sample_rate": 48000
+    },
+    "auth": true,
+    "events": [
+      {
+        "type": "error",
+        "code": "invalid_audio_format",
+        "message": "expected pcm_s16le, 16000 Hz, mono",
+        "request_id": "7132f743-0be3-4a14-b1e1-ec7b02cb4e62",
+        "session_id": null
+      }
+    ]
+  },
+  {
+    "case": "bad_channels",
+    "fields": {
+      "channels": 2
+    },
+    "auth": true,
+    "events": [
+      {
+        "type": "error",
+        "code": "invalid_audio_format",
+        "message": "expected pcm_s16le, 16000 Hz, mono",
+        "request_id": "d35f94da-6241-4c5b-bfea-84387ee2b39e",
+        "session_id": null
+      }
+    ]
+  },
+  {
+    "case": "cantonese",
+    "fields": {
+      "language": "Cantonese"
+    },
+    "auth": true,
+    "events": [
+      {
+        "type": "started",
+        "chunk_seconds": 2.0,
+        "max_audio_seconds": 60,
+        "request_id": "7f3e830c-2a64-4cd5-8513-7ac782732b6c",
+        "session_id": "docs-25e695763a68411d9e2f134292fd1bd7"
+      }
+    ]
+  },
+  {
+    "case": "unsupported_language",
+    "fields": {
+      "language": "French"
+    },
+    "auth": true,
+    "events": [
+      {
+        "type": "error",
+        "code": "invalid_language",
+        "message": "language must be Chinese, English or Cantonese; omit it for automatic detection",
+        "request_id": "8444b832-30ae-4a34-a099-4311b6da8f17",
+        "session_id": null
+      }
+    ]
+  },
+  {
+    "case": "auto_literal",
+    "fields": {
+      "language": "auto"
+    },
+    "auth": true,
+    "events": [
+      {
+        "type": "error",
+        "code": "invalid_language",
+        "message": "language must be Chinese, English or Cantonese; omit it for automatic detection",
+        "request_id": "6e31758c-6424-4e6a-b573-b3acdad4a15d",
+        "session_id": null
+      }
+    ]
+  },
+  {
+    "case": "empty_audio_end",
+    "fields": {},
+    "auth": true,
+    "events": [
+      {
+        "type": "started",
+        "chunk_seconds": 2.0,
+        "max_audio_seconds": 60,
+        "request_id": "2864707a-2b58-4191-8945-615c094506cb",
+        "session_id": "docs-a7c63cc974b9449cb60e0a63a464c5df"
+      },
+      {
+        "type": "final",
+        "sequence": 0,
+        "audio_seconds": 0.0,
+        "language": "",
+        "text": "",
+        "request_id": "2864707a-2b58-4191-8945-615c094506cb",
+        "session_id": "docs-a7c63cc974b9449cb60e0a63a464c5df"
+      }
+    ]
+  }
+]

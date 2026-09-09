@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#11283c"><meta name="description" content="普通话、粤语、英语 ASR 服务接口说明，包含文件上传、WebSocket 流式识别、错误处理与音频文本对应保存。">
+<title>ASR 接口参考 · 声迹</title>
+<style>
+:root{color-scheme:light;--ink:#182b40;--muted:#64778d;--accent:#087f8c;--line:#dfe7ef;--bg:#f4f7fa}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;color:var(--ink);background:var(--bg);font:16px/1.8 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}a{color:var(--accent);text-underline-offset:4px}button,summary{font:inherit}button,a,summary{-webkit-tap-highlight-color:transparent}a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #31b0c0;outline-offset:4px}header{background:#11283c;color:#fff;min-height:72px;padding:15px max(24px,calc((100vw - 1280px)/2));display:flex;align-items:center;justify-content:space-between;gap:16px}header a{color:inherit;text-decoration:none}.brand{font-size:21px;font-weight:700;letter-spacing:1px}.brand span{color:#91b7c5;font-size:13px;margin-left:12px;letter-spacing:2px}.header-meta{font-size:13px;color:#adbfce}.shell{max-width:1328px;margin:auto;padding:40px 24px 70px;display:grid;grid-template-columns:210px minmax(0,1fr);gap:38px}aside{position:sticky;top:25px;align-self:start;max-height:calc(100vh - 50px);overflow:auto;font-size:14px}aside p{font-size:12px;letter-spacing:1.5px;color:#8a98a9;margin:0 12px 13px}nav a{display:block;padding:8px 12px;text-decoration:none;color:#63768c;border-left:2px solid transparent;line-height:1.6}nav a:hover,nav a.current{background:#e7f0f3;color:#116a78;border-left-color:#138b97}.mobile-toc{display:none}main{min-width:0}.intro{padding:5px 0 28px}.eyebrow{font-size:12px;letter-spacing:2px;color:#438190;font-weight:600}.intro h1{font-size:36px;letter-spacing:-1px;line-height:1.35;margin:8px 0 14px;font-weight:680}.intro>p{color:var(--muted);max-width:740px}.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:21px}.pill{display:inline-block;padding:3px 10px;border-radius:5px;font-size:12px;font-weight:550;background:#e1f0f2;color:#287181}.pill.warn{background:#fff0d7;color:#92601e}.pill.gray{background:#e8edf3;color:#66798c}section{margin-bottom:24px;padding:30px 32px;background:#fff;border:1px solid var(--line);border-radius:13px;min-width:0}h2{font-size:22px;margin:0 0 17px;font-weight:650;letter-spacing:-.3px}h2>span{font:13px ui-monospace,monospace;color:#9aadbd;margin-right:13px}h3{font-size:17px;margin:26px 0 10px;font-weight:650}p{margin:10px 0 15px}strong{font-weight:650}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.875em;background:#f0f4f7;padding:2px 5px;border-radius:4px;overflow-wrap:anywhere}pre{font-size:14px;line-height:1.65;background:#11283c;color:#e1ecf2;padding:21px 20px;margin:0;overflow:auto;tab-size:2}pre code{padding:0;background:transparent;color:inherit;font-size:inherit;overflow-wrap:normal}figure{margin:15px 0 22px;border:1px solid #213c51;border-radius:9px;overflow:hidden;min-width:0}figcaption{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#1a3449;color:#9db7c9;padding:7px 15px;font:12px/1.6 ui-monospace,monospace}.copy{border:1px solid #385266;background:transparent;color:#c8dbe5;border-radius:4px;padding:4px 10px;cursor:pointer;font-size:12px;min-height:32px}.table-wrap{width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:8px;margin:15px 0 22px;overscroll-behavior-x:contain}table{width:100%;border-collapse:collapse;text-align:left;font-size:14px;min-width:570px}th{background:#f2f6f9;font-weight:600;color:#536b80}th,td{padding:12px 14px;border-bottom:1px solid #e7edf2;vertical-align:top}tr:last-child td{border-bottom:0}td code{font-size:13px}td:first-child{white-space:nowrap}ul,ol{padding-left:24px}li{margin:6px 0}.callout{padding:15px 18px;border-left:3px solid #39a1a9;background:#eff8f8;border-radius:0 7px 7px 0;font-size:15px;margin:18px 0}.callout.warning{background:#fff8ed;border-color:#dca752;color:#775327}.callout p{margin:4px 0}.endpoint{display:flex;align-items:center;gap:10px;margin:22px 0 12px;flex-wrap:wrap}.method{font:700 12px ui-monospace,monospace;letter-spacing:1px;background:#deeff0;color:#16747e;border-radius:4px;padding:4px 9px}.method.post{background:#e8eafa;color:#5262a6}.method.ws{background:#e6edf4;color:#375b79}.endpoint code{font-size:16px}.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:19px 0}.flow span{background:#edf5f6;border:1px solid #d6e8eb;border-radius:7px;padding:7px 12px;font-size:14px}.flow i{font-style:normal;color:#93a9ba}.small{font-size:14px;color:var(--muted)}.key-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.key-grid div{background:#f4f7fa;border:1px solid #e7edf3;border-radius:8px;padding:13px 16px;min-width:0}.key-grid small{display:block;font-size:12px;color:#7d8fa2;margin-bottom:5px}.key-grid code{padding:0;background:transparent;font-size:14px}footer{color:#8291a4;font-size:12px;padding:9px 0;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.back{position:fixed;bottom:20px;right:20px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 13px;box-shadow:0 3px 15px #16324a0d;font-size:13px;text-decoration:none}.source-list{font-size:14px;overflow-wrap:anywhere}
+@media(max-width:1000px){.shell{grid-template-columns:175px minmax(0,1fr);gap:23px;padding:28px 20px 60px}section{padding:24px}.intro h1{font-size:32px}}
+@media(max-width:760px){header{padding:14px 18px;min-height:66px}.header-meta{font-size:12px}.brand{font-size:19px}.brand span{font-size:12px;margin-left:7px}.shell{display:block;padding:22px 14px 55px}aside{display:none}.mobile-toc{display:block;position:sticky;top:0;background:#fff;z-index:3;border-bottom:1px solid var(--line);padding:0 17px;box-shadow:0 3px 8px #263b5005}.mobile-toc summary{padding:12px 0;font-size:14px;color:#3b667b;cursor:pointer;min-height:48px}.mobile-toc nav{max-height:65vh;overflow:auto;padding:0 0 13px}.mobile-toc a{padding:9px 10px}.intro{padding:3px 4px 22px}.intro h1{font-size:29px}.intro>p{font-size:16px}.pills{margin-top:15px}section{padding:22px 18px;margin-bottom:17px;border-radius:10px}h2{font-size:21px}h2>span{margin-right:8px}h3{font-size:17px}.key-grid{grid-template-columns:1fr}pre{padding:16px 14px;font-size:13px}.table-wrap{margin:13px 0 18px}th,td{padding:10px 12px}.callout{padding:12px 14px;font-size:15px}.endpoint code{font-size:14px}.flow{gap:6px}.flow span{font-size:13px;padding:6px 8px}.back{bottom:14px;right:14px}.source-list{font-size:14px}footer{padding:8px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{header,aside,.mobile-toc,.back,.copy{display:none}.shell{display:block;padding:0}body{background:#fff;color:#111;font-size:11pt}section{break-inside:auto;border:0;border-bottom:1px solid #bbb;border-radius:0;padding:15px 0}h2,h3{break-after:avoid}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f3f3f3;color:#111;font-size:9pt}.table-wrap{overflow:visible}table{min-width:0;font-size:9pt}figure{break-inside:avoid}a{color:#111}footer{font-size:9pt}}
+</style>
+</head>
+<body id="top">
+<header><a class="brand" href="#top">声迹<span>ASR REFERENCE</span></a><span class="header-meta">接口 v0.1.0 · 2026-09-09</span></header>
+<details class="mobile-toc"><summary>目录 · 跳转到接口或示例</summary><nav aria-label="手机目录"></nav></details>
+<div class="shell"><aside><p>API DOCUMENTATION</p><nav aria-label="文档目录">
+<a href="#overview">01 服务概览</a><a href="#authentication">02 鉴权与网络</a><a href="#endpoints">03 端点总览</a><a href="#health">04 健康检查</a><a href="#languages">05 语种查询</a><a href="#streaming">06 WebSocket 流式识别</a><a href="#messages">07 流式消息字段</a><a href="#upload">08 文件上传识别</a><a href="#compatible">09 兼容接口</a><a href="#errors">10 错误与恢复</a><a href="#examples">11 TypeScript 调用示例</a><a href="#application">12 网页与 VAD 接入</a><a href="#storage">13 音频与文本保存</a><a href="#verification">14 边界与稳定性实测</a>
+</nav></aside>
+<main>
+<div class="intro"><div class="eyebrow">SPEECH TO TEXT</div><h1>ASR 接口参考</h1><p>普通话、粤语、英语语音识别服务。覆盖鉴权、文件上传、连续音频流、响应字段、错误处理，以及网页中录音与文本的对应保存。</p><div class="pills"><span class="pill">流式识别已实测</span><span class="pill">三语自动检测</span><span class="pill warn">部分容器样本需转换</span><span class="pill gray">单文件 HTML · 支持手机阅读</span></div></div>
+
+<section id="overview"><h2><span>01</span>服务概览</h2><p>ASR 将语音转为文字；VAD 判断语音开始和结束。本文依据调用方约定、服务端 OpenAPI 与 2026-09-09 实测整理。服务端没有公开的参数和限制标为待确认。</p>
+<div class="key-grid"><div><small>HTTP 基础地址</small><code>http://10.210.1.23:19003</code></div><div><small>流式识别地址</small><code>ws://10.210.1.23:19003/infer/stream</code></div><div><small>建议请求并发</small><strong>8</strong><span class="small"> · 请求方控制并发</span></div><div><small>文件上传单位</small><strong>每次请求 1 个音频文件</strong></div></div>
+<p>文件上传声明支持：<code>wav</code>、<code>flac</code>、<code>mp3</code>、<code>mp4</code>、<code>mpeg</code>、<code>mpga</code>、<code>m4a</code>、<code>ogg</code>、<code>webm</code>。这些是文件接口格式；流式接口只接受后文规定的原始 PCM。</p>
+<div class="callout warning"><strong>当前可用性</strong><p>WebSocket、<code>/infer</code> 与 <code>/v1/audio/transcriptions</code> 的基本转写均已成功。早期的文件请求 500 不能代表最新 WAV 状态；部分容器与参数组合仍会报错，详见格式与错误表。</p></div></section>
+
+<section id="authentication"><h2><span>02</span>鉴权与网络</h2><p>语种查询、文件识别和 WebSocket 握手使用相同的 Bearer API key。文档与代码仓库不包含真实密钥。</p>
+<figure><figcaption>HTTP / WebSocket 握手请求头<button class="copy" type="button">复制</button></figcaption><pre><code>Authorization: Bearer &lt;API_KEY&gt;</code></pre></figure>
+<ul><li>服务位于内网，调用机器必须能路由到 <code>10.210.1.23:19003</code>。</li><li>curl 使用 <code>--noproxy '*'</code>，避免请求进入与内网不相通的代理。</li><li>健康检查示例不需要 API key。<code>/languages</code> 缺少或错误凭据返回 HTTP 401。</li><li>WebSocket 缺少鉴权时，本轮观察到握手被 HTTP 403 拒绝。</li><li>浏览器原生 WebSocket 构造函数不能设置任意 Authorization 请求头。本项目由 Node.js 服务代发鉴权请求，网页连接同源 <code>/api/live</code>。</li></ul>
+<p class="small">生产环境按部署网络选择 HTTPS/WSS。文档中内网 HTTP/WS 地址按当前实际服务展示；没有证据表明该端口提供 TLS。</p></section>
+
+<section id="endpoints"><h2><span>03</span>端点总览</h2><div class="table-wrap"><table><thead><tr><th>方法</th><th>路径</th><th>用途</th><th>状态 / 来源</th></tr></thead><tbody>
+<tr><td>GET</td><td><code>/health/live</code></td><td>网关进程存活</td><td>实测 200</td></tr><tr><td>GET</td><td><code>/health/ready</code></td><td>模型就绪</td><td>实测 200</td></tr><tr><td>GET</td><td><code>/health</code></td><td>模型就绪，兼容入口</td><td>实测 200</td></tr><tr><td>GET</td><td><code>/languages</code></td><td>语种列表与自动检测能力</td><td>实测 200，需要鉴权</td></tr><tr><td>WebSocket</td><td><code>/infer/stream</code></td><td>持续接收 PCM、返回中间及最终文字</td><td>实测可用，未列入 OpenAPI paths</td></tr><tr><td>POST</td><td><code>/infer</code></td><td>单文件识别</td><td>最新 WAV 请求实测 200</td></tr><tr><td>POST</td><td><code>/v1/audio/transcriptions</code></td><td>转写兼容入口</td><td>基本转写实测 200；并非完全兼容</td></tr><tr><td>GET</td><td><code>/openapi.json</code></td><td>OpenAPI 3.1 描述</td><td>实测 200</td></tr><tr><td>GET</td><td><code>/docs</code> / <code>/redoc</code></td><td>服务自带接口浏览页面</td><td>实测 200</td></tr>
+</tbody></table></div></section>
+
+<section id="health"><h2><span>04</span>健康检查</h2><div class="endpoint"><span class="method">GET</span><code>/health</code><code>/health/ready</code></div>
+<figure><figcaption>curl<button class="copy" type="button">复制</button></figcaption><pre><code>curl --noproxy '*' \
+  --connect-timeout 10 --max-time 30 \
+  'http://10.210.1.23:19003/health'</code></pre></figure>
+<figure><figcaption>HTTP 200 · 实际响应<button class="copy" type="button">复制</button></figcaption><pre><code>{
+  "status": "ok",
+  "model_loaded": true,
+  "upstream": "http://127.0.0.1:18081",
+  "error": null
+}</code></pre></figure>
+<div class="table-wrap"><table><thead><tr><th>字段</th><th>类型</th><th>含义</th></tr></thead><tbody><tr><td><code>status</code></td><td>string</td><td>本轮就绪值为 <code>ok</code></td></tr><tr><td><code>model_loaded</code></td><td>boolean</td><td>服务报告模型是否已加载</td></tr><tr><td><code>upstream</code></td><td>string</td><td>网关自身访问的上游地址；这里的 127.0.0.1 指服务器自身</td></tr><tr><td><code>error</code></td><td>null / 错误信息</td><td>本轮为 null；异常结构没有公开 schema</td></tr></tbody></table></div>
+<div class="endpoint"><span class="method">GET</span><code>/health/live</code></div><figure><figcaption>HTTP 200 · 实际响应<button class="copy" type="button">复制</button></figcaption><pre><code>{
+  "status": "ok",
+  "service": "sensenova-asr-archive-gateway",
+  "version": "0.1.0"
+}</code></pre></figure><p>存活检查反映进程可响应；就绪检查反映模型加载状态。业务监控还应定期使用短音频执行真实识别。</p></section>
+
+<section id="languages"><h2><span>05</span>语种查询与选择</h2><div class="endpoint"><span class="method">GET</span><code>/languages</code></div><p>需要 Bearer 鉴权，查询不运行识别。</p><figure><figcaption>实际响应<button class="copy" type="button">复制</button></figcaption><pre><code>{
+  &quot;languages&quot;: [
+    &quot;Chinese&quot;,
+    &quot;English&quot;,
+    &quot;Cantonese&quot;
+  ],
+  &quot;auto_detect&quot;: true
+}</code></pre></figure><div class="table-wrap"><table><thead><tr><th>语种</th><th>响应 language / WS 显式值</th><th>HTTP 文件 language</th></tr></thead><tbody><tr><td>普通话</td><td>Chinese</td><td>zh</td></tr><tr><td>粤语</td><td>Cantonese</td><td>yue</td></tr><tr><td>英语</td><td>English</td><td>en</td></tr></tbody></table></div><div class="callout"><strong>两个入口的语言参数值不同</strong><p>WS 使用 Chinese / Cantonese / English；HTTP 使用 zh / yue / en。自动检测均建议省略 language。把 Chinese 传给 HTTP，或把 zh 传给 WS，分别触发 400 和 invalid_language。字符串 auto 也被拒绝。</p></div><p>WS 的 language=null 已通过启动校验，但推荐省略。输出可能为繁体或简体字，网页及保存的文本保留服务原文。</p></section>
+
+<section id="streaming"><h2><span>06</span>WebSocket 流式识别</h2><div class="endpoint"><span class="method ws">WS</span><code>ws://10.210.1.23:19003/infer/stream</code></div>
+<div class="flow" aria-label="流式调用顺序"><span>握手 + 鉴权</span><i>→</i><span>start</span><i>→</i><span>started</span><i>→</i><span>PCM / partial</span><i>→</i><span>end / final</span></div>
+<h3>1. 音频规格</h3><div class="table-wrap"><table><thead><tr><th>参数</th><th>取值</th><th>说明</th></tr></thead><tbody><tr><td>编码</td><td><code>pcm_s16le</code></td><td>有符号 16 位小端整数</td></tr><tr><td>采样率</td><td><code>16000</code> Hz</td><td>每秒 16,000 个采样</td></tr><tr><td>声道</td><td><code>1</code></td><td>单声道</td></tr><tr><td>封装</td><td>WebSocket binary 帧</td><td>只发送 PCM 数据，不带 WAV 文件头，也不是 Base64 JSON</td></tr><tr><td>数据量</td><td>32,000 字节 / 秒</td><td>100 ms 音频 = 3,200 字节</td></tr><tr><td>建议发送粒度</td><td>100 ms</td><td>本项目发送粒度；上游单帧为 2–65,536 字节，长度须为偶数</td></tr></tbody></table></div>
+<h3>2. 发送启动消息</h3><figure><figcaption>JSON text frame<button class="copy" type="button">复制</button></figcaption><pre><code>{
+  "type": "start",
+  "session_id": "recording-20260909-001",
+  "sample_rate": 16000,
+  "channels": 1,
+  "format": "pcm_s16le"
+}</code></pre></figure>
+<div class="table-wrap"><table><thead><tr><th>字段</th><th>类型</th><th>填写规则</th></tr></thead><tbody><tr><td><code>type</code></td><td>string</td><td>固定为 <code>start</code></td></tr><tr><td><code>session_id</code></td><td>string</td><td>1–128 个英文字母、数字、下划线或连字符；同一时刻不能重用活动 ID；结束后可复用，但新连接从头识别</td></tr><tr><td><code>sample_rate</code></td><td>integer</td><td>显式填写 16000</td></tr><tr><td><code>channels</code></td><td>integer</td><td>显式填写 1</td></tr><tr><td><code>format</code></td><td>string</td><td>显式填写 pcm_s16le</td></tr><tr><td><code>language</code></td><td>string，可选</td><td>省略 = 自动检测；显式值为 Chinese / Cantonese / English</td></tr></tbody></table></div>
+<p class="small">音频字段各自的默认行为没有公开。本接入规范要求全部显式填写；省略全部音频字段、使用 48 kHz、双声道或 mp3 均已观察到 invalid_audio_format。不要追加未公开字段，chunk_seconds=1 或 0.5 已被拒绝。</p>
+<h3>3. 等待 started 后持续发送音频</h3><figure><figcaption>服务器确认<button class="copy" type="button">复制</button></figcaption><pre><code>{
+  "type": "started",
+  "chunk_seconds": 2.0,
+  "max_audio_seconds": 60,
+  "request_id": "服务器分配的请求 UUID",
+  "session_id": "recording-20260909-001"
+}</code></pre></figure>
+<p>收到确认后发送二进制 PCM。服务默认每累积 2 秒音频产生一次中间文字，未验证到可通过客户端缩短此周期的配置。实时验证 60.0 秒成功、60.1 秒返回 audio_limit；连续录音应提前创建下一段。过快灌入音频会触发 overloaded，应按实时速度发送。</p>
+<h3>4. 发送结束消息并等待最终文字</h3><figure><figcaption>JSON text frame<button class="copy" type="button">复制</button></figcaption><pre><code>{"type":"end"}</code></pre></figure>
+<p>麦克风停止或 VAD 判定当前语音结束时，先发送缓冲区剩余 PCM，再发送 end。保持连接直至收到 final；直接关闭连接可能丢失尾段文字。结束控制消息是 end，发送 finish 已实测被拒绝。</p></section>
+
+<section id="messages"><h2><span>07</span>流式消息字段</h2><h3>中间结果 partial</h3>
+<figure><figcaption>识别进行中<button class="copy" type="button">复制</button></figcaption><pre><code>{
+  "type": "partial",
+  "sequence": 2,
+  "audio_seconds": 4.0,
+  "language": "Chinese",
+  "text": "你好，今天我们测试普通话语音识别。",
+  "request_id": "723b2fba-05ee-4c28-b399-fc240fa7c282",
+  "session_id": "客户端生成的会话 ID"
+}</code></pre></figure>
+<h3>最终结果 final</h3><figure><figcaption>该会话完成<button class="copy" type="button">复制</button></figcaption><pre><code>{
+  "type": "final",
+  "sequence": 4,
+  "audio_seconds": 6.3570625,
+  "language": "Chinese",
+  "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+  "request_id": "723b2fba-05ee-4c28-b399-fc240fa7c282",
+  "session_id": "客户端生成的会话 ID"
+}</code></pre></figure>
+<div class="table-wrap"><table><thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead><tbody><tr><td><code>type</code></td><td>string</td><td>partial / final；另有 started / error</td></tr><tr><td><code>sequence</code></td><td>integer</td><td>会话内结果序号；空音频 final 实测为 0</td></tr><tr><td><code>audio_seconds</code></td><td>number</td><td>该结果对应的累计音频时长，单位秒</td></tr><tr><td><code>language</code></td><td>string</td><td>识别语种；空音频 final 实测为空字符串</td></tr><tr><td><code>text</code></td><td>string</td><td>当前会话完整的识别假设，可为空</td></tr><tr><td><code>request_id</code></td><td>string</td><td>服务器分配的请求标识，排查错误时保留</td></tr><tr><td><code>session_id</code></td><td>string</td><td>与客户端启动消息关联</td></tr></tbody></table></div>
+<div class="callout"><strong>partial 是完整快照</strong><p>每次用新 text 替换该段暂定文字。不要将多个 partial.text 直接拼接，否则前文会重复。final 到达后固定该段；不同会话按录音开始时间排序，不按网络返回先后排序。</p></div>
+<p>空音频 end 返回 sequence=0、audio_seconds=0、language=""、text="" 的 final。5 秒全零 PCM 与 10 秒纯高斯噪声也未识别出文字。收到 final 不等于存在有效语音。</p></section>
+
+<section id="upload"><h2><span>08</span>文件上传识别</h2><div class="endpoint"><span class="method post">POST</span><code>/infer</code></div><p>multipart/form-data，一次上传一个音频文件，由客户端自动生成 boundary。</p><div class="table-wrap"><table><thead><tr><th>位置</th><th>字段</th><th>规则</th></tr></thead><tbody><tr><td>Header</td><td>Authorization</td><td>Bearer &lt;API_KEY&gt;</td></tr><tr><td>Form</td><td>audio</td><td>文件内容，必填</td></tr><tr><td>Form</td><td>language</td><td>可选 zh / en / yue；省略自动检测</td></tr><tr><td>Form</td><td>response_format</td><td>建议省略或 json；text 请求成功但仍返回 JSON</td></tr><tr><td>Form</td><td>stream</td><td>省略或 false；true 实测返回 502</td></tr><tr><td>Form</td><td>model</td><td>不能传；由服务选择模型</td></tr></tbody></table></div><figure><figcaption>curl<button class="copy" type="button">复制</button></figcaption><pre><code>curl --noproxy &#x27;*&#x27; -X POST \
+  --connect-timeout 10 --max-time 120 \
+  &#x27;http://10.210.1.23:19003/infer&#x27; \
+  -H &quot;Authorization: Bearer $ASR_API_KEY&quot; \
+  -F &#x27;audio=@/path/to/audio.wav&#x27;</code></pre></figure><p>audio=@path 从运行 curl 的机器读取文件并上传，不要求服务器访问该路径。示例超时由客户端设置，不是服务端 SLA。</p><figure><figcaption>最新补测：HTTP 200<button class="copy" type="button">复制</button></figcaption><pre><code>{
+  &quot;request_id&quot;: &quot;8714aa4d-bccf-4176-860a-335b1c5a2a79&quot;,
+  &quot;language&quot;: &quot;Chinese&quot;,
+  &quot;text&quot;: &quot;你好，今天我们测试普通话语音识别，请把我说的话转换成文字。&quot;
+}</code></pre></figure><div class="table-wrap"><table><thead><tr><th>响应字段</th><th>类型</th><th>含义</th></tr></thead><tbody><tr><td>request_id</td><td>string</td><td>追踪 ID；最新 HTTP 响应同时有 X-Request-ID 头</td></tr><tr><td>language</td><td>string</td><td>Chinese / Cantonese / English 等实际返回值</td></tr><tr><td>text</td><td>string</td><td>识别文本，可为空</td></tr></tbody></table></div><h3>格式与解码实测</h3><div class="table-wrap"><table><thead><tr><th>格式</th><th>样本编码</th><th>HTTP 状态</th></tr></thead><tbody><tr><td>WAV</td><td>PCM16；另测 8 kHz 单声道、44.1 kHz 双声道、48 kHz 单声道、float32 WAV</td><td>200</td></tr><tr><td>FLAC</td><td>FLAC</td><td>200</td></tr><tr><td>MP3</td><td>MP3，64 kbit/s</td><td>200</td></tr><tr><td>MPGA</td><td>MP2，32 kHz，96 kbit/s</td><td>200</td></tr><tr><td>OGG</td><td>Opus，48 kbit/s</td><td>200</td></tr><tr><td>MP4</td><td>AAC，64 kbit/s，仅音轨</td><td>500</td></tr><tr><td>M4A</td><td>AAC，64 kbit/s</td><td>500</td></tr><tr><td>MPEG</td><td>MPEG-PS / MP2</td><td>500</td></tr><tr><td>WebM</td><td>Opus 音频</td><td>500</td></tr></tbody></table></div><p class="small">这是具体编码样本的结果，不穷尽该容器的所有编码组合。失败样本已用正确 MIME 的 curl 复测，仍返回 upstream transcription failed。网页采用原始 PCM；文件接入优先转换成已验证的 WAV。</p><h3>文件时长与体积</h3><div class="table-wrap"><table><thead><tr><th>测试</th><th>结果</th><th>可以确认的范围</th></tr></thead><tbody><tr><td>30 / 60 / 61 / 120 秒 WAV</td><td>全部 200</td><td>至少 120 秒已通过；不同于 WS 的 60 秒限制</td></tr><tr><td>1 / 4 / 8 / 16 MiB WAV</td><td>全部 200</td><td>至少 16 MiB 已通过；未触发真实上限</td></tr></tbody></table></div><p class="small">时长样本为短语音后补静音；体积样本用 WAV JUNK 块增大文件并保持音频不变。不能由此承诺 120 秒持续说话没有输出截断，也不能把已通过的最大样本当作服务真实上限。</p><p>批量并发建议 8。未知字段及 HTTP session_id 在样本中未报错，但是否实际生效、参与存档或幂等控制没有证据，不应依赖。</p></section>
+
+<section id="compatible"><h2><span>09</span>转写兼容入口</h2><div class="endpoint"><span class="method post">POST</span><code>/v1/audio/transcriptions</code></div><p>基本转写已成功，文件字段为 file，不能按完整 OpenAI API 兼容实现来假定。</p><figure><figcaption>基本调用<button class="copy" type="button">复制</button></figcaption><pre><code>curl --noproxy &#x27;*&#x27; -X POST \
+  &#x27;http://10.210.1.23:19003/v1/audio/transcriptions&#x27; \
+  -H &quot;Authorization: Bearer $ASR_API_KEY&quot; \
+  -F &#x27;file=@/path/to/audio.wav&#x27;</code></pre></figure><div class="table-wrap"><table><thead><tr><th>参数组合</th><th>结果</th><th>建议</th></tr></thead><tbody><tr><td>只传 file</td><td>200，JSON request_id/language/text</td><td>可用</td></tr><tr><td>language=zh</td><td>200</td><td>HTTP 使用短代码</td></tr><tr><td>model=sensenova-asr</td><td>400：model field is not supported</td><td>不要传 model</td></tr><tr><td>stream=true</td><td>502：未取得转写结果</td><td>SSE 未验证为可用</td></tr><tr><td>response_format=text（/infer）</td><td>200，但仍返回 JSON</td><td>不能按纯文本响应解析</td></tr><tr><td>response_format=verbose_json</td><td>400：upstream transcription failed</td><td>不要依赖 verbose_json</td></tr><tr><td>verbose_json + word 时间戳请求</td><td>400</td><td>未获得词级时间戳</td></tr></tbody></table></div><p>默认强制传 model 的 SDK 调用可能失败。客户端应使用本页实际 JSON 契约；流式网页采用已验证的 WebSocket。</p></section>
+
+<section id="errors"><h2><span>10</span>错误、超时与重复会话</h2><figure><figcaption>流式错误<button class="copy" type="button">复制</button></figcaption><pre><code>{
+  &quot;type&quot;: &quot;error&quot;,
+  &quot;code&quot;: &quot;audio_limit&quot;,
+  &quot;message&quot;: &quot;session audio duration limit exceeded&quot;,
+  &quot;request_id&quot;: &quot;服务器请求 ID&quot;,
+  &quot;session_id&quot;: &quot;客户端会话 ID&quot;
+}</code></pre></figure><div class="table-wrap"><table><thead><tr><th>状态 / 代码</th><th>实测触发条件</th><th>处理</th></tr></thead><tbody><tr><td>HTTP 401</td><td>无有效 key；/infer 与 /languages 已验证</td><td>检查 Bearer 头</td></tr><tr><td>HTTP 400</td><td>错误语言值、model、verbose_json</td><td>HTTP 语言用 zh/en/yue，移除不支持字段</td></tr><tr><td>HTTP 405</td><td>GET /infer</td><td>改为 POST</td></tr><tr><td>HTTP 500</td><td>部分容器解码失败；缺少文件等异常</td><td>检查输入，保留请求 ID</td></tr><tr><td>HTTP 502</td><td>HTTP stream=true</td><td>该入口未取得 SSE 转写结果</td></tr><tr><td>握手 403</td><td>无 WS 鉴权；错误路径也可能返回 403</td><td>检查路径及凭据</td></tr><tr><td>invalid_start</td><td>ID 为空/过长/中文；未知字段；先发 binary</td><td>使用规定的 start</td></tr><tr><td>invalid_message</td><td>JSON null/数组/语法错误；finish</td><td>发送 JSON 对象，结束用 end</td></tr><tr><td>invalid_audio_format</td><td>WS 48 kHz、双声道、mp3</td><td>WS 固定 PCM16LE / 16 kHz / mono</td></tr><tr><td>invalid_audio</td><td>1 字节 PCM</td><td>2–65,536 字节、偶数对齐</td></tr><tr><td>关闭码 1009</td><td>65,538 字节单帧</td><td>每帧不超过 65,536 字节</td></tr><tr><td>invalid_language</td><td>WS language=zh/French/auto</td><td>完整英文名称或省略</td></tr><tr><td>session_conflict</td><td>重复活动 session_id</td><td>活动 ID 必须唯一</td></tr><tr><td>overloaded</td><td>约 50 倍实时速度灌入音频</td><td>按实时速度发送，设置有界队列</td></tr><tr><td>audio_limit</td><td>实时 60.1 秒 PCM</td><td>提前切换会话</td></tr><tr><td>timeout</td><td>约 10 秒未发送 start；started 后约 30 秒无应用消息</td><td>及时发送 start/音频/end</td></tr><tr><td>断线 / 重试</td><td>重连同 ID 从头识别</td><td>不假定续传，保留原音频</td></tr></tbody></table></div><h3>重复 ID 与续传</h3><p>同一活动 ID 的第二个连接被 session_conflict 拒绝。结束后可复用 ID，但返回新的 request_id，sequence/audio_seconds 从新音频计算。关闭 3 秒英语前缀后，同 ID 重连发送粤语只识别了新音频；resume 字段被拒绝。这不能证明存档幂等或避免重复保存。</p><h3>并发与配额</h3><p>同步启动的 8 路实时语音均获得 final，首次文字约 2.09–2.23 秒。另有 9 个仅完成 start 的空会话被同时接受；这不是 9 路推理压力测试，也不证明最大推理配额。建议并发仍为 8。</p><p class="small">错误表不是内部所有代码的穷尽清单。HTTP 文件处理的服务器超时尚未触发，测试脚本的客户端超时不能视为服务器超时。静音 PCM 仍是应用消息，不等同于完全不发送消息。</p></section>
+
+<section id="examples"><h2><span>11</span>TypeScript 调用示例</h2><p>仓库的 <code>docs/examples/stream.ts</code> 提供完整可运行示例，使用 Node.js 与 ws，包含格式长度检查、超时和连接错误处理。</p>
+<figure><figcaption>准备音频并执行<button class="copy" type="button">复制</button></figcaption><pre><code># ASR_API_KEY 放入本地 .env，或预先设置为环境变量
+ffmpeg -i speech.wav -ar 16000 -ac 1 -f s16le speech.pcm
+npx tsx docs/examples/stream.ts speech.pcm</code></pre></figure>
+<figure><figcaption>核心握手与消息处理 · Node.js<button class="copy" type="button">复制</button></figcaption><pre><code>import WebSocket from 'ws';
+import { randomUUID } from 'node:crypto';
+
+const ws = new WebSocket(
+  'ws://10.210.1.23:19003/infer/stream',
+  { headers: { Authorization: 'Bearer ' + process.env.ASR_API_KEY } }
+);
+
+ws.on('open', () =&gt; {
+  ws.send(JSON.stringify({
+    type: 'start',
+    session_id: 'example-' + randomUUID(),
+    sample_rate: 16000,
+    channels: 1,
+    format: 'pcm_s16le'
+    // 省略 language，自动检测
+  }));
+});
+
+ws.on('message', raw =&gt; {
+  const event = JSON.parse(raw.toString());
+  if (event.type === 'started') {
+    // 此后持续 ws.send(pcmFrame)，每 100ms 发送 3200 字节。
+    // 全部音频发送完毕后：
+    // ws.send(JSON.stringify({ type: 'end' }));
+  }
+  if (event.type === 'partial' || event.type === 'final') {
+    // 用 event.text 替换当前会话文字，不重复追加。
+    console.log(event.type, event.language, event.text);
+  }
+  if (event.type === 'final') ws.close(1000);
+});</code></pre></figure>
+<p class="small">上方是协议核心片段；实际调用请使用仓库中的完整示例。不要把文件容器的 44 字节当作通用 WAV 头长度：WAV 可包含附加块，先正确解码或用 ffmpeg 提取 PCM。</p></section>
+
+<section id="application"><h2><span>12</span>网页与 VAD 接入</h2>
+<div class="flow"><span>麦克风</span><i>→</i><span>PCM 重采样</span><i>→</i><span>原 ONNX VAD</span><i>→</i><span>ASR WebSocket</span><i>→</i><span>文字 + 文件</span></div>
+<ul><li>前端使用 AudioWorklet 持续采集，将浏览器采样率转换为 16 kHz 单声道 PCM，每 100 ms 发送一帧。</li><li>Node.js 运行用户提供的 <code>vad-new-standalone/materials/net.onnx</code>，移植其 80 维 fbank、缓存预热和语音起止判定。</li><li>VAD 检测到说话时取回预留音频，建立 ASR 会话；停顿后发送 end。网页默认停顿阈值为 600 ms，可通过 VAD_SILENCE_MS 调整；原工程默认值为 300 ms。</li><li>长句在 55 秒前切换 ASR 会话，避免到达服务声明的 60 秒上限。新段保持时间顺序。</li><li>每个 VAD 语音段独立自动检测语种，分段切换三语已通过。句内混语的 HTTP 与 WS 结果出现差异，详见实测章节；响应仅提供一个 language 标签。</li><li>本地服务对上游设置最多 8 个活动会话，并对消息大小和积压音频设置上限。发生错误时停止采集并保留已保存内容。</li></ul>
+<div class="callout"><strong>手机访问</strong><p>HTML 文档可直接在手机浏览器打开。网页录音需要安全上下文：本机 localhost 可用；手机通过局域网 IP 访问应用时，需要 HTTPS 和手机信任的证书。服务必须运行在能访问 ASR 内网的机器上，录音时保持页面在前台。</p></div>
+<p class="source-list">浏览器依据：<a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia">MDN · getUserMedia</a>、<a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioWorklet">MDN · AudioWorklet</a>、<a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket">MDN · WebSocket 构造函数</a>。</p></section>
+
+<section id="storage"><h2><span>13</span>音频与文本对应保存</h2><p>此节说明本项目的本地应用行为，不是远端 ASR 已公开的存档协议。每次点击“开始录音”创建独立目录；完整音频保留静音，每个 VAD 片段另存一组同编号音频与文本。</p>
+<figure><figcaption>本地目录结构<button class="copy" type="button">复制</button></figcaption><pre><code>recordings/
+  2026-09-09T03-20-00-000Z-a1b2c3d4/
+    recording.wav        # 本次完整录音，16 kHz / mono / PCM16
+    transcript.txt       # 完整文字，包含时间范围、语种、分段文件名
+    manifest.json        # 录音与分段之间的对应清单
+    segments/
+      001.wav
+      001.txt
+      002.wav
+      002.txt</code></pre></figure>
+<p><strong>001.wav 与 001.txt 对应，002.wav 与 002.txt 对应。</strong>下载文件名前会附加录音编号，避免不同录音之间同名混淆。manifest 包含每段的开始与结束位置、语种、识别状态及音频和文本相对路径。</p>
+<ul><li>完整 recording.wav 与 transcript.txt 对应本次连续录音；分段文件对应具体语音。</li><li>partial 更新暂定文本文件，final 到达后以最终文本覆盖；未完成的分段文本带有明确标记。</li><li>文件写入本地服务磁盘，不只保存在网页内存。刷新页面后可从“已保存的录音”下载。</li><li>写入中的 WAV 使用 .part 后缀，结束时修正文件头并转为 .wav；服务重新启动会尝试恢复遗留录音。</li><li>默认保存在项目 recordings/，可通过 RECORDINGS_DIR 更改。录音、密钥和本地证书被 Git 忽略。</li></ul>
+<h3>本地应用 HTTP / WebSocket 接口</h3><p class="small">以下路径属于运行在 localhost:5173 的应用服务，与 10.210.1.23:19003 的上游 ASR 路径不同。</p>
+<div class="table-wrap"><table><thead><tr><th>方法</th><th>应用路径</th><th>用途</th></tr></thead><tbody><tr><td>GET</td><td><code>/api/status</code></td><td>本地 VAD、配置、上游健康与会话数量</td></tr><tr><td>WebSocket</td><td><code>/api/live</code></td><td>先发 {"type":"start"}，ready 后发 PCM，最后发 {"type":"end"}</td></tr><tr><td>GET</td><td><code>/api/recordings</code></td><td>最近 50 次录音元数据；历史文件仍保留在磁盘</td></tr><tr><td>GET</td><td><code>/api/recordings/{id}/audio</code></td><td>下载完整 WAV</td></tr><tr><td>GET</td><td><code>/api/recordings/{id}/text</code></td><td>下载完整 TXT</td></tr><tr><td>GET</td><td><code>/api/recordings/{id}/manifest</code></td><td>下载对应清单 JSON</td></tr><tr><td>GET</td><td><code>/api/recordings/{id}/segments/{n}/audio</code></td><td>下载第 n 段 WAV</td></tr><tr><td>GET</td><td><code>/api/recordings/{id}/segments/{n}/text</code></td><td>下载第 n 段 TXT</td></tr></tbody></table></div>
+<p>本地流式事件为 ready、vad、segment、partial、final、error、stopped。segment 的 id 关联后续文字，startMs 是相对本次录音的开始时间。浏览器控制协议详见仓库 <code>shared/protocol.ts</code>；上游 key 不会发送到浏览器。</p></section>
+
+<section id="verification"><h2><span>14</span>边界、真人样本与稳定性实测</h2><p>补测日期：2026-09-09。音频、对应文本、原始响应在项目 test-output/，精简证据在 tests/evidence/。下列是小样本功能验证，不是总体准确率报告。</p><h3>协议与稳定性</h3><div class="table-wrap"><table><thead><tr><th>项目</th><th>实测结果</th><th>范围</th></tr></thead><tbody><tr><td>8 路实时识别</td><td>8/8 final；首次文字约 2.09–2.23 秒</td><td>同步发起的短语音</td></tr><tr><td>WS 时长</td><td>59.9 / 60.0 秒成功；60.1 秒 audio_limit</td><td>按实时速度发送</td></tr><tr><td>WS 单帧</td><td>65,536 字节成功；65,538 触发 1009</td><td>PCM16 偶数对齐</td></tr><tr><td>10 分钟网页链路</td><td>73 段均有 final，无接口 error 或断线</td><td>合成三语，经原 VAD 与真实 ASR</td></tr><tr><td>完整录音</td><td>保存 PCM 与输入 SHA-256 一致</td><td>600 秒，19,200,000 字节 PCM</td></tr><tr><td>本地桥接 RSS</td><td>82.9–98.5 MiB，结束 93.8 MiB</td><td>每分钟采样，不是远端模型资源</td></tr><tr><td>浏览器布局</td><td>320 / 390 / 430 / 768 / 1280 px 无页面横向溢出</td><td>桌面 Chrome 尺寸模拟，非真机</td></tr></tbody></table></div><h3>真人语音与人工噪声</h3><p>采用 <a href="https://huggingface.co/datasets/google/fleurs">Google FLEURS</a> 的 cmn_hans_cn、yue_hant_hk、en_us 各 1 条真人录音，分别生成整段 RMS 定义的 20、10、0 dB 高斯噪声版本，共 12 条，语种标签均正确。人工噪声不能代表真实街道、会议室或多人串音。</p><div class="table-wrap"><table><thead><tr><th>样本 / 指标</th><th>原音</th><th>20 dB</th><th>10 dB</th><th>0 dB</th></tr></thead><tbody><tr><td>普通话 / CER</td><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>4.5%</td></tr><tr><td>粤语 / CER</td><td>5.3%</td><td>5.3%</td><td>5.3%</td><td>5.3%</td></tr><tr><td>英语 / WER</td><td>0.0%</td><td>0.0%</td><td>13.3%</td><td>13.3%</td></tr></tbody></table></div><p class="small">CER/WER：NFKC、英文小写；中文繁转简并去标点/空白；英文按词比较；不展开数字或缩写。粤语 5.3% 来自 40/四十，英语 13.3% 来自 you are/you’re 形式差异。普通话 0 dB 的“宗派→宗教”“或→和”是实质错词。原始误差不能直接当作语义准确率。</p><h3>地区英语样本</h3><p><a href="https://huggingface.co/datasets/PolyAI/minds14">PolyAI MInDS-14</a> 的 en-AU、en-GB、en-US 分组各取第 1 条真人录音。分组来自数据集，不推断说话人的身份或国籍。</p><div class="table-wrap"><table><thead><tr><th>分组</th><th>返回语种</th><th>按原标注 WER</th><th>说明</th></tr></thead><tbody><tr><td>en-AU</td><td>English</td><td>0.0%</td><td>除标点外与该条参考一致</td></tr><tr><td>en-GB</td><td>English</td><td>0.0%</td><td>除标点外与该条参考一致</td></tr><tr><td>en-US</td><td>English</td><td>58.3%</td><td>参考尾句可能缺失</td></tr></tbody></table></div><p class="small">美式分组输出比原标注多出尾问句。<a href="https://huggingface.co/docs/transformers/v4.46.0/quicktour">Hugging Face 官方示例</a>中的另一识别器也输出该尾句，据此认为标注可能不完整，不使用原始 58.3% WER 排序口音效果。两套数据均为 CC BY 4.0，配置、split、行号保留在证据中。</p><h3>句内混语对照</h3><p>三段合成短语紧邻拼接成 3.92 秒音频，均省略 language，分别调用 HTTP 与 WS。</p><figure><figcaption>参考短句<button class="copy" type="button">复制</button></figcaption><pre><code>请帮我确认 the meeting starts at three 唔好遲到呀。</code></pre></figure><figure><figcaption>HTTP 文件结果 · language=Chinese<button class="copy" type="button">复制</button></figcaption><pre><code>请帮我确认。The meeting starts at three。唔好迟到啊！</code></pre></figure><figure><figcaption>WS 最终结果 · language=English<button class="copy" type="button">复制</button></figcaption><pre><code>The meeting starts at three.唔好迟到啊！</code></pre></figure><p>此样本的 WS 漏掉开头普通话，HTTP 保留三语内容。句内混语仍可能丢词；“支持三种语言”不能推导为所有流式混语可靠。VAD 停顿分段后连续切换三语已通过。</p><h3>VAD 噪声边界</h3><p>真人及噪声版本均检测到语音，但片段数随噪声变化；纯高斯噪声也误触发 1 段。ASR 对纯噪声返回空文字，网页会标记未识别出文字并保留音频。不能承诺所有背景噪声下零误触。</p><h3>仍不能仅凭外部调用确认</h3><ul><li>真实最大上传体积、文件时长和 HTTP 服务端超时：已通过 16 MiB / 120 秒，但未触发真实上限。</li><li>远端存档、保存目录、保留周期、删除机制及存档幂等：需要源码、部署配置或日志。</li><li>全局推理配额、远端资源曲线及数小时/数天稳定性。</li><li>真实 iPhone/Android 型号的麦克风、后台/锁屏、网络切换，以及真实复杂环境噪声：尚无真机验证。</li><li>未公开参数与内部错误码的穷尽清单：本页只将有证据的行为作为可依赖契约。</li></ul><p class="source-list">依据：调用方协议、<a href="http://10.210.1.23:19003/openapi.json">服务 OpenAPI</a>、tests/evidence/ 实测记录。服务升级后应重新核验。</p></section>
+<footer><span>声迹 ASR · 接口参考</span><span>HTML 自包含，无外部字体或脚本依赖 · 可打印为 PDF</span></footer>
+</main></div><a href="#top" class="back">回到顶部 ↑</a>
+<script>
+(function(){
+  var desktop=document.querySelector('aside nav'), mobile=document.querySelector('.mobile-toc nav');
+  if(desktop&&mobile) mobile.innerHTML=desktop.innerHTML;
+  document.querySelectorAll('.mobile-toc a').forEach(function(a){a.addEventListener('click',function(){document.querySelector('.mobile-toc').open=false;});});
+  document.querySelectorAll('.copy').forEach(function(button){button.addEventListener('click',async function(){
+    var text=button.closest('figure').querySelector('pre').textContent;
+    try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);}else{var area=document.createElement('textarea');area.value=text;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();var ok=document.execCommand('copy');area.remove();if(!ok)throw new Error();}
+      button.textContent='已复制';setTimeout(function(){button.textContent='复制';},1600);
+    }catch(e){button.textContent='请手动选择复制';}
+  });});
+  if('IntersectionObserver' in window){var observer=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){document.querySelectorAll('aside nav a').forEach(function(a){a.classList.toggle('current',a.getAttribute('href')==='#'+entry.target.id);});}});},{rootMargin:'-5% 0px -75% 0px'});document.querySelectorAll('main section').forEach(function(section){observer.observe(section);});}
+})();
+</script>
+</body></html>

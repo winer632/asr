@@ -1,0 +1,55 @@
+{
+  "name": "mixed_sentence",
+  "input_seconds": 3.91875,
+  "pcm_bytes": 125400,
+  "pace": 1,
+  "events": [
+    {
+      "seconds": 0.0361,
+      "message": {
+        "type": "started",
+        "chunk_seconds": 2.0,
+        "max_audio_seconds": 60,
+        "request_id": "01254a25-dd37-4bfb-9ea0-2b1506091b8d",
+        "session_id": "probe-748e35b06d6b40228e5258a6e3124988"
+      }
+    },
+    {
+      "seconds": 2.1232,
+      "message": {
+        "type": "partial",
+        "sequence": 1,
+        "audio_seconds": 2.0,
+        "language": "English",
+        "text": "Please help me confirm.",
+        "request_id": "01254a25-dd37-4bfb-9ea0-2b1506091b8d",
+        "session_id": "probe-748e35b06d6b40228e5258a6e3124988"
+      }
+    },
+    {
+      "seconds": 4.0771,
+      "message": {
+        "type": "final",
+        "sequence": 2,
+        "audio_seconds": 3.91875,
+        "language": "English",
+        "text": "The meeting starts at three.唔好迟到啊！",
+        "request_id": "01254a25-dd37-4bfb-9ea0-2b1506091b8d",
+        "session_id": "probe-748e35b06d6b40228e5258a6e3124988"
+      }
+    }
+  ],
+  "status": "final",
+  "start": {
+    "type": "start",
+    "session_id": "probe-748e35b06d6b40228e5258a6e3124988",
+    "sample_rate": 16000,
+    "channels": 1,
+    "format": "pcm_s16le"
+  },
+  "audio_send_start": 0.0361,
+  "first_partial_seconds": 2.0871,
+  "audio_send_end": 3.9596,
+  "final_after_send_seconds": 0.1175,
+  "seconds": 4.0855
+}

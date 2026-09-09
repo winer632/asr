@@ -1,0 +1,65 @@
+[
+  {
+    "dataset": "google/fleurs",
+    "config": "cmn_hans_cn",
+    "split": "validation",
+    "row_index": 0,
+    "id": 1579,
+    "reference": "报告警告称，没有人能保证目前在伊拉克采取的任何行动能够阻止宗派战争、不断增长的暴力或走向混乱。",
+    "license": "CC-BY-4.0",
+    "source": "https://huggingface.co/datasets/google/fleurs",
+    "wav": "test-output/real-speech/cmn_hans_cn.wav"
+  },
+  {
+    "dataset": "google/fleurs",
+    "config": "yue_hant_hk",
+    "split": "validation",
+    "row_index": 0,
+    "id": 1514,
+    "reference": "傷員送往醫院後，打鬥停止，這時剩下的囚犯中約有 40 人留在庭院中，拒絕回去自己的牢房。",
+    "license": "CC-BY-4.0",
+    "source": "https://huggingface.co/datasets/google/fleurs",
+    "wav": "test-output/real-speech/yue_hant_hk.wav"
+  },
+  {
+    "dataset": "google/fleurs",
+    "config": "en_us",
+    "split": "validation",
+    "row_index": 0,
+    "id": 1548,
+    "reference": "When you call someone who is thousands of miles away, you are using a satellite.",
+    "license": "CC-BY-4.0",
+    "source": "https://huggingface.co/datasets/google/fleurs",
+    "wav": "test-output/real-speech/en_us.wav"
+  },
+  {
+    "dataset": "PolyAI/minds14",
+    "config": "en-AU",
+    "split": "train",
+    "row_index": 0,
+    "reference": "I would like to pay my electricity bill using my card can you please assist",
+    "license": "CC-BY-4.0",
+    "source": "https://huggingface.co/datasets/PolyAI/minds14",
+    "wav": "test-output/real-speech/minds_en-AU.wav"
+  },
+  {
+    "dataset": "PolyAI/minds14",
+    "config": "en-GB",
+    "split": "train",
+    "row_index": 0,
+    "reference": "I want to pay a bill and I know I want to know how can I use my credit card to do so",
+    "license": "CC-BY-4.0",
+    "source": "https://huggingface.co/datasets/PolyAI/minds14",
+    "wav": "test-output/real-speech/minds_en-GB.wav"
+  },
+  {
+    "dataset": "PolyAI/minds14",
+    "config": "en-US",
+    "split": "train",
+    "row_index": 0,
+    "reference": "I would like to set up a joint account with my partner",
+    "license": "CC-BY-4.0",
+    "source": "https://huggingface.co/datasets/PolyAI/minds14",
+    "wav": "test-output/real-speech/minds_en-US.wav"
+  }
+]

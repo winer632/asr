@@ -1,0 +1,323 @@
+{
+  "results": [
+    {
+      "name": "format_wav",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 203690,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"8714aa4d-bccf-4176-860a-335b1c5a2a79\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.2252
+    },
+    {
+      "name": "format_flac",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 128603,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"f605d25c-b73a-4ff6-8fa9-fc34eac35e69\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.2221
+    },
+    {
+      "name": "format_mp3",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 52070,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"6bd9f6e2-a011-4ea1-8938-826579728ba4\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.2161
+    },
+    {
+      "name": "format_mp4",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 55305,
+      "status": 500,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"417e8832-ba2e-43e0-a7cc-7b0b71d9c16c\",\"error\":\"upstream transcription failed\"}",
+      "seconds": 0.0724
+    },
+    {
+      "name": "format_mpeg",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 78012,
+      "status": 500,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"768fc8bf-999a-499e-b7f4-91142821efd9\",\"error\":\"upstream transcription failed\"}",
+      "seconds": 0.0797
+    },
+    {
+      "name": "format_mpga",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 76652,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"dce9bded-3dfb-4f00-a195-2d8cb5b0c237\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.234
+    },
+    {
+      "name": "format_m4a",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 55285,
+      "status": 500,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"63be105a-1276-4d4b-9379-d30813fa9be0\",\"error\":\"upstream transcription failed\"}",
+      "seconds": 0.5047
+    },
+    {
+      "name": "format_ogg",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 37845,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"9507a103-403b-4cbf-8ae0-2546f3d1103c\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.223
+    },
+    {
+      "name": "format_webm",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 39838,
+      "status": 500,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"e0ace234-bd11-4974-b0a4-9b5323b52293\",\"error\":\"upstream transcription failed\"}",
+      "seconds": 0.0706
+    },
+    {
+      "name": "language_zh",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 203786,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"cdec4891-b808-4fdb-89b9-27b3746ebdac\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.1936
+    },
+    {
+      "name": "language_yue",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 273018,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"72d9a0e5-746e-4844-8e1e-9ce080932edf\",\"language\":\"Cantonese\",\"text\":\"你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？\"}",
+      "seconds": 0.7504
+    },
+    {
+      "name": "language_en",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 173367,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"60b26e3e-908f-4413-b42d-177f36a839a8\",\"language\":\"English\",\"text\":\"Hello. This is a test of automatic speech recognition. Please turn my voice into text.\"}",
+      "seconds": 0.2374
+    },
+    {
+      "name": "language_auto",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 203788,
+      "status": 400,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"b9222840-329c-47fe-8882-4f7632d9c3af\",\"error\":\"language must be zh, en or yue; omit it for automatic detection\"}",
+      "seconds": 1.4729
+    },
+    {
+      "name": "session_id_rest",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 203805,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"5608dfed-7c7a-49a7-9a91-f65c7d632884\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.2392
+    },
+    {
+      "name": "unknown_field",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 203790,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"2d639b26-821b-4419-ab85-8d631bdaf806\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.2374
+    },
+    {
+      "name": "response_json",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 203795,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"bb4817b5-5fd4-447d-ad97-14811bb3a9aa\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.2284
+    },
+    {
+      "name": "response_text",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 203795,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"4e2c11f6-fe1e-4e6a-966d-563609e64816\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.3168
+    },
+    {
+      "name": "response_verbose",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 203803,
+      "status": 400,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"e5c9ca72-c963-41a4-a9d6-bae496a6f9ee\",\"error\":\"upstream transcription failed\"}",
+      "seconds": 0.1043
+    },
+    {
+      "name": "stream_true",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 203786,
+      "status": 502,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"2c02a27e-d0ef-49bd-87fd-8efa66a6c152\",\"error\":\"upstream response did not contain a transcription result\"}",
+      "seconds": 0.2174
+    },
+    {
+      "name": "stream_false",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 203787,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"a5ab8032-18d9-404d-b47f-4d0fd09a75b0\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.2308
+    },
+    {
+      "name": "compat_basic",
+      "endpoint": "/v1/audio/transcriptions",
+      "method": "POST",
+      "request_bytes": 203689,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"b6a27071-9fb2-4c0b-a1ca-b9fc7cf3bdea\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.4278
+    },
+    {
+      "name": "compat_language_zh",
+      "endpoint": "/v1/audio/transcriptions",
+      "method": "POST",
+      "request_bytes": 203785,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"f2622c6d-5211-4901-b7f5-42d787c1819d\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.2177
+    },
+    {
+      "name": "compat_verbose_timestamps",
+      "endpoint": "/v1/audio/transcriptions",
+      "method": "POST",
+      "request_bytes": 203917,
+      "status": 400,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"ed560346-e27f-42b3-95bd-becef391628f\",\"error\":\"upstream transcription failed\"}",
+      "seconds": 0.2759
+    },
+    {
+      "name": "rest_no_auth",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 203690,
+      "status": "client_error",
+      "error": "<urlopen error [Errno 32] Broken pipe>",
+      "seconds": 0.0598
+    },
+    {
+      "name": "file_duration_30",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 960236,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"198a819f-c903-4aa1-aa75-716e2453b673\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.2961
+    },
+    {
+      "name": "file_duration_60",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 1920236,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"8d6c1d94-bada-4688-83e1-9a8fe0f9ce90\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.429
+    },
+    {
+      "name": "file_duration_61",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 1952236,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"ee7ba27f-42f1-4115-90f4-8322810af149\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.3869
+    },
+    {
+      "name": "file_duration_120",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 3840237,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"a0108ba6-824f-48d7-a5de-9108eb41f6fb\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.5431
+    },
+    {
+      "name": "file_size_1MiB",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 1048766,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"c117e9ce-9946-43aa-9272-0e2cbb840ffd\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.2699
+    },
+    {
+      "name": "file_size_4MiB",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 4194494,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"41a02d6d-96a4-46c2-b5a5-e9c2dc8e2d0f\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.3944
+    },
+    {
+      "name": "file_size_8MiB",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 8388798,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"4c583737-561e-49dd-a552-fb63bc683409\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.5615
+    },
+    {
+      "name": "file_size_16MiB",
+      "endpoint": "/infer",
+      "method": "POST",
+      "request_bytes": 16777407,
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"request_id\":\"30848c6e-454a-44ae-bcc7-3bcaeea2db06\",\"language\":\"Chinese\",\"text\":\"你好，今天我们测试普通话语音识别，请把我说的话转换成文字。\"}",
+      "seconds": 0.8233
+    }
+  ]
+}
