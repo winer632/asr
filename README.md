@@ -3,7 +3,7 @@
 TypeScript 连续录音网页：使用用户提供的 ONNX VAD 检测说话与停顿，通过内网 ASR WebSocket 自动识别普通话、粤语和英语。完整录音与每段音频、文本均保存到本地磁盘。
 
 - [独立响应式 HTML 接口文档](docs/index.html)：手机可阅读，无外部字体、样式或脚本依赖。
-- 私有在线文档：https://asr-api-winer632.upbeat-puppy-6718.chatgpt.site （需本人登录）。
+- 私有在线文档：https://asr-api-winer632.xjtu-wang.chatgpt.site （需本人登录）。
 - [原始接口测试记录](tests/evidence/)：已验证部分与服务尚未公开的部分分开说明。
 - 私有仓库：<https://github.com/winer632/asr>。
 
