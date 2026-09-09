@@ -26,13 +26,13 @@
 
 ## systemd 安装
 
-需要 `/usr/bin/node` 为 Node.js 22.13+，以及 npm、git。以下为首次部署步骤；已有目录时先检查状态，保留配置和录音。
+需要 `/usr/bin/node` 为 Node.js 22.13+，以及 npm、git。以下为首次部署步骤；已有目录时先检查状态，保留配置和录音。VAD 使用包内自带的 CPU 运行库，安装时设置 `ONNXRUNTIME_NODE_INSTALL=skip`，避免额外下载本项目不用的 CUDA 运行库。
 
 ```bash
 sudo install -d -o "$(id -un)" -g "$(id -gn)" -m 0755 /srv/asr
 git clone https://github.com/winer632/asr.git /srv/asr/app
 cd /srv/asr/app
-npm ci
+ONNXRUNTIME_NODE_INSTALL=skip npm ci
 npm run build
 npm test
 
