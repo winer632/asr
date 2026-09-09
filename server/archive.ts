@@ -13,6 +13,7 @@ import {
 } from 'node:fs';
 import path from 'node:path';
 import type { ServerEvent } from '../shared/protocol.js';
+import { languageLabel } from '../shared/languages.js';
 
 export interface SavedSegment {
   id: string;
@@ -79,11 +80,6 @@ export class WavWriter {
     renameSync(this.filename + '.part', this.filename);
   }
 }
-const names: Record<string, string> = {
-  Chinese: '普通话',
-  Cantonese: '粤语',
-  English: '英语',
-};
 const clock = (ms: number) =>
   Math.floor(ms / 60000)
     .toString()
@@ -201,7 +197,7 @@ export class RecordingArchive {
           ' – ' +
           clock(s.endMs) +
           '] ' +
-          (names[s.language] || '语种待定') +
+          languageLabel(s.language) +
           ' · ' +
           (s.status === 'complete' ? '已完成' : '未完成'),
         '对应文件：' + s.audioFile + ' ↔ ' + s.textFile,

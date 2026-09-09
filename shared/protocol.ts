@@ -1,4 +1,4 @@
-export type Language = 'Chinese' | 'Cantonese' | 'English';
+export type { Language } from './languages.js';
 export type ServerEvent =
   | { type: 'ready' | 'stopped' }
   | { type: 'vad'; speaking: boolean; probability: number }

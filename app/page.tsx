@@ -10,11 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useRecorder } from '@/lib/use-recorder';
 import { RecordingHistory } from '@/components/recording-history';
-const names: Record<string, string> = {
-  Chinese: '普通话',
-  Cantonese: '粤语',
-  English: '英语',
-};
+import { LANGUAGES, findLanguage, languageLabel } from '@/shared/languages';
 const time = (n: number) =>
   Math.floor(n / 60)
     .toString()
@@ -35,6 +31,7 @@ export default function Home() {
     error: '连接中断',
   }[r.status];
   const latest = r.segments.at(-1);
+  const latestLanguage = findLanguage(latest?.language || '');
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -53,7 +50,7 @@ export default function Home() {
           <div>
             <p className="eyebrow">VOICE WORKSPACE</p>
             <h1>让对话成为文字</h1>
-            <p className="subtitle">连续录音，自动识别普通话、粤语与英语。</p>
+            <p className="subtitle">连续录音，自动识别多种语言。</p>
           </div>
           <span className={'status-pill ' + (active ? 'active' : '')}>
             <i />
@@ -101,7 +98,7 @@ export default function Home() {
                       : '点击「开始录音」，说话时自动出字，停顿时自动分段。'}
                   </p>
                   <span className="empty-languages">
-                    普通话 <i /> 粤语 <i /> English
+                    已实测 {LANGUAGES.length} 种语言 <i /> 自动识别
                   </span>
                 </div>
               ) : (
@@ -116,9 +113,10 @@ export default function Home() {
                       <span>{String(i + 1).padStart(2, '0')}</span>
                       <time>{time(s.startMs / 1000)}</time>
                       <span className="language-tag">
-                        {names[s.language] ||
-                          s.language ||
-                          (s.final ? '未检测到语种' : '检测语种中')}
+                        {languageLabel(
+                          s.language,
+                          s.final ? '未检测到语种' : '检测语种中',
+                        )}
                       </span>
                       <span className="entry-state">
                         {s.error ? '识别失败' : s.final ? '已完成' : '识别中'}
@@ -204,17 +202,25 @@ export default function Home() {
             )}
             <div className="language-summary">
               <span>自动检测语种</span>
-              <strong>{names[latest?.language || ''] || '等待语音'}</strong>
+              <strong>
+                {languageLabel(latest?.language || '', '等待语音')}
+              </strong>
               <div className="language-chips">
-                {Object.entries(names).map(([v, n]) => (
+                {LANGUAGES.map((language) => (
                   <span
-                    className={latest?.language === v ? 'selected' : ''}
-                    key={v}
+                    className={latestLanguage === language ? 'selected' : ''}
+                    title={
+                      language.declared ? '服务声明支持' : '实测可自动识别'
+                    }
+                    key={language.code}
                   >
-                    {n}
+                    {language.label}
                   </span>
                 ))}
               </div>
+              <p className="language-hint">
+                已实测 {LANGUAGES.length} 种语言，无需手动切换。
+              </p>
             </div>
             <div className="recording-note">
               <span className="note-dot" />
@@ -230,7 +236,7 @@ export default function Home() {
         <footer className="page-footer">
           <span>声迹 · 连续语音识别</span>
           <span>
-            VAD 语音检测 <i /> 三语自动识别
+            VAD 语音检测 <i /> 多语自动识别
           </span>
         </footer>
       </main>

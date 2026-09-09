@@ -7,11 +7,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import type { SavedRecording } from '../server/archive';
-const names: Record<string, string> = {
-  Chinese: '普通话',
-  Cantonese: '粤语',
-  English: '英语',
-};
+import { languageLabel } from '@/shared/languages';
 const time = (n: number) =>
   Math.floor(n / 60)
     .toString()
@@ -125,7 +121,7 @@ export function RecordingHistory({ state }: { state: string }) {
                         {time(segment.startMs / 1000)} –{' '}
                         {time(segment.endMs / 1000)}
                       </span>
-                      <span>{names[segment.language] || '待识别'}</span>
+                      <span>{languageLabel(segment.language, '待识别')}</span>
                       {segment.status !== 'complete' && (
                         <span className="incomplete-label">
                           {segment.status === 'recognizing'
