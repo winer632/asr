@@ -63,6 +63,23 @@ const tlsKey = process.env.TLS_KEY_FILE,
   tlsCert = process.env.TLS_CERT_FILE;
 if (!!tlsKey !== !!tlsCert)
   throw new Error('Set both TLS_KEY_FILE and TLS_CERT_FILE.');
+const publicOriginValue = process.env.PUBLIC_ORIGIN;
+let publicOrigin: string | undefined;
+if (publicOriginValue) {
+  const parsed = new URL(publicOriginValue);
+  if (
+    !['http:', 'https:'].includes(parsed.protocol) ||
+    parsed.username ||
+    parsed.password ||
+    parsed.pathname !== '/' ||
+    parsed.search ||
+    parsed.hash
+  )
+    throw new Error(
+      'PUBLIC_ORIGIN must be an HTTP(S) origin without a path or credentials.',
+    );
+  publicOrigin = parsed.origin;
+}
 const listener: http.RequestListener = (req, res) => {
   void handle(req, res).catch(() => {
     if (!res.headersSent) res.writeHead(500);
@@ -231,7 +248,8 @@ server.on('upgrade', (req, socket, head) => {
     if (!vite) socket.destroy();
     return;
   }
-  const expectedOrigin = (tlsKey ? 'https://' : 'http://') + req.headers.host;
+  const expectedOrigin =
+    publicOrigin || (tlsKey ? 'https://' : 'http://') + req.headers.host;
   if (req.headers.origin && req.headers.origin !== expectedOrigin) {
     socket.end('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n');
     return;

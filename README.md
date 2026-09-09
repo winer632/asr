@@ -5,7 +5,8 @@ TypeScript 连续录音网页：使用用户提供的 ONNX VAD 检测说话与�
 - [独立响应式 HTML 接口文档](docs/index.html)：手机可阅读，无外部字体、样式或脚本依赖。
 - 私有在线文档：https://asr-api-winer632.xjtu-wang.chatgpt.site （需本人登录）。
 - [原始接口测试记录](tests/evidence/)：已验证部分与服务尚未公开的部分分开说明。
-- 私有仓库：<https://github.com/winer632/asr>。
+- 公开仓库：<https://github.com/winer632/asr>。
+- [Linux 服务器部署与办公网端口映射](deploy/README.md)。
 
 ## 本地运行
 
@@ -66,17 +67,18 @@ WAV 为 16 kHz、单声道、PCM16 小端。每段 TXT 在收到最终识别后�
 
 ## 配置
 
-| 变量                             | 默认值                     | 作用                             |
-| -------------------------------- | -------------------------- | -------------------------------- |
-| `ASR_BASE_URL`                   | `http://10.210.1.23:19003` | 内网 ASR 服务地址                |
-| `ASR_API_KEY`                    | 无                         | 仅由 Node.js 服务读取            |
-| `VAD_MODEL_PATH`                 | `models/net.onnx`          | 用户提供的 VAD 模型              |
-| `VAD_SILENCE_MS`                 | `600`                      | 停顿阈值，范围 300–2000 ms       |
-| `ASR_CONCURRENCY`                | `8`                        | 全服务上游活动会话上限，范围 1–8 |
-| `MAX_CONNECTIONS`                | `8`                        | 浏览器连接上限                   |
-| `HOST` / `PORT`                  | `127.0.0.1` / `5173`       | 监听地址与端口                   |
-| `RECORDINGS_DIR`                 | `recordings`               | 音频、文字、清单保存目录         |
-| `TLS_KEY_FILE` / `TLS_CERT_FILE` | 无                         | 配置后使用 HTTPS，需同时设置     |
+| 变量                             | 默认值                     | 作用                                               |
+| -------------------------------- | -------------------------- | -------------------------------------------------- |
+| `ASR_BASE_URL`                   | `http://10.210.1.23:19003` | 内网 ASR 服务地址                                  |
+| `ASR_API_KEY`                    | 无                         | 仅由 Node.js 服务读取                              |
+| `VAD_MODEL_PATH`                 | `models/net.onnx`          | 用户提供的 VAD 模型                                |
+| `VAD_SILENCE_MS`                 | `600`                      | 停顿阈值，范围 300–2000 ms                         |
+| `ASR_CONCURRENCY`                | `8`                        | 全服务上游活动会话上限，范围 1–8                   |
+| `MAX_CONNECTIONS`                | `8`                        | 浏览器连接上限                                     |
+| `HOST` / `PORT`                  | `127.0.0.1` / `5173`       | 监听地址与端口                                     |
+| `PUBLIC_ORIGIN`                  | 无                         | HTTPS 反向代理后的浏览器来源，包含外部端口（如有） |
+| `RECORDINGS_DIR`                 | `recordings`               | 音频、文字、清单保存目录                           |
+| `TLS_KEY_FILE` / `TLS_CERT_FILE` | 无                         | 配置后使用 HTTPS，需同时设置                       |
 
 ## 实现
 

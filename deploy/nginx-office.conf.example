@@ -1,0 +1,22 @@
+# Place this server block inside nginx's http context on the office HTTPS gateway.
+# Replace the domain, certificate paths, and upstream address before enabling it.
+# Set PUBLIC_ORIGIN=https://asr.office.example on the ASR application.
+server {
+    listen 443 ssl;
+    server_name asr.office.example;
+
+    ssl_certificate /etc/nginx/certs/asr-fullchain.pem;
+    ssl_certificate_key /etc/nginx/certs/asr-key.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    location / {
+        proxy_pass http://L40S_REACHABLE_ADDRESS:5173;
+        proxy_http_version 1.1;
+        proxy_set_header Host $http_host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+        proxy_buffering off;
+    }
+}
