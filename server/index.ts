@@ -7,6 +7,7 @@ import { VadFactory } from './vad/model.js';
 import { Capacity } from './upstream.js';
 import { RecordingSession } from './session.js';
 import type { ServerEvent } from '../shared/protocol.js';
+import { deleteRecordings, deletionIds } from './recordings.js';
 import {
   RecordingArchive,
   listRecordings,
@@ -101,11 +102,87 @@ const mime: Record<string, string> = {
   '.json': 'application/json',
   '.ico': 'image/x-icon',
 };
+function expectedBrowserOrigin(req: http.IncomingMessage) {
+  return publicOrigin || (tlsKey ? 'https://' : 'http://') + req.headers.host;
+}
+function readDeleteBody(req: http.IncomingMessage): Promise<unknown> {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    let size = 0,
+      oversized = false;
+    req.on('data', (chunk: Buffer) => {
+      size += chunk.length;
+      if (size > 16_384) {
+        chunks.length = 0;
+        oversized = true;
+        reject(new Error('payload_too_large'));
+      } else if (!oversized) chunks.push(chunk);
+    });
+    req.on('end', () => {
+      if (oversized) return;
+      try {
+        resolve(JSON.parse(Buffer.concat(chunks).toString('utf8')));
+      } catch {
+        reject(new Error('invalid_json'));
+      }
+    });
+    req.on('error', reject);
+    req.on('aborted', () => reject(new Error('request_aborted')));
+  });
+}
 async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'same-origin');
   res.setHeader('Permissions-Policy', 'microphone=(self)');
   const url = new URL(req.url || '/', 'http://localhost');
+  if (url.pathname === '/api/recordings' && req.method === 'DELETE') {
+    const respond = (status: number, data: unknown) => {
+      if (status === 413) res.setHeader('Connection', 'close');
+      res.writeHead(status, {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'no-store',
+      });
+      res.end(JSON.stringify(data));
+    };
+    // Destructive browser requests must name this application's exact origin.
+    if (req.headers.origin !== expectedBrowserOrigin(req)) {
+      req.resume();
+      respond(403, { error: '请从当前录音网页执行删除。' });
+      return;
+    }
+    if (
+      req.headers['content-type']?.split(';')[0].trim().toLowerCase() !==
+      'application/json'
+    ) {
+      req.resume();
+      respond(415, { error: '删除请求必须使用 JSON 格式。' });
+      return;
+    }
+    if (Number(req.headers['content-length'] || 0) > 16_384) {
+      req.resume();
+      respond(413, { error: '删除请求过大，请每次选择不超过 50 条录音。' });
+      return;
+    }
+    let ids: string[];
+    try {
+      const body = await readDeleteBody(req);
+      ids = deletionIds(
+        body && typeof body === 'object' && 'ids' in body
+          ? body.ids
+          : undefined,
+      );
+    } catch (error) {
+      const oversized = (error as Error).message === 'payload_too_large';
+      respond(oversized ? 413 : 400, {
+        error: oversized
+          ? '删除请求过大，请每次选择不超过 50 条录音。'
+          : '请选择 1–50 条有效的录音记录。',
+      });
+      return;
+    }
+    respond(200, await deleteRecordings(recordingsRoot, ids));
+    return;
+  }
   if (url.pathname === '/api/recordings' && req.method === 'GET') {
     res.writeHead(200, {
       'Content-Type': 'application/json',
@@ -166,7 +243,13 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
       'Content-Length': statSync(filename).size,
       'Cache-Control': 'no-store',
     });
-    createReadStream(filename).pipe(res);
+    const stream = createReadStream(filename);
+    stream.on('error', () => {
+      // A confirmed deletion may remove the file between stat and open.
+      res.destroy();
+    });
+    res.on('close', () => stream.destroy());
+    stream.pipe(res);
     return;
   }
   if (url.pathname === '/api/status') {
@@ -248,8 +331,7 @@ server.on('upgrade', (req, socket, head) => {
     if (!vite) socket.destroy();
     return;
   }
-  const expectedOrigin =
-    publicOrigin || (tlsKey ? 'https://' : 'http://') + req.headers.host;
+  const expectedOrigin = expectedBrowserOrigin(req);
   if (req.headers.origin && req.headers.origin !== expectedOrigin) {
     socket.end('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n');
     return;
