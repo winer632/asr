@@ -7,7 +7,7 @@ TypeScript 连续录音网页：使用用户提供的 ONNX VAD 检测说话与�
 SenseNova ASR 2609 起，服务声明的显式语种为普通话、粤语、英语、阿拉伯语、日语、韩语六种，全称和缩写（zh/yue/en/ar/ja/ko）在流式与文件两个入口都接受；其余六种根据端到端测试加入展示，使用自动检测，不新增显式指定参数。“已实测 12 种”不代表模型支持语言的完整上限。
 
 - [独立响应式 HTML 接口文档](docs/index.html)：手机可阅读，无外部字体、样式或脚本依赖。
-- 私有在线文档：https://asr-api-winer632.xjtu-wang.chatgpt.site （需本人登录）。
+- 独立 Sites 文档站已于 2026-09-15 关闭并删除；接口文档请通过上述仓库文件或内网应用阅读。
 - [原始接口测试记录](tests/evidence/)：已验证部分与服务尚未公开的部分分开说明。
 - 公开仓库：<https://github.com/winer632/asr>。
 - [Linux 服务器部署与办公网端口映射](deploy/README.md)。
@@ -38,7 +38,7 @@ npm run build
 npm start
 ```
 
-这会构建浏览器静态资源和 Node.js 服务。接口文档也可单独双击 `docs/index.html` 打开；本地网页中的“接口文档”路径是 `/asr-api.html`。Sites 部署只发布独立文档，录音应用在可访问 ASR 的机器运行。
+这会构建浏览器静态资源和 Node.js 服务。接口文档也可单独双击 `docs/index.html` 打开；本地网页中的“接口文档”路径是 `/asr-api.html`。录音应用在可访问 ASR 的机器运行。
 
 ## 手机访问
 
@@ -176,4 +176,4 @@ npm run build
 npx tsx scripts/test-endurance.ts
 ```
 
-原始测试音频与文本在 `test-output/`，不提交到 Git。`tests/evidence/` 保存精简响应与来源；`scripts/update-reference.py` 可根据这些证据更新 HTML 文档。独立文档由相邻的 `asr-docs-site/` 发布目录托管，仅发布文档，不包含模型或录音。
+原始测试音频与文本在 `test-output/`，不提交到 Git。`tests/evidence/` 保存精简响应与来源；`scripts/update-reference.py` 可根据这些证据更新 HTML 文档。接口文档以本仓库的 `docs/index.html` 和 `public/asr-api.html` 为准，不再通过相邻的 `asr-docs-site/` 发布目录托管。
