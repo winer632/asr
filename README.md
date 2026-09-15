@@ -155,7 +155,7 @@ tests/                   自动验证与合成语音样本
 - 合成句内混语样本的 HTTP 结果完整，WS 漏掉开头普通话。远端留存策略及真实手机麦克风表现仍需额外证据。
 - 2026-09-15 复测标点，三段音频：30 秒连续口语普通话在 `/infer/stream` 全程无标点，同一文件发到 `POST /infer` 返回完整标点与分句；22 秒粤语连续口语两个接口都不给标点；34 秒清晰朗读的整句两个接口都给标点。证据在 [tests/evidence/streaming-punctuation.json](tests/evidence/streaming-punctuation.json)。
 - 2026-09-15 复测上游 2609 变更：显式语种从 3 种扩到 6 种（新增阿拉伯语、日语、韩语），流式与文件入口都接受全称或缩写、忽略大小写；日/韩/阿语自动识别均返回正确语种。`app_id` 与 `max_completion_tokens` 被流式 `start` 拒绝、被文件接口接受。原始记录在 [tests/evidence/upstream-2609.json](tests/evidence/upstream-2609.json)。
-- 2026-09-15 复测发现上游变化：`tests/fixtures/english_1.wav` 经 WS 与 HTTP 都返回 `language: "Chinese"`，并把 “please turn” 识别成“请转”；2026-09-09 的记录是 English 且文字正确。绕开本应用直接调用上游同样如此，`npm run test:live` 的英语语种断言目前会失败，需要向服务方核对。
+- 2026-09-15 复测发现英语自动识别退化：`english_1.wav` 与 `english_2.wav` 自动检测都返回 `language: "Chinese"`，2026-09-09 的记录是 English；`english_1` 还把 “please turn” 识别成“请转”。显式传 `language=en` 时两条的语种和文字都正确，普通话与粤语样本的自动检测没有变化，因此问题在自动语种识别，不在英语识别本身。绕开本应用直接调用上游同样如此，`npm run test:live` 的英语语种断言目前会失败，已向服务方反馈。
 
 可选测试工具（不在普通 CI 中运行）：
 

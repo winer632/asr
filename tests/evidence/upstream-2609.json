@@ -47,5 +47,86 @@
    "language": "Arabic",
    "text": "مرحباً تم تغيير موعد الاجتماع إلى الساعة الثالثة بعد الظهر يرجى الحضور قبل عشر دقائق"
   }
+ },
+ "languageIdentification": {
+  "note": "Both English samples are now labelled Chinese under automatic detection; on 2026-09-09 the same files returned English. Naming the language explicitly restores both the label and the words, so the English acoustic path still works and the regression is in automatic identification.",
+  "results": [
+   {
+    "sample": "tests/fixtures/english_1.wav",
+    "archived_2026_09_09": {
+     "language": "English",
+     "text": "Hello. This is a test of automatic speech recognition. Please turn my voice into text."
+    },
+    "automatic": {
+     "status": 200,
+     "language": "Chinese",
+     "text": "Hello, this is a test of automatic speech recognition. 请转 my voice into text.",
+     "request_id": "97e85a84-0889-4521-92e3-15f667b4928e"
+    },
+    "explicit": {
+     "status": 200,
+     "language": "English",
+     "text": "Hello, this is a test of automatic speech recognition. Please turn my voice into text.",
+     "request_id": "102d33d1-15d4-4efc-aeb5-447fec16faef"
+    }
+   },
+   {
+    "sample": "tests/fixtures/english_2.wav",
+    "archived_2026_09_09": {
+     "language": "English",
+     "text": "The meeting has moved to three o'clock tomorrow afternoon. Please arrive ten minutes early."
+    },
+    "automatic": {
+     "status": 200,
+     "language": "Chinese",
+     "text": "The meeting has moved to three o'clock tomorrow afternoon, please arrive ten minutes early.",
+     "request_id": "bb2dc976-d30a-40fe-99f0-ac073364eeae"
+    },
+    "explicit": {
+     "status": 200,
+     "language": "English",
+     "text": "The meeting has moved to three o'clock tomorrow afternoon, please arrive ten minutes early.",
+     "request_id": "b4e2a5cf-a999-4330-b108-de56fa4bfa40"
+    }
+   },
+   {
+    "sample": "tests/fixtures/mandarin_1.wav",
+    "archived_2026_09_09": {
+     "language": "Chinese",
+     "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。"
+    },
+    "automatic": {
+     "status": 200,
+     "language": "Chinese",
+     "text": "你好今天我们测试普通话语音识别请把我说的话转换成文字",
+     "request_id": "78be2a85-2997-4e96-8acb-ee675d724fc6"
+    },
+    "explicit": {
+     "status": 200,
+     "language": "Chinese",
+     "text": "你好今天我们测试普通话语音识别请把我说的话转换成文字",
+     "request_id": "d3be0991-0fd1-4670-b2e0-1fe150782f8c"
+    }
+   },
+   {
+    "sample": "tests/fixtures/cantonese_1.wav",
+    "archived_2026_09_09": {
+     "language": "Cantonese",
+     "text": "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？"
+    },
+    "automatic": {
+     "status": 200,
+     "language": "Cantonese",
+     "text": "你好我而家讲紧广东话今日天气几好我想出去饮茶你有冇时间一齐去下",
+     "request_id": "7c0f00e8-12fe-40c7-a85f-e573c2c2b2b2"
+    },
+    "explicit": {
+     "status": 200,
+     "language": "Cantonese",
+     "text": "你好我而家讲紧广东话今日天气几好我想出去饮茶你有冇时间一齐去下",
+     "request_id": "ce71b741-3f04-4fc1-b7d1-26b7eb8dba1b"
+    }
+   }
+  ]
  }
 }
