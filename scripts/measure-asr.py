@@ -56,7 +56,7 @@ def ws_case(name, pcm=b"", *, extra=None, session_id=None, pace=.02, control="en
     result = {"name": name, "input_seconds": len(pcm) / 32000, "pcm_bytes": len(pcm),
               "pace": pace, "events": [], "status": "incomplete"}
     stop = threading.Event(); sender = None
-    config = {"type": "start", "session_id": session_id or "probe-" + uuid.uuid4().hex,
+    config = {"type": "start", "session_id": session_id or "abg-probe-" + uuid.uuid4().hex,
               "sample_rate": 16000, "channels": 1, "format": "pcm_s16le"}
     if extra: config.update(extra)
     result["start"] = config
@@ -155,7 +155,7 @@ def core():
     original = ROOT / "tests/fixtures/mandarin_1.wav"
     requests = [
         ("rest_wav", "/infer", {"file_name": original}),
-        ("rest_with_session", "/infer", {"file_name": original, "fields": {"session_id": "probe-" + uuid.uuid4().hex, "language": "Chinese"}}),
+        ("rest_with_session", "/infer", {"file_name": original, "fields": {"session_id": "abg-probe-" + uuid.uuid4().hex, "language": "Chinese"}}),
         ("rest_no_file", "/infer", {"fields": {}}),
         ("rest_json_empty", "/infer", {"json_body": {}}),
         ("compat_model", "/v1/audio/transcriptions", {"file_name": original, "file_field": "file", "fields": {"model": "sensenova-asr"}}),
@@ -191,13 +191,13 @@ def core():
     records.append(ws_case("fast_send_overload", seed + b"\x00"*(1920000-len(seed)), pace=.02))
     records.append(ws_case("frame_65536", seed[:65536], frame_bytes=65536))
     records.append(ws_case("frame_65538", seed[:65538], frame_bytes=65538))
-    replay = "replay-" + uuid.uuid4().hex
+    replay = "abg-replay-" + uuid.uuid4().hex
     records.append(ws_case("repeat_id_first", wav_pcm("mandarin_2"), session_id=replay))
     records.append(ws_case("repeat_id_second", wav_pcm("english_2"), session_id=replay))
-    simultaneous = "duplicate-" + uuid.uuid4().hex
+    simultaneous = "abg-duplicate-" + uuid.uuid4().hex
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
         records.extend(pool.map(lambda name: ws_case(name, wav_pcm("english_2"), session_id=simultaneous, pace=1), ["duplicate_id_a", "duplicate_id_b"]))
-    resume = "resume-" + uuid.uuid4().hex
+    resume = "abg-resume-" + uuid.uuid4().hex
     records.append(ws_case("disconnect_prefix", wav_pcm("english_1")[:96000], session_id=resume, pace=1, disconnect=True))
     records.append(ws_case("reconnect_same_id", wav_pcm("cantonese_2"), session_id=resume))
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:

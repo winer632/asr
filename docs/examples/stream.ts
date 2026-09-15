@@ -32,7 +32,7 @@ socket.on('open', () =>
   socket.send(
     JSON.stringify({
       type: 'start',
-      session_id: 'example-' + randomUUID(),
+      session_id: 'abg-example-' + randomUUID(),
       sample_rate: 16000,
       channels: 1,
       format: 'pcm_s16le',

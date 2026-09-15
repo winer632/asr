@@ -69,19 +69,20 @@
 <h3>1. 音频规格</h3><div class="table-wrap"><table><thead><tr><th>参数</th><th>取值</th><th>说明</th></tr></thead><tbody><tr><td>编码</td><td><code>pcm_s16le</code></td><td>有符号 16 位小端整数</td></tr><tr><td>采样率</td><td><code>16000</code> Hz</td><td>每秒 16,000 个采样</td></tr><tr><td>声道</td><td><code>1</code></td><td>单声道</td></tr><tr><td>封装</td><td>WebSocket binary 帧</td><td>只发送 PCM 数据，不带 WAV 文件头，也不是 Base64 JSON</td></tr><tr><td>数据量</td><td>32,000 字节 / 秒</td><td>100 ms 音频 = 3,200 字节</td></tr><tr><td>建议发送粒度</td><td>100 ms</td><td>本项目发送粒度；上游单帧为 2–65,536 字节，长度须为偶数</td></tr></tbody></table></div>
 <h3>2. 发送启动消息</h3><figure><figcaption>JSON text frame<button class="copy" type="button">复制</button></figcaption><pre><code>{
   "type": "start",
-  "session_id": "recording-20260909-001",
+  "session_id": "abg-web-550e8400-e29b-41d4-a716-446655440000",
   "sample_rate": 16000,
   "channels": 1,
   "format": "pcm_s16le"
 }</code></pre></figure>
 <div class="table-wrap"><table><thead><tr><th>字段</th><th>类型</th><th>填写规则</th></tr></thead><tbody><tr><td><code>type</code></td><td>string</td><td>固定为 <code>start</code></td></tr><tr><td><code>session_id</code></td><td>string</td><td>1–128 个英文字母、数字、下划线或连字符；同一时刻不能重用活动 ID；结束后可复用，但新连接从头识别</td></tr><tr><td><code>sample_rate</code></td><td>integer</td><td>显式填写 16000</td></tr><tr><td><code>channels</code></td><td>integer</td><td>显式填写 1</td></tr><tr><td><code>format</code></td><td>string</td><td>显式填写 pcm_s16le</td></tr><tr><td><code>language</code></td><td>string，可选</td><td>省略 = 自动检测；显式值为 6 种语种的全称或缩写，忽略大小写</td></tr><tr><td><code>app_id</code></td><td>string</td><td>2609 文档要求正式环境填写；本办公网网关拒绝该字段并返回 invalid_start，仅在要求它的节点上发送</td></tr></tbody></table></div>
+<p>按语音组的日志跟进约定，本项目生成的 <code>session_id</code> 使用 <code>abg-</code> 前缀。录音应用每段生成 <code>abg-web-&lt;UUID&gt;</code>，命令行示例生成 <code>abg-example-&lt;UUID&gt;</code>；每次新建会话应生成新的 UUID，不要复用上方示例 ID。本地 <code>manifest.json</code> 的 <code>segments[].id</code> 与上游流式会话 ID 一致，可据此定位音频片段及日志。</p>
 <p class="small">音频字段各自的默认行为没有公开。本接入规范要求全部显式填写；省略全部音频字段、使用 48 kHz、双声道或 mp3 均已观察到 invalid_audio_format。start 是严格白名单：chunk_seconds、app_id、max_completion_tokens 都会被该网关拒绝。</p>
 <h3>3. 等待 started 后持续发送音频</h3><figure><figcaption>服务器确认<button class="copy" type="button">复制</button></figcaption><pre><code>{
   "type": "started",
   "chunk_seconds": 2.0,
   "max_audio_seconds": 60,
   "request_id": "服务器分配的请求 UUID",
-  "session_id": "recording-20260909-001"
+  "session_id": "abg-web-550e8400-e29b-41d4-a716-446655440000"
 }</code></pre></figure>
 <p>收到确认后发送二进制 PCM。服务默认每累积 2 秒音频产生一次中间文字，未验证到可通过客户端缩短此周期的配置。实时验证 60.0 秒成功、60.1 秒返回 audio_limit；连续录音应提前创建下一段。过快灌入音频会触发 overloaded，应按实时速度发送。</p>
 <h3>4. 发送结束消息并等待最终文字</h3><figure><figcaption>JSON text frame<button class="copy" type="button">复制</button></figcaption><pre><code>{"type":"end"}</code></pre></figure>
@@ -148,7 +149,7 @@ const ws = new WebSocket(
 ws.on('open', () =&gt; {
   ws.send(JSON.stringify({
     type: 'start',
-    session_id: 'example-' + randomUUID(),
+    session_id: 'abg-example-' + randomUUID(),
     sample_rate: 16000,
     channels: 1,
     format: 'pcm_s16le'

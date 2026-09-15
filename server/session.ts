@@ -137,7 +137,8 @@ export class RecordingSession {
     }
   }
   private create(sample: number) {
-    const id = 'web-' + randomUUID(),
+    // Use the same source-tagged ID in upstream logs and the local archive.
+    const id = 'abg-web-' + randomUUID(),
       startMs = (sample / SAMPLE_RATE) * 1000;
     this.archive?.startSegment(id, startMs);
     const segment = new AsrSegment(id, startMs, {

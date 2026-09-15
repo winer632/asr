@@ -12,6 +12,8 @@ SenseNova ASR 2609 起，服务声明的显式语种为普通话、粤语、英�
 - 公开仓库：<https://github.com/winer632/asr>。
 - [Linux 服务器部署与办公网端口映射](deploy/README.md)。
 
+上游流式识别的 `session_id` 统一使用 `abg-web-<UUID>`，每个语音片段生成一个唯一 ID。语音组可按 `abg-` 前缀筛选本项目的日志；本地 `manifest.json` 中的 `segments[].id` 与该 ID 一致，可用于定位具体片段。命令行示例使用 `abg-example-<UUID>`，探测脚本也使用 `abg-` 前缀。
+
 ## 本地运行
 
 需要 Node.js 22.13 或更新版本（建议 Node.js 22 LTS）、npm，以及到 ASR 内网地址的网络连通性。
