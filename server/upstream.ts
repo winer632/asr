@@ -19,6 +19,9 @@ export interface UpstreamOptions {
   key: string;
   capacity: Capacity;
   emit: (event: ServerEvent) => void;
+  // Set when a finished segment is recognised again from its saved WAV, so a
+  // failed streaming segment is a recoverable warning instead of a dead end.
+  recoverable?: boolean;
 }
 export class AsrSegment {
   samples = 0;
@@ -42,12 +45,12 @@ export class AsrSegment {
     });
     options.emit({ type: 'segment', id, startMs });
     if (!options.capacity.acquire()) {
-      this.fail('busy', '识别服务正忙，请稍后重新开始录音。');
+      this.fail('busy', '识别通道已满');
       return;
     }
     this.acquired = true;
     this.timer = setTimeout(
-      () => this.fail('upstream_timeout', '连接识别服务超时，请检查内网连接。'),
+      () => this.fail('upstream_timeout', '连接识别服务超时'),
       12_000,
     );
     const ws = (this.ws = new WebSocket(options.url, {
@@ -73,7 +76,7 @@ export class AsrSegment {
       try {
         event = JSON.parse(rawText(bytes));
       } catch {
-        this.fail('upstream_protocol', '识别服务返回了无法解析的消息。');
+        this.fail('upstream_protocol', '识别服务返回了无法解析的消息');
         return;
       }
       if (event.type === 'started') {
@@ -88,7 +91,7 @@ export class AsrSegment {
           typeof event.text !== 'string' ||
           typeof event.language !== 'string'
         ) {
-          this.fail('upstream_protocol', '识别服务的文字消息缺少必要字段。');
+          this.fail('upstream_protocol', '识别服务的文字消息缺少必要字段');
           return;
         }
         options.emit({
@@ -104,19 +107,13 @@ export class AsrSegment {
         // Do not relay upstream internals or credentials to browser clients.
         this.fail(
           typeof event.code === 'string' ? event.code : 'upstream_error',
-          '识别服务未能完成这段语音，请重试。',
+          '识别服务未能完成这段语音',
         );
       }
     });
-    ws.on('error', () =>
-      this.fail(
-        'upstream_unavailable',
-        '无法连接识别服务，请检查服务地址、密钥和内网连接。',
-      ),
-    );
+    ws.on('error', () => this.fail('upstream_unavailable', '无法连接识别服务'));
     ws.on('close', () => {
-      if (!this.closed)
-        this.fail('upstream_closed', '识别连接提前断开，这段文字可能不完整。');
+      if (!this.closed) this.fail('upstream_closed', '识别连接提前断开');
     });
   }
   append(pcm: Buffer) {
@@ -125,13 +122,13 @@ export class AsrSegment {
     if (!this.ready) {
       this.pendingBytes += pcm.length;
       if (this.pendingBytes > BYTES_PER_SECOND * 10) {
-        this.fail('backpressure', '连接等待过久，录音已停止，请重试。');
+        this.fail('backpressure', '识别连接等待过久');
         return;
       }
       this.pending.push(Buffer.from(pcm));
     } else if (this.ws?.readyState === WebSocket.OPEN) {
       if (this.ws.bufferedAmount > BYTES_PER_SECOND * 10) {
-        this.fail('backpressure', '网络传输跟不上录音速度，录音已停止。');
+        this.fail('backpressure', '网络传输跟不上录音速度');
         return;
       }
       this.ws.send(pcm);
@@ -146,22 +143,27 @@ export class AsrSegment {
     this.ws?.send(JSON.stringify({ type: 'end' }));
     clearTimeout(this.timer);
     this.timer = setTimeout(
-      () =>
-        this.fail('final_timeout', '等待最终识别结果超时，已保留收到的文字。'),
+      () => this.fail('final_timeout', '等待最终识别结果超时'),
       30_000,
     );
   }
   cancel() {
     this.cleanup();
   }
-  private fail(code: string, message: string) {
+  // One segment failing never stops the recording: the audio keeps being
+  // captured and the saved WAV is recognised again once the segment closes.
+  private fail(code: string, reason: string) {
     if (this.closed) return;
     this.options.emit({
       type: 'error',
       id: this.id,
       code,
-      message,
-      fatal: true,
+      message:
+        reason +
+        (this.options.recoverable
+          ? '，正在用整段音频重新识别，录音继续。'
+          : '，这段文字可能不完整，录音继续。'),
+      fatal: false,
     });
     this.cleanup();
   }

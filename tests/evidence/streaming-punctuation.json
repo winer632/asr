@@ -1,0 +1,60 @@
+{
+  "testedAt": "2026-09-15T09:09:48.043Z",
+  "note": "Same audio through the streaming and file endpoints. Speech is locally synthesized; the reference text and voice are recorded so the sample can be regenerated.",
+  "results": [
+    {
+      "name": "mandarin_continuous",
+      "synthesized_with": "macOS say -v Tingting, 16 kHz mono PCM16",
+      "reference": "我们先说一下今天的安排，第一是旅客清关的演示，我希望大家把流程看一遍，确认没有问题，第二是把环境准备好，服务器要提前部署，链接要发给客户，第三是把识别结果记录下来，方便后面复盘，如果时间还有多，我们再看一下移动端的表现，整体大概就是这样，大家有问题随时打断我。",
+      "audio_seconds": 29.99,
+      "stream": {
+        "endpoint": "/infer/stream",
+        "language": "Chinese",
+        "text": "我们先说一下今天的安排第一是旅客清关的演示我希望大家把流程看一遍确认没有问题第二是把环境准备好服务器要提前部署链接要发给客户第三是把识别结果记录下来方便后面复盘如果时间还有多我们再看一下移动端的表现整体大概就是这样大家有问题随时打断我",
+        "punctuated": false
+      },
+      "file": {
+        "endpoint": "/infer",
+        "language": "Chinese",
+        "text": "我们先说一下今天的安排，第一是旅客清关的演示，我希望大家把流程看一遍，确认没有问题。第二是把环境准备好，服务器要提前部署，链接要发给客户。第三是把识别结果记录下来，方便后面复盘。如果时间还有多，我们再看一下移动端的表现，整体大概就是这样，大家有问题随时打断我。",
+        "punctuated": true
+      }
+    },
+    {
+      "name": "cantonese_continuous",
+      "synthesized_with": "macOS say -v Sinji, 16 kHz mono PCM16",
+      "reference": "我净係示範旅客清關，咁起碼我哋用多啲力去睇返旅客清關相關嘅內容，確保呢方面冇出錯，咁喺呢個示範裏面效果會好少少，第一即係話你要幫我睇旅客清關特別要睇得清楚有冇錯，第二就係話你要俾到一個環境我，我係可以好似入去我哋自己而家有嘅呢個界面，咁只不過唔係去咗我嘅伺服器，係去咗你嘅伺服器嘅噉，可以嘅。",
+      "audio_seconds": 22.15,
+      "stream": {
+        "endpoint": "/infer/stream",
+        "language": "Cantonese",
+        "text": "我净系示范旅客清关咁起码我哋用多啲力去睇返旅客清关相关嘅内容确保呢方面冇出错咁喺呢个示范里面效果会好少少第一即系话你要帮我睇旅客清关特别要睇得清楚有冇错第二就系话你要俾到一个环境我我系可以好似入去我哋自己而家有嘅呢个界面咁只不过唔系去咗我嘅伺服器系去咗你嘅伺服器嘅啖可以嘅",
+        "punctuated": false
+      },
+      "file": {
+        "endpoint": "/infer",
+        "language": "Cantonese",
+        "text": "我净系示范旅客清关咁起码我哋用多啲力去睇返旅客清关相关嘅内容确保呢方面冇出错咁喺呢个示范里面效果会好少少第一即系话你要帮我睇旅客清关特别要睇得清楚有冇错第二就系话你要俾到一个环境我我系可以好似入去我哋自己而家有嘅呢个界面咁只不过唔系去咗我嘅伺服器系去咗你嘅伺服器嘅啖可以嘅",
+        "punctuated": false
+      }
+    },
+    {
+      "name": "mandarin_read_sentences",
+      "synthesized_with": "macOS say -v Tingting, 16 kHz mono PCM16",
+      "reference": "你好，今天我们测试普通话语音识别。请把我说的话转换成文字。会议改到明天下午三点，请提前十分钟到场。你好，今天我们测试普通话语音识别。请把我说的话转换成文字。会议改到明天下午三点，请提前十分钟到场。你好，今天我们测试普通话语音识别。请把我说的话转换成文字。会议改到明天下午三点，请提前十分钟到场。",
+      "audio_seconds": 34.36,
+      "stream": {
+        "endpoint": "/infer/stream",
+        "language": "Chinese",
+        "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字，会议改到明天下午三点，请提前十分钟到场。你好，今天我们测试普通话语音识别，请把我说的话转换成文字，会议改到明天下午三点，请提前十分钟到场。你好，今天我们测试普通话语音识别，请把我说的话转换成文字，会议改到明天下午三点，请提前十分钟到场。",
+        "punctuated": true
+      },
+      "file": {
+        "endpoint": "/infer",
+        "language": "Chinese",
+        "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。会议改到明天下午三点，请提前十分钟到场。你好，今天我们测试普通话语音识别，请把我说的话转换成文字。会议改到明天下午三点，请提前十分钟到场。你好，今天我们测试普通话语音识别，请把我说的话转换成文字。会议改到明天下午三点请提前十分钟到场",
+        "punctuated": true
+      }
+    }
+  ]
+}

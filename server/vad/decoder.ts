@@ -17,6 +17,11 @@ export class VadDecoder {
     private soundFrames = 30,
     private headFrames = 6,
   ) {}
+  // Silence frames inside the current utterance, before it reaches the
+  // end-of-speech threshold. Long speech is cut at one of these short pauses.
+  get pauseFrames() {
+    return this.speaking ? this.silence : 0;
+  }
   accept(silenceProbabilities: number[]): VadBoundary[] {
     const events: VadBoundary[] = [];
     for (const probability of silenceProbabilities) {

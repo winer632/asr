@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { useRecorder } from '@/lib/use-recorder';
 import { RecordingHistory } from '@/components/recording-history';
 import { LANGUAGES, findLanguage, languageLabel } from '@/shared/languages';
+import { sentenceLines } from '@/shared/text';
 const time = (n: number) =>
   Math.floor(n / 60)
     .toString()
@@ -122,14 +123,29 @@ export default function Home() {
                         {s.error ? '识别失败' : s.final ? '已完成' : '识别中'}
                       </span>
                     </div>
-                    <p>
-                      {s.text ||
-                        s.error ||
-                        (s.final
-                          ? '这段语音未识别出文字。'
-                          : '正在识别这段语音…')}
-                      {!s.final && !s.error && <span className="text-caret" />}
-                    </p>
+                    <div className="entry-text">
+                      {sentenceLines(s.text, s.final ? s.mark : '').map(
+                        (line, index, lines) => (
+                          <p key={index}>
+                            {line}
+                            {!s.final && index === lines.length - 1 && (
+                              <span className="text-caret" />
+                            )}
+                          </p>
+                        ),
+                      )}
+                      {!s.text && (
+                        <p>
+                          {s.error ||
+                            (s.final
+                              ? '这段语音未识别出文字。'
+                              : '正在识别这段语音…')}
+                          {!s.final && !s.error && (
+                            <span className="text-caret" />
+                          )}
+                        </p>
+                      )}
+                    </div>
                   </article>
                 ))
               )}
@@ -200,6 +216,9 @@ export default function Home() {
                 {r.error}
               </div>
             )}
+            {!r.error && r.notice && (
+              <output className="notice-message">{r.notice}</output>
+            )}
             <div className="language-summary">
               <span>自动检测语种</span>
               <strong>
@@ -227,7 +246,7 @@ export default function Home() {
               <p>
                 说话时持续更新文字
                 <br />
-                停顿后自动完成当前句
+                停顿后自动断句并补全标点
               </p>
             </div>
           </aside>

@@ -312,12 +312,15 @@ h2 {
 .provisional .entry-state {
   color: #07828a;
 }
-.transcript-entry > p {
+.entry-text > p {
   font-size: 18px;
   line-height: 1.9;
   overflow-wrap: anywhere;
 }
-.provisional > p {
+.entry-text > p + p {
+  margin-top: 2px;
+}
+.provisional .entry-text > p {
   color: #256474;
 }
 .text-caret {
@@ -493,6 +496,17 @@ h2 {
   width: 100%;
   overflow-wrap: anywhere;
 }
+.notice-message {
+  font-size: 14px;
+  background: #fff8ec;
+  border: 1px solid #f0dcb8;
+  color: #8a6124;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 16px;
+  width: 100%;
+  overflow-wrap: anywhere;
+}
 .page-footer {
   display: flex;
   justify-content: space-between;
@@ -613,7 +627,8 @@ h2 {
   .recording-note {
     display: none;
   }
-  .error-message {
+  .error-message,
+  .notice-message {
     grid-column: 1/-1;
     margin-top: 10px;
   }
@@ -638,7 +653,7 @@ h2 {
   .transcript-footer {
     padding: 12px 17px;
   }
-  .transcript-entry > p {
+  .entry-text > p {
     font-size: 17px;
   }
   .entry-meta {
@@ -907,10 +922,15 @@ h2 {
   color: #286878;
   font-family: ui-monospace, monospace;
 }
-.saved-segment > p {
-  font-size: 16px;
+.segment-text {
   margin: 8px 0 12px;
+}
+.segment-text > p {
+  font-size: 16px;
   overflow-wrap: anywhere;
+}
+.segment-text > p + p {
+  margin-top: 2px;
 }
 .incomplete-label {
   color: #ac6940;

@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/collapsible';
 import type { SavedRecording } from '../server/archive';
 import { languageLabel } from '@/shared/languages';
+import { sentenceLines } from '@/shared/text';
 import type { DeleteRecordingsResult } from '@/shared/recordings';
 const time = (n: number) =>
   Math.floor(n / 60)
@@ -308,13 +309,20 @@ export function RecordingHistory({ state }: { state: string }) {
                         </span>
                       )}
                     </div>
-                    <p>
-                      {segment.text ||
-                        segment.error ||
-                        (segment.status === 'complete'
-                          ? '这段语音未识别出文字。'
-                          : '等待识别结果…')}
-                    </p>
+                    <div className="segment-text">
+                      {segment.text ? (
+                        sentenceLines(segment.text, segment.mark).map(
+                          (line, index) => <p key={index}>{line}</p>,
+                        )
+                      ) : (
+                        <p>
+                          {segment.error ||
+                            (segment.status === 'complete'
+                              ? '这段语音未识别出文字。'
+                              : '等待识别结果…')}
+                        </p>
+                      )}
+                    </div>
                     <div className="download-pair">
                       {segment.status === 'recognizing' ? (
                         <span>音频保存中</span>

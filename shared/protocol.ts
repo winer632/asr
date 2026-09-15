@@ -9,6 +9,8 @@ export type ServerEvent =
       text: string;
       language: string;
       requestId?: string;
+      // Closing mark derived from the measured pause, never from the model.
+      mark?: string;
     }
   | {
       type: 'error';
@@ -23,6 +25,7 @@ export interface Transcript {
   text: string;
   language: string;
   final: boolean;
+  mark?: string;
   error?: string;
 }
 export const SAMPLE_RATE = 16_000;

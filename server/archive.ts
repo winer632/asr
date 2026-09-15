@@ -14,6 +14,7 @@ import {
 import path from 'node:path';
 import type { ServerEvent } from '../shared/protocol.js';
 import { languageLabel } from '../shared/languages.js';
+import { sentenceLines } from '../shared/text.js';
 
 export interface SavedSegment {
   id: string;
@@ -23,6 +24,9 @@ export interface SavedSegment {
   samples: number;
   language: string;
   text: string;
+  // Closing mark derived from the measured pause when the recogniser returned
+  // no punctuation. `text` always stays exactly as the service returned it.
+  mark?: string;
   status: 'recognizing' | 'complete' | 'interrupted';
   error?: string;
   requestId?: string;
@@ -161,7 +165,10 @@ export class RecordingArchive {
       segment.text = event.text;
       segment.language = event.language;
       segment.requestId = event.requestId;
+      segment.mark = event.mark || undefined;
       segment.status = event.type === 'final' ? 'complete' : 'recognizing';
+      // A later pass can recover a segment whose streaming session failed.
+      if (event.type === 'final') segment.error = undefined;
     } else if (event.type === 'error') {
       segment.error = event.message;
       segment.status = 'interrupted';
@@ -172,9 +179,10 @@ export class RecordingArchive {
   private writeText(segment: SavedSegment) {
     const prefix =
       segment.status === 'complete' ? '' : '【未完成识别，请核对音频】\n';
+    const lines = sentenceLines(segment.text, segment.mark);
     this.atomic(
       segment.textFile,
-      prefix + (segment.text || segment.error || '') + '\n',
+      prefix + (lines.join('\n') || segment.error || '') + '\n',
     );
   }
   private atomic(file: string, data: string) {
@@ -190,7 +198,8 @@ export class RecordingArchive {
       '完整音频：recording.wav',
       '',
     ];
-    for (const s of this.metadata.segments)
+    for (const s of this.metadata.segments) {
+      const text = sentenceLines(s.text, s.mark);
       lines.push(
         '[' +
           clock(s.startMs) +
@@ -201,9 +210,10 @@ export class RecordingArchive {
           ' · ' +
           (s.status === 'complete' ? '已完成' : '未完成'),
         '对应文件：' + s.audioFile + ' ↔ ' + s.textFile,
-        s.text || s.error || '等待识别',
+        ...(text.length ? text : [s.error || '等待识别']),
         '',
       );
+    }
     if (!this.metadata.segments.length)
       lines.push(this.finished ? '未检测到有效语音。' : '等待语音。');
     this.atomic('transcript.txt', lines.join('\n'));

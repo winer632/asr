@@ -8,6 +8,7 @@ import { Capacity } from './upstream.js';
 import { RecordingSession } from './session.js';
 import type { ServerEvent } from '../shared/protocol.js';
 import { deleteRecordings, deletionIds } from './recordings.js';
+import type { FileTranscriberOptions } from './transcribe.js';
 import {
   RecordingArchive,
   listRecordings,
@@ -26,11 +27,25 @@ function integer(name: string, fallback: number, min: number, max: number) {
     throw new Error(name + ' is outside the supported range.');
   return value;
 }
+function flag(name: string, fallback: boolean) {
+  const value = (process.env[name] || '').trim().toLowerCase();
+  if (!value) return fallback;
+  if (['1', 'true', 'yes', 'on'].includes(value)) return true;
+  if (['0', 'false', 'no', 'off'].includes(value)) return false;
+  throw new Error(name + ' must be 1 or 0.');
+}
 const port = integer('PORT', 5173, 1, 65535),
   host = process.env.HOST || '127.0.0.1';
 const maxConnections = integer('MAX_CONNECTIONS', 8, 1, 32),
   maxAsr = integer('ASR_CONCURRENCY', 8, 1, 8);
 const silenceMs = integer('VAD_SILENCE_MS', 600, 300, 2000);
+// 0 keeps one segment per pause; otherwise long speech is cut at a short pause.
+const softSplitSeconds = integer('VAD_SOFT_SPLIT_SECONDS', 12, 0, 55);
+if (softSplitSeconds && softSplitSeconds < 5)
+  throw new Error('VAD_SOFT_SPLIT_SECONDS must be 0 or at least 5.');
+const softSplitPauseMs = integer('VAD_SOFT_SPLIT_PAUSE_MS', 200, 100, 600);
+const fileRecognition = flag('ASR_FILE_RECOGNITION', true);
+const pausePunctuation = flag('PAUSE_PUNCTUATION', true);
 const baseUrl = new URL(process.env.ASR_BASE_URL || 'http://10.210.1.23:19003');
 if (
   !['http:', 'https:'].includes(baseUrl.protocol) ||
@@ -42,8 +57,13 @@ if (
   );
 const streamUrl = new URL('/infer/stream', baseUrl);
 streamUrl.protocol = baseUrl.protocol === 'https:' ? 'wss:' : 'ws:';
+const fileUrl = new URL('/infer', baseUrl);
 const key = process.env.ASR_API_KEY || '';
 const capacity = new Capacity(maxAsr);
+const fileOptions: FileTranscriberOptions = {
+  url: fileUrl.toString(),
+  key,
+};
 const recordingsRoot = path.resolve(
   root,
   process.env.RECORDINGS_DIR || 'recordings',
@@ -365,6 +385,15 @@ wss.on('connection', (ws) => {
     alive = true;
   });
   function emit(event: ServerEvent) {
+    if (event.type === 'error')
+      // Codes make an occasional interruption diagnosable after the fact.
+      console.error(
+        'recognition ' +
+          (event.fatal ? 'stopped' : 'warning') +
+          ': ' +
+          event.code +
+          (event.id ? ' (' + event.id + ')' : ''),
+      );
     if (closed || ws.readyState !== WebSocket.OPEN) return;
     if (ws.bufferedAmount > 1_000_000) {
       ws.terminate();
@@ -454,6 +483,12 @@ wss.on('connection', (ws) => {
           { url: streamUrl.toString(), key, capacity, emit },
           55,
           new RecordingArchive(recordingsRoot),
+          {
+            softSplitSeconds,
+            softSplitPauseFrames: Math.round(softSplitPauseMs / 10),
+            pausePunctuation,
+            file: fileRecognition ? fileOptions : undefined,
+          },
         );
       } catch {
         fail(

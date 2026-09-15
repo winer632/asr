@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ServerEvent, Transcript } from '../shared/protocol';
+import { readableText } from '../shared/text';
 type Status = 'idle' | 'connecting' | 'recording' | 'stopping' | 'error';
 interface Resources {
   context: AudioContext;
@@ -9,10 +10,22 @@ interface Resources {
   gain?: GainNode;
   socket?: WebSocket;
   timeout?: ReturnType<typeof setTimeout>;
+  recovery?: ReturnType<typeof setTimeout>;
   flush?: () => void;
   offset: number;
   started: number;
+  resumes: number;
+  switching: boolean;
 }
+const CAPTURE: MediaStreamConstraints = {
+  audio: {
+    channelCount: 1,
+    echoCancellation: true,
+    noiseSuppression: true,
+    autoGainControl: true,
+  },
+  video: false,
+};
 export function useRecorder() {
   const [status, setStatus] = useState<Status>('idle'),
     statusRef = useRef<Status>('idle');
@@ -22,6 +35,7 @@ export function useRecorder() {
   const [elapsed, setElapsed] = useState(0),
     elapsedRef = useRef(0);
   const [error, setError] = useState(''),
+    [notice, setNotice] = useState(''),
     [copied, setCopied] = useState(false);
   const resources = useRef<Resources | undefined>(undefined),
     mounted = useRef(true);
@@ -31,6 +45,7 @@ export function useRecorder() {
     if (mounted.current) setStatus(value);
   };
   const releaseAudio = (r: Resources) => {
+    clearTimeout(r.recovery);
     r.stream?.getTracks().forEach((track) => track.stop());
     r.processor?.disconnect();
     r.source?.disconnect();
@@ -56,6 +71,7 @@ export function useRecorder() {
       elapsedRef.current = r.offset + (Date.now() - r.started) / 1000;
     setElapsed(elapsedRef.current);
     setError(message);
+    setNotice('');
     setSegments((previous) =>
       previous.map((s) =>
         s.final
@@ -100,6 +116,7 @@ export function useRecorder() {
       return;
     cleanup();
     setError('');
+    setNotice('');
     transition('connecting');
     if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
       fail(
@@ -111,18 +128,16 @@ export function useRecorder() {
     try {
       const context = new AudioContext();
       const resume = context.resume();
-      r = { context, offset: elapsedRef.current, started: 0 };
+      r = {
+        context,
+        offset: elapsedRef.current,
+        started: 0,
+        resumes: 0,
+        switching: false,
+      };
       resources.current = r;
       const current = r;
-      r.stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          channelCount: 1,
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-        video: false,
-      });
+      r.stream = await navigator.mediaDevices.getUserMedia(CAPTURE);
       if (resources.current !== r) {
         releaseAudio(r);
         return;
@@ -148,6 +163,8 @@ export function useRecorder() {
         if (resources.current === current)
           fail('连接录音服务超时，请确认本地服务正在运行。');
       }, 15_000);
+      const live = () =>
+        resources.current === current && statusRef.current === 'recording';
       processor.port.onmessage = (event) => {
         if (resources.current !== current) return;
         if (event.data.type === 'flushed') {
@@ -168,22 +185,66 @@ export function useRecorder() {
         if (resources.current === current)
           fail('浏览器音频处理器意外停止，请重新开始录音。');
       };
-      r.stream.getTracks().forEach((track) =>
-        track.addEventListener('ended', () => {
-          if (
-            resources.current === current &&
-            statusRef.current === 'recording'
-          )
-            fail('麦克风已断开，请检查设备后重新开始。');
-        }),
-      );
-      context.addEventListener('statechange', () => {
-        if (
-          resources.current === current &&
-          statusRef.current === 'recording' &&
-          context.state !== 'running'
-        )
+      // Joining a call or changing the audio device suspends the context or
+      // ends the track. Recover instead of dropping the whole recording.
+      const watch = (stream: MediaStream) =>
+        stream.getTracks().forEach((track) =>
+          track.addEventListener('ended', () => {
+            if (live()) void reacquire();
+          }),
+        );
+      const reacquire = async () => {
+        if (!live() || current.switching) return;
+        current.switching = true;
+        setNotice('麦克风被系统切换，正在重新连接…');
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia(CAPTURE);
+          if (!live()) {
+            stream.getTracks().forEach((track) => track.stop());
+            return;
+          }
+          current.source?.disconnect();
+          current.stream?.getTracks().forEach((track) => track.stop());
+          current.stream = stream;
+          current.source = context.createMediaStreamSource(stream);
+          current.source.connect(processor);
+          watch(stream);
+          setNotice('麦克风已重新连接，录音继续。');
+        } catch {
+          fail('麦克风已断开，请检查设备后重新开始。');
+        } finally {
+          current.switching = false;
+        }
+      };
+      const running = () => context.state === 'running';
+      const recover = async () => {
+        if (!live()) return;
+        if (running()) {
+          current.resumes = 0;
+          setNotice('');
+          return;
+        }
+        try {
+          await context.resume();
+        } catch {
+          /* retried below */
+        }
+        if (!live()) return;
+        if (running()) {
+          current.resumes = 0;
+          setNotice('');
+          return;
+        }
+        if (++current.resumes > 12) {
           fail('浏览器暂停了音频采集，请保持页面在前台并重新开始。');
+          return;
+        }
+        setNotice('系统暂停了音频采集，正在恢复…');
+        current.recovery = setTimeout(() => void recover(), 500);
+      };
+      watch(r.stream);
+      context.addEventListener('statechange', () => {
+        if (live() && !running()) void recover();
       });
       ws.onopen = () => ws.send(JSON.stringify({ type: 'start' }));
       ws.onmessage = (event) => {
@@ -222,6 +283,7 @@ export function useRecorder() {
                     ...s,
                     text: message.text,
                     language: message.language,
+                    mark: message.mark,
                     final: message.type === 'final',
                     error: undefined,
                   }
@@ -235,8 +297,10 @@ export function useRecorder() {
                 s.id === message.id ? { ...s, error: message.message } : s,
               ),
             );
+          // Only a session-level failure stops the capture; one segment's
+          // recognition problem is reported while the recording continues.
           if (message.fatal) fail(message.message);
-          else setError(message.message);
+          else setNotice(message.message);
         } else if (message.type === 'stopped') {
           cleanup();
           transition('idle');
@@ -269,6 +333,7 @@ export function useRecorder() {
     const r = resources.current;
     if (!r || statusRef.current !== 'recording') return;
     transition('stopping');
+    setNotice('');
     elapsedRef.current = r.offset + (Date.now() - r.started) / 1000;
     setElapsed(elapsedRef.current);
     const flushed = await new Promise<boolean>((resolve) => {
@@ -302,7 +367,7 @@ export function useRecorder() {
       await navigator.clipboard.writeText(
         segments
           .filter((s) => s.text)
-          .map((s) => s.text)
+          .map((s) => readableText(s.text, s.mark))
           .join('\n'),
       );
       setCopied(true);
@@ -320,6 +385,7 @@ export function useRecorder() {
     level,
     elapsed,
     error,
+    notice,
     copied,
     bottomRef,
     start,

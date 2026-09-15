@@ -11,6 +11,7 @@ import WebSocket from 'ws';
 import { readWav } from '../tests/wav.js';
 import type { SavedRecording } from '../server/archive.js';
 import type { ServerEvent } from '../shared/protocol.js';
+import { sentenceLines } from '../shared/text.js';
 
 try {
   process.loadEnvFile('.env');
@@ -94,7 +95,7 @@ async function run(name: string, pcm: Buffer, expectedLanguages: string[]) {
           reject(error);
           ws.close();
         }
-      } else if (event.type === 'error') {
+      } else if (event.type === 'error' && event.fatal) {
         clearTimeout(timeout);
         reject(new Error(name + ': ' + event.message));
         ws.close();
@@ -153,7 +154,10 @@ async function run(name: string, pcm: Buffer, expectedLanguages: string[]) {
     const text = await fetch(prefix + '/text').then((r) => r.text());
     assert.equal(audio.toString('ascii', 0, 4), 'RIFF');
     assert.equal(audio.readUInt32LE(40), segment.samples * 2);
-    assert.equal(text.trim(), segment.text.trim());
+    assert.equal(
+      text.trim(),
+      sentenceLines(segment.text, segment.mark).join('\n'),
+    );
     assert.equal(segment.status, 'complete');
   }
   const result = {
@@ -161,6 +165,9 @@ async function run(name: string, pcm: Buffer, expectedLanguages: string[]) {
     recordingId: recording.id,
     inputSeconds: pcm.length / 32000,
     finals,
+    warnings: messages.flatMap((m) =>
+      m.event.type === 'error' ? [m.event.code] : [],
+    ),
     firstPartialSeconds: messages.find((m) => m.event.type === 'partial')
       ?.seconds,
     exactFullAudioMatch: true,
@@ -172,7 +179,7 @@ async function run(name: string, pcm: Buffer, expectedLanguages: string[]) {
     JSON.stringify({
       name,
       finalLanguages: finals.map((f) => f.language),
-      finalTexts: finals.map((f) => f.text),
+      finalTexts: finals.map((f) => f.text + (f.mark || '')),
       savedPairs: recording.segments.length,
       exactFullAudioMatch: true,
     }),
