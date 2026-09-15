@@ -17,6 +17,9 @@ export class Capacity {
 export interface UpstreamOptions {
   url: string;
   key: string;
+  // SenseNova ASR 2609 requires app_id in production. The gateway in front of
+  // the office node rejects unknown start fields, so it is only sent when set.
+  appId?: string;
   capacity: Capacity;
   emit: (event: ServerEvent) => void;
   // Set when a finished segment is recognised again from its saved WAV, so a
@@ -63,6 +66,7 @@ export class AsrSegment {
       ws.send(
         JSON.stringify({
           type: 'start',
+          ...(options.appId ? { app_id: options.appId } : {}),
           session_id: id,
           sample_rate: 16000,
           channels: 1,

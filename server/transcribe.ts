@@ -9,6 +9,7 @@ export interface FileTranscript {
 export interface FileTranscriberOptions {
   url: string;
   key: string;
+  appId?: string;
   timeoutMs?: number;
   attempts?: number;
 }
@@ -39,6 +40,7 @@ export async function transcribeFile(
       new Blob([new Uint8Array(audio)], { type: 'audio/wav' }),
       path.basename(filename),
     );
+    if (options.appId) body.append('app_id', options.appId);
     try {
       const response = await fetch(options.url, {
         method: 'POST',

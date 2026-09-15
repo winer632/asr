@@ -59,10 +59,16 @@ const streamUrl = new URL('/infer/stream', baseUrl);
 streamUrl.protocol = baseUrl.protocol === 'https:' ? 'wss:' : 'ws:';
 const fileUrl = new URL('/infer', baseUrl);
 const key = process.env.ASR_API_KEY || '';
+// Required by SenseNova ASR 2609 in production. The office gateway rejects it,
+// so it stays unset there and is only added to requests once configured.
+const appId = (process.env.ASR_APP_ID || '').trim();
+if (appId && !/^[A-Za-z0-9_-]{1,128}$/.test(appId))
+  throw new Error('ASR_APP_ID must be 1–128 letters, digits, _ or -.');
 const capacity = new Capacity(maxAsr);
 const fileOptions: FileTranscriberOptions = {
   url: fileUrl.toString(),
   key,
+  appId,
 };
 const recordingsRoot = path.resolve(
   root,
@@ -480,7 +486,7 @@ wss.on('connection', (ws) => {
       try {
         session = new RecordingSession(
           factory.create(silenceMs),
-          { url: streamUrl.toString(), key, capacity, emit },
+          { url: streamUrl.toString(), key, appId, capacity, emit },
           55,
           new RecordingArchive(recordingsRoot),
           {

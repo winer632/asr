@@ -1,0 +1,51 @@
+{
+ "testedAt": "2026-09-15T09:21:57.904Z",
+ "note": "Re-probe after the SenseNova ASR 2609 update, against the office gateway http://10.210.1.23:19003. The 2609 document describes the node service on port 8080; that port is not reachable from the office network, so app_id and max_completion_tokens could only be checked against this gateway.",
+ "languagesEndpoint": {
+  "languages": [
+   "Chinese",
+   "English",
+   "Cantonese",
+   "Arabic",
+   "Japanese",
+   "Korean"
+  ],
+  "auto_detect": true
+ },
+ "streamingStartFields": {
+  "baseline": "started",
+  "language_full_name": "started",
+  "language_short_code": "started",
+  "language_padded_uppercase": "started",
+  "language_null": "started",
+  "language_unsupported": "error:invalid_language",
+  "language_auto": "error:invalid_language",
+  "app_id": "error:invalid_start",
+  "max_completion_tokens": "error:invalid_start"
+ },
+ "fileFormFields": {
+  "baseline": 200,
+  "language_full_name": 200,
+  "language_short_code": 200,
+  "language_unsupported": 400,
+  "app_id": 200,
+  "max_completion_tokens": 200
+ },
+ "automaticDetection": {
+  "japanese": {
+   "synthesized_with": "macOS say -v Kyoko",
+   "language": "Japanese",
+   "text": "こんにちは、今日の会議は午後三時に変更になりました。十分前に到着してください。"
+  },
+  "korean": {
+   "synthesized_with": "macOS say -v Yuna",
+   "language": "Korean",
+   "text": "안녕하세요, 오늘 회의는 오후 세시로 변경되었습니다. 십분 전에 도착해 주세요."
+  },
+  "arabic": {
+   "synthesized_with": "macOS say -v Majed",
+   "language": "Arabic",
+   "text": "مرحباً تم تغيير موعد الاجتماع إلى الساعة الثالثة بعد الظهر يرجى الحضور قبل عشر دقائق"
+  }
+ }
+}
