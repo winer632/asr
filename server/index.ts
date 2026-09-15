@@ -8,6 +8,7 @@ import { Capacity } from './upstream.js';
 import { RecordingSession } from './session.js';
 import type { ServerEvent } from '../shared/protocol.js';
 import { deleteRecordings, deletionIds } from './recordings.js';
+import { declaredLanguage } from '../shared/languages.js';
 import type { FileTranscriberOptions } from './transcribe.js';
 import {
   RecordingArchive,
@@ -466,7 +467,7 @@ wss.on('connection', (ws) => {
         });
       return;
     }
-    let message: { type?: string };
+    let message: { type?: string; language?: unknown };
     try {
       message = JSON.parse(bytes.toString());
       if (!message || Array.isArray(message)) throw new Error();
@@ -476,6 +477,27 @@ wss.on('connection', (ws) => {
     }
     if (message.type === 'start' && !session) {
       clearTimeout(deadline);
+      // An empty choice means automatic detection. Anything the service does
+      // not declare is refused here instead of being relayed upstream.
+      let language = '';
+      if (message.language !== undefined && message.language !== null) {
+        if (typeof message.language !== 'string') {
+          fail('invalid_language', '语种选择格式错误，请重新选择。');
+          return;
+        }
+        const chosen = message.language.trim();
+        if (chosen) {
+          const declared = declaredLanguage(chosen);
+          if (!declared) {
+            fail(
+              'invalid_language',
+              '识别服务不支持锁定这个语种，请改用自动检测。',
+            );
+            return;
+          }
+          language = declared.code;
+        }
+      }
       if (!key) {
         fail(
           'not_configured',
@@ -486,14 +508,14 @@ wss.on('connection', (ws) => {
       try {
         session = new RecordingSession(
           factory.create(silenceMs),
-          { url: streamUrl.toString(), key, appId, capacity, emit },
+          { url: streamUrl.toString(), key, appId, language, capacity, emit },
           55,
-          new RecordingArchive(recordingsRoot),
+          new RecordingArchive(recordingsRoot, language),
           {
             softSplitSeconds,
             softSplitPauseFrames: Math.round(softSplitPauseMs / 10),
             pausePunctuation,
-            file: fileRecognition ? fileOptions : undefined,
+            file: fileRecognition ? { ...fileOptions, language } : undefined,
           },
         );
       } catch {

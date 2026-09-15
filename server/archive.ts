@@ -37,6 +37,8 @@ export interface SavedRecording {
   id: string;
   startedAt: string;
   endedAt?: string;
+  // Language the browser locked for this recording; empty means automatic.
+  requestedLanguage?: string;
   status: 'recording' | 'complete' | 'interrupted';
   samples: number;
   audioFile: string;
@@ -96,7 +98,7 @@ export class RecordingArchive {
   private full: WavWriter;
   private writers = new Map<string, WavWriter>();
   private finished = false;
-  constructor(root: string) {
+  constructor(root: string, requestedLanguage = '') {
     const startedAt = new Date().toISOString();
     const id = startedAt.replace(/[:.]/g, '-') + '-' + randomUUID().slice(0, 8);
     this.directory = path.join(root, id);
@@ -108,6 +110,7 @@ export class RecordingArchive {
     this.metadata = {
       id,
       startedAt,
+      ...(requestedLanguage ? { requestedLanguage } : {}),
       status: 'recording',
       samples: 0,
       audioFile: 'recording.wav',
@@ -195,6 +198,10 @@ export class RecordingArchive {
       '录音编号：' + this.metadata.id,
       '开始时间：' + this.metadata.startedAt,
       '状态：' + this.metadata.status,
+      '识别语种：' +
+        (this.metadata.requestedLanguage
+          ? '已锁定 ' + languageLabel(this.metadata.requestedLanguage)
+          : '自动检测'),
       '完整音频：recording.wav',
       '',
     ];

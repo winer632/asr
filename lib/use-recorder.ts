@@ -37,12 +37,22 @@ export function useRecorder() {
   const [error, setError] = useState(''),
     [notice, setNotice] = useState(''),
     [copied, setCopied] = useState(false);
+  // '' asks the service to detect the language; anything else locks it.
+  const [language, setLanguageState] = useState(''),
+    languageRef = useRef('');
   const resources = useRef<Resources | undefined>(undefined),
     mounted = useRef(true);
   const bottomRef = useRef<HTMLDivElement>(null);
   const transition = (value: Status) => {
     statusRef.current = value;
     if (mounted.current) setStatus(value);
+  };
+  const setLanguage = (value: string) => {
+    // The choice applies to the next recording; a running one keeps its own.
+    if (statusRef.current === 'recording' || statusRef.current === 'stopping')
+      return;
+    languageRef.current = value;
+    setLanguageState(value);
   };
   const releaseAudio = (r: Resources) => {
     clearTimeout(r.recovery);
@@ -246,7 +256,13 @@ export function useRecorder() {
       context.addEventListener('statechange', () => {
         if (live() && !running()) void recover();
       });
-      ws.onopen = () => ws.send(JSON.stringify({ type: 'start' }));
+      ws.onopen = () =>
+        ws.send(
+          JSON.stringify({
+            type: 'start',
+            ...(languageRef.current ? { language: languageRef.current } : {}),
+          }),
+        );
       ws.onmessage = (event) => {
         if (resources.current !== current) return;
         let message: ServerEvent;
@@ -387,6 +403,8 @@ export function useRecorder() {
     error,
     notice,
     copied,
+    language,
+    setLanguage,
     bottomRef,
     start,
     stop,

@@ -10,6 +10,7 @@ export interface FileTranscriberOptions {
   url: string;
   key: string;
   appId?: string;
+  language?: string;
   timeoutMs?: number;
   attempts?: number;
 }
@@ -41,6 +42,7 @@ export async function transcribeFile(
       path.basename(filename),
     );
     if (options.appId) body.append('app_id', options.appId);
+    if (options.language) body.append('language', options.language);
     try {
       const response = await fetch(options.url, {
         method: 'POST',

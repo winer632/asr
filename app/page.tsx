@@ -10,7 +10,16 @@ import {
 import { Button } from '@/components/ui/button';
 import { useRecorder } from '@/lib/use-recorder';
 import { RecordingHistory } from '@/components/recording-history';
-import { LANGUAGES, findLanguage, languageLabel } from '@/shared/languages';
+import {
+  LANGUAGES,
+  SELECTABLE,
+  findLanguage,
+  languageLabel,
+} from '@/shared/languages';
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from '@/components/ui/native-select';
 import { sentenceLines } from '@/shared/text';
 const time = (n: number) =>
   Math.floor(n / 60)
@@ -32,7 +41,8 @@ export default function Home() {
     error: '连接中断',
   }[r.status];
   const latest = r.segments.at(-1);
-  const latestLanguage = findLanguage(latest?.language || '');
+  const locked = findLanguage(r.language);
+  const latestLanguage = locked || findLanguage(latest?.language || '');
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -220,9 +230,30 @@ export default function Home() {
               <output className="notice-message">{r.notice}</output>
             )}
             <div className="language-summary">
-              <span>自动检测语种</span>
+              <label className="language-choice" htmlFor="language-choice">
+                <span>识别语种</span>
+                <NativeSelect
+                  id="language-choice"
+                  value={r.language}
+                  disabled={active || busy}
+                  onChange={(event) => r.setLanguage(event.target.value)}
+                >
+                  <NativeSelectOption value="">自动检测</NativeSelectOption>
+                  {SELECTABLE.map((language) => (
+                    <NativeSelectOption
+                      key={language.code}
+                      value={language.code}
+                    >
+                      {language.label}
+                    </NativeSelectOption>
+                  ))}
+                </NativeSelect>
+              </label>
+              <span>{locked ? '已锁定语种' : '自动检测语种'}</span>
               <strong>
-                {languageLabel(latest?.language || '', '等待语音')}
+                {locked
+                  ? locked.label
+                  : languageLabel(latest?.language || '', '等待语音')}
               </strong>
               <div className="language-chips">
                 {LANGUAGES.map((language) => (
@@ -238,7 +269,13 @@ export default function Home() {
                 ))}
               </div>
               <p className="language-hint">
-                已实测 {LANGUAGES.length} 种语言，无需手动切换。
+                {locked
+                  ? '整段录音都按' +
+                    locked.label +
+                    '识别，不再自动切换语种。录音结束后可以改回自动检测。'
+                  : '已实测 ' +
+                    LANGUAGES.length +
+                    ' 种语言，无需手动切换；只说一种语言时锁定语种更准。'}
               </p>
             </div>
             <div className="recording-note">

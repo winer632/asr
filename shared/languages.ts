@@ -28,6 +28,16 @@ export function findLanguage(value: string) {
   );
 }
 
+// Only the declared six can be named explicitly; the service answers
+// invalid_language for anything else, so a browser's choice is checked here
+// before it reaches the upstream.
+export const SELECTABLE = LANGUAGES.filter((language) => language.declared);
+
+export function declaredLanguage(value: string) {
+  const language = findLanguage(value);
+  return language?.declared ? language : undefined;
+}
+
 export function languageLabel(value: string, emptyLabel = '语种待定') {
   return findLanguage(value)?.label || value.trim() || emptyLabel;
 }

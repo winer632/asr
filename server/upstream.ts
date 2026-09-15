@@ -20,6 +20,8 @@ export interface UpstreamOptions {
   // SenseNova ASR 2609 requires app_id in production. The gateway in front of
   // the office node rejects unknown start fields, so it is only sent when set.
   appId?: string;
+  // Explicit language name; omitted for automatic detection.
+  language?: string;
   capacity: Capacity;
   emit: (event: ServerEvent) => void;
   // Set when a finished segment is recognised again from its saved WAV, so a
@@ -71,6 +73,7 @@ export class AsrSegment {
           sample_rate: 16000,
           channels: 1,
           format: 'pcm_s16le',
+          ...(options.language ? { language: options.language } : {}),
         }),
       );
     });
