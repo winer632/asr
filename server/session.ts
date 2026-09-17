@@ -19,6 +19,9 @@ export interface SessionSettings {
   // Recognise every finished segment once more from its saved WAV.
   file?: FileTranscriberOptions;
 }
+// Headroom kept under the service's announced per-session audio limit, so a
+// segment is always rotated before the upstream cuts it off.
+const LIMIT_MARGIN_SECONDS = 5;
 // One browser capture is continuous; each VAD utterance gets a separate ASR session.
 export class RecordingSession {
   private position = 0;
@@ -34,6 +37,8 @@ export class RecordingSession {
   private stopping = false;
   private cancelled = false;
   private complete = false;
+  // Learned from the first `started`; until then the configured bound stands.
+  private upstreamLimitSeconds: number | undefined;
   constructor(
     private vad: VadStream,
     private options: UpstreamOptions,
@@ -56,11 +61,10 @@ export class RecordingSession {
       this.preRoll = this.preRoll.subarray(
         this.preRoll.length - SAMPLE_RATE * 2 * 2,
       );
-    // Rotate BEFORE the upstream's declared 60-second limit; no duplicated overlap.
+    // Rotate BEFORE the upstream's declared audio limit; no duplicated overlap.
     if (
       this.current &&
-      this.currentSamples + pcm.length / 2 >
-        this.maxSegmentSeconds * SAMPLE_RATE
+      this.currentSamples + pcm.length / 2 > this.segmentLimit() * SAMPLE_RATE
     ) {
       this.endSegment(this.current, true);
       this.current = this.create(chunkStart);
@@ -136,6 +140,16 @@ export class RecordingSession {
       this.current = this.begin(from);
     }
   }
+  // The service announces `max_audio_seconds` (60 on the current node) with
+  // every `started`; honour it when it is tighter than the configured bound.
+  private segmentLimit() {
+    const announced = this.upstreamLimitSeconds;
+    if (announced === undefined) return this.maxSegmentSeconds;
+    return Math.max(
+      1,
+      Math.min(this.maxSegmentSeconds, announced - LIMIT_MARGIN_SECONDS),
+    );
+  }
   private create(sample: number) {
     // Use the same source-tagged ID in upstream logs and the local archive.
     const id = 'abg-web-' + randomUUID(),
@@ -145,6 +159,9 @@ export class RecordingSession {
       ...this.options,
       recoverable: !!this.settings.file,
       emit: (event) => this.deliver(event),
+      onLimit: (seconds) => {
+        this.upstreamLimitSeconds = seconds;
+      },
     });
     this.segments.add(segment);
     this.currentSamples = 0;

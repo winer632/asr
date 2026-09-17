@@ -376,7 +376,9 @@ export function useRecorder() {
     r.timeout = setTimeout(() => {
       if (resources.current === r)
         fail('等待最终文字超时，已保留当前识别结果。');
-    }, 45_000);
+      // The hosted service needs tens of seconds to re-recognise a long tail
+      // segment from its WAV; the wait has to outlast that whole-file pass.
+    }, 75_000);
   };
   const copy = useCallback(async () => {
     try {

@@ -7,7 +7,7 @@ import type { AddressInfo } from 'node:net';
 import { WebSocketServer } from 'ws';
 import { rawText } from '../shared/raw-message.js';
 import { RecordingSession } from '../server/session.js';
-import { Capacity } from '../server/upstream.js';
+import { Capacity, resolveEndpoints } from '../server/upstream.js';
 import { RecordingArchive } from '../server/archive.js';
 import type { VadStream } from '../server/vad/model.js';
 import {
@@ -17,10 +17,10 @@ import {
   findLanguage,
 } from '../shared/languages.js';
 import http from 'node:http';
-import { transcribeFile } from '../server/transcribe.js';
+import { fileBudget, transcribeFile } from '../server/transcribe.js';
 
 // Collects the start message so the wire format can be asserted.
-async function startCollector() {
+async function startCollector(maxAudioSeconds?: number) {
   const server = new WebSocketServer({ port: 0, host: '127.0.0.1' });
   await new Promise<void>((resolve) => server.on('listening', resolve));
   const starts: Record<string, unknown>[] = [];
@@ -30,7 +30,13 @@ async function startCollector() {
       const event = JSON.parse(rawText(data)) as Record<string, unknown>;
       if (event.type === 'start') {
         starts.push(event);
-        ws.send(JSON.stringify({ type: 'started', chunk_seconds: 2 }));
+        ws.send(
+          JSON.stringify({
+            type: 'started',
+            chunk_seconds: 2,
+            ...(maxAudioSeconds ? { max_audio_seconds: maxAudioSeconds } : {}),
+          }),
+        );
       } else if (event.type === 'end')
         ws.send(
           JSON.stringify({ type: 'final', text: '文字', language: 'Chinese' }),
@@ -169,4 +175,86 @@ void test('only the declared languages can be locked', () => {
       (language) => language.code,
     ),
   );
+});
+
+// The hosted 2609 service lives under a path prefix, and `new URL(route, base)`
+// would silently drop it and point every request at the origin's root.
+void test('service routes are appended to the base path, not put in its place', () => {
+  const hosted =
+    'https://api-gai-volc.sensetime.com/agent-5o/signpost/v0/prod-agent-5o-sensenova-filabs-asr-v1';
+  for (const base of [hosted, hosted + '/', hosted + '/infer']) {
+    const { fileUrl, streamUrl, healthUrl } = resolveEndpoints(new URL(base));
+    assert.equal(fileUrl.toString(), hosted + '/infer');
+    assert.equal(
+      streamUrl.toString(),
+      hosted.replace('https:', 'wss:') + '/infer/stream',
+    );
+    assert.equal(healthUrl.toString(), hosted + '/health');
+  }
+  // The older office gateway has no prefix and speaks plain ws.
+  const office = resolveEndpoints(new URL('http://10.210.1.23:19003'));
+  assert.equal(office.fileUrl.toString(), 'http://10.210.1.23:19003/infer');
+  assert.equal(
+    office.streamUrl.toString(),
+    'ws://10.210.1.23:19003/infer/stream',
+  );
+  assert.equal(office.healthUrl.toString(), 'http://10.210.1.23:19003/health');
+});
+
+// 2609 says the per-session audio limit is whatever `started` reports, so a
+// node running a shorter bound must rotate segments earlier than the default.
+void test('segments rotate inside the audio limit the service announces', async () => {
+  const upstream = await startCollector(12);
+  const archive = new RecordingArchive(
+    mkdtempSync(path.join(tmpdir(), 'asr-limit-test-')),
+  );
+  let calls = 0;
+  const vad = {
+    decoder: { speaking: true, probability: 0.99, pauseFrames: 0 },
+    accept: async () => (++calls === 1 ? [{ type: 'start', sample: 0 }] : []),
+  } as unknown as VadStream;
+  const session = new RecordingSession(
+    vad,
+    {
+      url: upstream.url,
+      key: 'test-only',
+      capacity: new Capacity(8),
+      emit: () => {},
+    },
+    55,
+    archive,
+  );
+  try {
+    // 100 ms per frame: a 55-second bound would never rotate inside 12 seconds.
+    for (let n = 0; n < 90; n++) {
+      await session.accept(Buffer.alloc(3200, n % 251));
+      if (n === 10) await new Promise((resolve) => setTimeout(resolve, 150));
+    }
+    await session.stop();
+    // 12 s announced minus the 5 s margin: a cut at 7 s of audio.
+    assert.equal(upstream.starts.length, 2);
+  } finally {
+    session.cancel();
+    await upstream.close();
+  }
+});
+
+// The hosted service needs tens of seconds for a long segment, so the whole
+// budget has to follow the segment length and still fit the browser's wait.
+void test('the file pass budgets by segment length and stays inside the stop window', () => {
+  const short = fileBudget(3);
+  assert.equal(short.timeoutMs, 10_000);
+  assert.equal(short.attempts, 2);
+  const medium = fileBudget(15);
+  assert.equal(medium.timeoutMs, 15_000);
+  assert.equal(medium.attempts, 2);
+  // A 55-second segment measured 22–39 s on the hosted service.
+  const long = fileBudget(55);
+  assert.equal(long.timeoutMs, 40_000);
+  assert.equal(long.attempts, 1);
+  for (const seconds of [0, 1, 12, 30, 55, 60, 600]) {
+    const { timeoutMs, attempts } = fileBudget(seconds);
+    assert.ok(timeoutMs >= 10_000 && timeoutMs <= 40_000);
+    assert.ok(timeoutMs * attempts <= 45_000, seconds + 's exceeds the wait');
+  }
 });

@@ -2,6 +2,18 @@ import { rawText } from '../shared/raw-message.js';
 import WebSocket from 'ws';
 import { BYTES_PER_SECOND, type ServerEvent } from '../shared/protocol.js';
 
+// The 2609 service is mounted under a path prefix
+// (…/signpost/v0/prod-agent-5o-sensenova-filabs-asr-v1), so its routes are
+// appended to the configured base instead of replacing the base's own path.
+// A base quoted with /infer or /infer/stream already on it is accepted too,
+// because the document writes the file endpoint both ways.
+export function resolveEndpoints(base: URL) {
+  const prefix = base.pathname.replace(/\/(infer(\/stream)?)?\/*$/, '');
+  const at = (route: string) => new URL(prefix + route, base);
+  const streamUrl = at('/infer/stream');
+  streamUrl.protocol = base.protocol === 'https:' ? 'wss:' : 'ws:';
+  return { fileUrl: at('/infer'), streamUrl, healthUrl: at('/health') };
+}
 export class Capacity {
   active = 0;
   constructor(readonly limit = 8) {}
@@ -22,6 +34,9 @@ export interface UpstreamOptions {
   appId?: string;
   // Explicit language name; omitted for automatic detection.
   language?: string;
+  // Reports the per-session audio limit the service announces in `started`,
+  // so segments are rotated before whatever bound this node is running with.
+  onLimit?: (seconds: number) => void;
   capacity: Capacity;
   emit: (event: ServerEvent) => void;
   // Set when a finished segment is recognised again from its saved WAV, so a
@@ -89,6 +104,11 @@ export class AsrSegment {
       if (event.type === 'started') {
         clearTimeout(this.timer);
         this.ready = true;
+        if (
+          typeof event.max_audio_seconds === 'number' &&
+          event.max_audio_seconds > 0
+        )
+          options.onLimit?.(event.max_audio_seconds);
         for (const chunk of this.pending) ws.send(chunk);
         this.pending = [];
         this.pendingBytes = 0;
@@ -111,10 +131,16 @@ export class AsrSegment {
         });
         if (event.type === 'final') this.cleanup();
       } else if (event.type === 'error') {
+        const code =
+          typeof event.code === 'string' ? event.code : 'upstream_error';
         // Do not relay upstream internals or credentials to browser clients.
+        // A refused start is a configuration problem and will refuse every
+        // following segment too, so it is named instead of read as a glitch.
         this.fail(
-          typeof event.code === 'string' ? event.code : 'upstream_error',
-          '识别服务未能完成这段语音',
+          code,
+          code === 'unauthorized_app' || code === 'invalid_start'
+            ? '识别服务拒绝了这次会话，请检查 ASR_APP_ID 与服务地址配置'
+            : '识别服务未能完成这段语音',
         );
       }
     });

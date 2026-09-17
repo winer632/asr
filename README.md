@@ -79,23 +79,23 @@ WAV 为 16 kHz、单声道、PCM16 小端。每段 TXT 在收到最终识别后�
 
 ## 配置
 
-| 变量                             | 默认值                     | 作用                                               |
-| -------------------------------- | -------------------------- | -------------------------------------------------- |
-| `ASR_BASE_URL`                   | `http://10.210.1.23:19003` | 内网 ASR 服务地址                                  |
-| `ASR_API_KEY`                    | 无                         | 仅由 Node.js 服务读取                              |
-| `ASR_APP_ID`                     | 无                         | 设置后随流式 start 与文件请求一起发送，见下方说明  |
-| `VAD_MODEL_PATH`                 | `models/net.onnx`          | 用户提供的 VAD 模型                                |
-| `VAD_SILENCE_MS`                 | `600`                      | 停顿阈值，范围 300–2000 ms                         |
-| `VAD_SOFT_SPLIT_SECONDS`         | `12`                       | 长句收句的最短时长，`0` 关闭，其余取 5–55 s        |
-| `VAD_SOFT_SPLIT_PAUSE_MS`        | `200`                      | 长句收句所需的判定静音，范围 100–600 ms            |
-| `ASR_FILE_RECOGNITION`           | `1`                        | 分段结束后用整段音频重识别，取回标点并补救失败     |
-| `PAUSE_PUNCTUATION`              | `1`                        | 服务未给标点时，按测得的停顿补句末标点             |
-| `ASR_CONCURRENCY`                | `8`                        | 全服务上游活动会话上限，范围 1–8                   |
-| `MAX_CONNECTIONS`                | `8`                        | 浏览器连接上限                                     |
-| `HOST` / `PORT`                  | `127.0.0.1` / `5173`       | 监听地址与端口                                     |
-| `PUBLIC_ORIGIN`                  | 无                         | HTTPS 反向代理后的浏览器来源，包含外部端口（如有） |
-| `RECORDINGS_DIR`                 | `recordings`               | 音频、文字、清单保存目录                           |
-| `TLS_KEY_FILE` / `TLS_CERT_FILE` | 无                         | 配置后使用 HTTPS，需同时设置                       |
+| 变量                             | 默认值               | 作用                                               |
+| -------------------------------- | -------------------- | -------------------------------------------------- |
+| `ASR_BASE_URL`                   | 见 `.env.example`    | ASR 服务地址，服务路由拼在它的路径之后             |
+| `ASR_API_KEY`                    | 无                   | 仅由 Node.js 服务读取                              |
+| `ASR_APP_ID`                     | 无                   | 托管服务两个入口都必填，老网关必须留空，见下方说明 |
+| `VAD_MODEL_PATH`                 | `models/net.onnx`    | 用户提供的 VAD 模型                                |
+| `VAD_SILENCE_MS`                 | `600`                | 停顿阈值，范围 300–2000 ms                         |
+| `VAD_SOFT_SPLIT_SECONDS`         | `12`                 | 长句收句的最短时长，`0` 关闭，其余取 5–55 s        |
+| `VAD_SOFT_SPLIT_PAUSE_MS`        | `200`                | 长句收句所需的判定静音，范围 100–600 ms            |
+| `ASR_FILE_RECOGNITION`           | `1`                  | 分段结束后用整段音频重识别，取回标点并补救失败     |
+| `PAUSE_PUNCTUATION`              | `1`                  | 服务未给标点时，按测得的停顿补句末标点             |
+| `ASR_CONCURRENCY`                | `8`                  | 全服务上游活动会话上限，范围 1–8                   |
+| `MAX_CONNECTIONS`                | `8`                  | 浏览器连接上限                                     |
+| `HOST` / `PORT`                  | `127.0.0.1` / `5173` | 监听地址与端口                                     |
+| `PUBLIC_ORIGIN`                  | 无                   | HTTPS 反向代理后的浏览器来源，包含外部端口（如有） |
+| `RECORDINGS_DIR`                 | `recordings`         | 音频、文字、清单保存目录                           |
+| `TLS_KEY_FILE` / `TLS_CERT_FILE` | 无                   | 配置后使用 HTTPS，需同时设置                       |
 
 语种由浏览器每次录音时选择，不是服务端配置项。服务端只接受服务声明的六种语种，其余值直接拒绝，不会转发给上游。
 
@@ -104,9 +104,9 @@ WAV 为 16 kHz、单声道、PCM16 小端。每段 TXT 在收到最终识别后�
 - React + TypeScript 浏览器界面、AudioWorklet 实时采集、连续相位的抗混叠重采样。
 - TypeScript Node.js 服务运行 `onnxruntime-node`；读取原始 `net.onnx`，没有更换成其他 VAD。
 - 80 维 fbank 与原 C++ 前端对照；保留 25 ms 窗、10 ms 帧移、Povey 窗、预加重、原缓存预热与判定逻辑。网页停顿默认 600 ms，原工程默认 300 ms。
-- 预留音频避免检测启动延迟截断句首；ASR 会话在 55 秒前切换，低于服务声明的 60 秒上限。
+- 预留音频避免检测启动延迟截断句首；ASR 会话在 55 秒前切换，低于服务声明的 60 秒上限。若某个节点在 `started` 里给出更短的 `max_audio_seconds`，切换点自动跟随该值再留 5 秒余量。
 - 同一句讲满 12 秒后，在 VAD 判出的 200 ms 静音处收句；切点由模型给出，续接段用预留音频从切点接上，音频不重不漏。
-- 分段结束后把该段 WAV 再发一次 `POST /infer`，用整段上下文取回标点；流式段失败时同一次调用即是补救。
+- 分段结束后把该段 WAV 再发一次 `POST /infer`，用整段上下文取回标点；流式段失败时同一次调用即是补救。超时预算按该段音频时长计算，因为托管网关的整段识别耗时接近音频时长的一半。
 - 服务对整段也没给出标点时，按测得的停顿补一个句末标点：句中停顿用「，」，一句结束用「。」。`manifest.json` 中 `text` 始终是服务原样返回的文字，补的标点单独记在 `mark`。
 - 语种锁定在服务端按声明列表校验后，同时用于流式 `start` 和整段重识别；`manifest.json` 记录 `requestedLanguage`，文字稿标注“识别语种”。
 - partial 替换当前段暂定文字；final 固定该段，通过段 ID 关联，避免网络乱序导致文字错位。
@@ -114,7 +114,20 @@ WAV 为 16 kHz、单声道、PCM16 小端。每段 TXT 在收到最终识别后�
 - 同源 WebSocket 校验、有限缓冲、活动会话上限、握手及最终响应超时、断线与保存失败反馈。
 - 音频与文字保存在本地文件系统，不把 ASR key、录音、证书提交到仓库。
 
-`ASR_APP_ID` 默认不设置。SenseNova ASR 2609 文档要求正式环境在流式 `start` 和文件请求里带 `app_id`，但当前办公网网关 `10.210.1.23:19003` 的 `start` 是严格白名单，带上 `app_id` 会直接返回 `invalid_start`（文件接口则接受）。因此只有在确实要求该字段的节点上才设置它；文档描述的节点端口 `:8080` 在办公网不可达，未能实测。
+### 两套上游地址
+
+`ASR_API.docx`（2026-09-17）把服务迁到了托管网关，地址带路径前缀：
+
+- 公网 `https://api-gai-volc.sensetime.com/agent-5o/signpost/v0/prod-agent-5o-sensenova-filabs-asr-v1`
+- 内网 `https://api-gai-volc-internal.sensetime.com/agent-5o/signpost/v0/prod-agent-5o-sensenova-filabs-asr-v1`
+
+`/infer`、`/infer/stream`、`/health` 都拼在这个路径之后，不是拼在域名根上；`ASR_BASE_URL` 末尾带不带 `/infer` 都可以。托管服务的 `/health` 也要带 `Authorization`。
+
+托管服务**两个入口都必须带 `app_id`**：不带返回 `invalid_start: app_id is required`，带未授权的值返回 `unauthorized_app`（文件接口 HTTP 403，流式 close 1008）。app_id 向商汤语音组申请，填进 `ASR_APP_ID` 即可，默认已指向托管服务。
+
+老的办公网网关 `http://10.210.1.23:19003` 仍然可用且不需要 app_id，它的流式 `start` 是严格白名单，带上 `app_id` 会返回 `invalid_start`，所以切回它时 `ASR_APP_ID` 必须留空。`.env.example` 里两套配置都写了。
+
+托管网关整段重识别比办公网网关慢很多：7 秒音频 1.1–2.8 秒对 0.2 秒，57 秒音频 22.8/38.8 秒对 1.0 秒。因此整段重识别的超时按分段时长计算（10–40 秒，超过 20 秒只试一次），浏览器等待最终文字的窗口相应放宽到 75 秒。
 
 ## 验证
 
@@ -162,6 +175,9 @@ tests/                   自动验证与合成语音样本
 - 合成句内混语样本的 HTTP 结果完整，WS 漏掉开头普通话。远端留存策略及真实手机麦克风表现仍需额外证据。
 - 2026-09-15 复测标点，三段音频：30 秒连续口语普通话在 `/infer/stream` 全程无标点，同一文件发到 `POST /infer` 返回完整标点与分句；22 秒粤语连续口语两个接口都不给标点；34 秒清晰朗读的整句两个接口都给标点。证据在 [tests/evidence/streaming-punctuation.json](tests/evidence/streaming-punctuation.json)。
 - 2026-09-15 复测上游 2609 变更：显式语种从 3 种扩到 6 种（新增阿拉伯语、日语、韩语），流式与文件入口都接受全称或缩写、忽略大小写；日/韩/阿语自动识别均返回正确语种。`app_id` 与 `max_completion_tokens` 被流式 `start` 拒绝、被文件接口接受。原始记录在 [tests/evidence/upstream-2609.json](tests/evidence/upstream-2609.json)。
+- 2026-09-17 按新版 `ASR_API.docx` 迁移到托管网关：地址带路径前缀，`app_id` 在流式与文件两个入口都必填，`/health` 也要鉴权。拿到语音组签发的 app_id 后端到端跑通：流式 `started` 0.17 秒、`max_audio_seconds` 仍为 60、partial 每 2 秒累计下发、`end` 到 `final` 尾延迟 93 毫秒；文件接口自动识别与显式语种都正确。内网地址在本机不解析，公网地址可用。老网关 `10.210.1.23:19003` 同日复测仍可用且更快，留作注释备选。原始记录在 [tests/evidence/upstream-2609.json](tests/evidence/upstream-2609.json)。
+- 托管网关新增 `output_limit`：连续 51 秒不停顿的语音在第 36 秒返回 `{"type":"error","code":"output_limit"}`，该段改由整段重识别补回完整带标点文本，录音与文字都没有丢。老网关对应的边界是 60 秒的 `audio_limit`。
+- 英语自动识别退化在托管网关同样存在（`english_1`/`english_2` 自动检测仍返回 Chinese，显式传 `en` 正确），两个入口背后是同一个模型。
 - 英语自动识别退化的临时规避：在页面上把识别语种锁定为“英语”。实测锁定后与直接传 `language=en` 结果一致，文字和语种都正确。
 - 2026-09-15 复测发现英语自动识别退化：`english_1.wav` 与 `english_2.wav` 自动检测都返回 `language: "Chinese"`，2026-09-09 的记录是 English；`english_1` 还把 “please turn” 识别成“请转”。显式传 `language=en` 时两条的语种和文字都正确，普通话与粤语样本的自动检测没有变化，因此问题在自动语种识别，不在英语识别本身。绕开本应用直接调用上游同样如此，`npm run test:live` 的英语语种断言目前会失败，已向服务方反馈。
 

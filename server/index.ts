@@ -4,7 +4,7 @@ import { readFileSync, existsSync, createReadStream, statSync } from 'node:fs';
 import path from 'node:path';
 import WebSocket, { WebSocketServer } from 'ws';
 import { VadFactory } from './vad/model.js';
-import { Capacity } from './upstream.js';
+import { Capacity, resolveEndpoints } from './upstream.js';
 import { RecordingSession } from './session.js';
 import type { ServerEvent } from '../shared/protocol.js';
 import { deleteRecordings, deletionIds } from './recordings.js';
@@ -56,12 +56,11 @@ if (
   throw new Error(
     'ASR_BASE_URL must be an HTTP(S) origin without credentials.',
   );
-const streamUrl = new URL('/infer/stream', baseUrl);
-streamUrl.protocol = baseUrl.protocol === 'https:' ? 'wss:' : 'ws:';
-const fileUrl = new URL('/infer', baseUrl);
+const { fileUrl, streamUrl, healthUrl } = resolveEndpoints(baseUrl);
 const key = process.env.ASR_API_KEY || '';
-// Required by SenseNova ASR 2609 in production. The office gateway rejects it,
-// so it stays unset there and is only added to requests once configured.
+// The 2609 hosted service requires app_id on both entry points and answers
+// unauthorized_app without it. The older office gateway rejects the field, so
+// it stays unset there and is only added to requests once configured.
 const appId = (process.env.ASR_APP_ID || '').trim();
 if (appId && !/^[A-Za-z0-9_-]{1,128}$/.test(appId))
   throw new Error('ASR_APP_ID must be 1–128 letters, digits, _ or -.');
@@ -282,7 +281,10 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
   if (url.pathname === '/api/status') {
     let upstream = false;
     try {
-      const response = await fetch(new URL('/health', baseUrl), {
+      // The hosted service authenticates /health as well, where the older
+      // office gateway served it open.
+      const response = await fetch(healthUrl, {
+        headers: key ? { Authorization: 'Bearer ' + key } : undefined,
         signal: AbortSignal.timeout(3000),
       });
       const data = (await response.json()) as {

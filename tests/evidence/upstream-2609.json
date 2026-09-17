@@ -1,132 +1,255 @@
 {
- "testedAt": "2026-09-15T09:21:57.904Z",
- "note": "Re-probe after the SenseNova ASR 2609 update, against the office gateway http://10.210.1.23:19003. The 2609 document describes the node service on port 8080; that port is not reachable from the office network, so app_id and max_completion_tokens could only be checked against this gateway.",
- "languagesEndpoint": {
-  "languages": [
-   "Chinese",
-   "English",
-   "Cantonese",
-   "Arabic",
-   "Japanese",
-   "Korean"
-  ],
-  "auto_detect": true
- },
- "streamingStartFields": {
-  "baseline": "started",
-  "language_full_name": "started",
-  "language_short_code": "started",
-  "language_padded_uppercase": "started",
-  "language_null": "started",
-  "language_unsupported": "error:invalid_language",
-  "language_auto": "error:invalid_language",
-  "app_id": "error:invalid_start",
-  "max_completion_tokens": "error:invalid_start"
- },
- "fileFormFields": {
-  "baseline": 200,
-  "language_full_name": 200,
-  "language_short_code": 200,
-  "language_unsupported": 400,
-  "app_id": 200,
-  "max_completion_tokens": 200
- },
- "automaticDetection": {
-  "japanese": {
-   "synthesized_with": "macOS say -v Kyoko",
-   "language": "Japanese",
-   "text": "こんにちは、今日の会議は午後三時に変更になりました。十分前に到着してください。"
+  "testedAt": "2026-09-15T09:21:57.904Z",
+  "note": "Re-probe after the SenseNova ASR 2609 update, against the office gateway http://10.210.1.23:19003. The 2609 document describes the node service on port 8080; that port is not reachable from the office network, so app_id and max_completion_tokens could only be checked against this gateway.",
+  "languagesEndpoint": {
+    "languages": [
+      "Chinese",
+      "English",
+      "Cantonese",
+      "Arabic",
+      "Japanese",
+      "Korean"
+    ],
+    "auto_detect": true
   },
-  "korean": {
-   "synthesized_with": "macOS say -v Yuna",
-   "language": "Korean",
-   "text": "안녕하세요, 오늘 회의는 오후 세시로 변경되었습니다. 십분 전에 도착해 주세요."
+  "streamingStartFields": {
+    "baseline": "started",
+    "language_full_name": "started",
+    "language_short_code": "started",
+    "language_padded_uppercase": "started",
+    "language_null": "started",
+    "language_unsupported": "error:invalid_language",
+    "language_auto": "error:invalid_language",
+    "app_id": "error:invalid_start",
+    "max_completion_tokens": "error:invalid_start"
   },
-  "arabic": {
-   "synthesized_with": "macOS say -v Majed",
-   "language": "Arabic",
-   "text": "مرحباً تم تغيير موعد الاجتماع إلى الساعة الثالثة بعد الظهر يرجى الحضور قبل عشر دقائق"
+  "fileFormFields": {
+    "baseline": 200,
+    "language_full_name": 200,
+    "language_short_code": 200,
+    "language_unsupported": 400,
+    "app_id": 200,
+    "max_completion_tokens": 200
+  },
+  "automaticDetection": {
+    "japanese": {
+      "synthesized_with": "macOS say -v Kyoko",
+      "language": "Japanese",
+      "text": "こんにちは、今日の会議は午後三時に変更になりました。十分前に到着してください。"
+    },
+    "korean": {
+      "synthesized_with": "macOS say -v Yuna",
+      "language": "Korean",
+      "text": "안녕하세요, 오늘 회의는 오후 세시로 변경되었습니다. 십분 전에 도착해 주세요."
+    },
+    "arabic": {
+      "synthesized_with": "macOS say -v Majed",
+      "language": "Arabic",
+      "text": "مرحباً تم تغيير موعد الاجتماع إلى الساعة الثالثة بعد الظهر يرجى الحضور قبل عشر دقائق"
+    }
+  },
+  "languageIdentification": {
+    "note": "Both English samples are now labelled Chinese under automatic detection; on 2026-09-09 the same files returned English. Naming the language explicitly restores both the label and the words, so the English acoustic path still works and the regression is in automatic identification.",
+    "results": [
+      {
+        "sample": "tests/fixtures/english_1.wav",
+        "archived_2026_09_09": {
+          "language": "English",
+          "text": "Hello. This is a test of automatic speech recognition. Please turn my voice into text."
+        },
+        "automatic": {
+          "status": 200,
+          "language": "Chinese",
+          "text": "Hello, this is a test of automatic speech recognition. 请转 my voice into text.",
+          "request_id": "97e85a84-0889-4521-92e3-15f667b4928e"
+        },
+        "explicit": {
+          "status": 200,
+          "language": "English",
+          "text": "Hello, this is a test of automatic speech recognition. Please turn my voice into text.",
+          "request_id": "102d33d1-15d4-4efc-aeb5-447fec16faef"
+        }
+      },
+      {
+        "sample": "tests/fixtures/english_2.wav",
+        "archived_2026_09_09": {
+          "language": "English",
+          "text": "The meeting has moved to three o'clock tomorrow afternoon. Please arrive ten minutes early."
+        },
+        "automatic": {
+          "status": 200,
+          "language": "Chinese",
+          "text": "The meeting has moved to three o'clock tomorrow afternoon, please arrive ten minutes early.",
+          "request_id": "bb2dc976-d30a-40fe-99f0-ac073364eeae"
+        },
+        "explicit": {
+          "status": 200,
+          "language": "English",
+          "text": "The meeting has moved to three o'clock tomorrow afternoon, please arrive ten minutes early.",
+          "request_id": "b4e2a5cf-a999-4330-b108-de56fa4bfa40"
+        }
+      },
+      {
+        "sample": "tests/fixtures/mandarin_1.wav",
+        "archived_2026_09_09": {
+          "language": "Chinese",
+          "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。"
+        },
+        "automatic": {
+          "status": 200,
+          "language": "Chinese",
+          "text": "你好今天我们测试普通话语音识别请把我说的话转换成文字",
+          "request_id": "78be2a85-2997-4e96-8acb-ee675d724fc6"
+        },
+        "explicit": {
+          "status": 200,
+          "language": "Chinese",
+          "text": "你好今天我们测试普通话语音识别请把我说的话转换成文字",
+          "request_id": "d3be0991-0fd1-4670-b2e0-1fe150782f8c"
+        }
+      },
+      {
+        "sample": "tests/fixtures/cantonese_1.wav",
+        "archived_2026_09_09": {
+          "language": "Cantonese",
+          "text": "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？"
+        },
+        "automatic": {
+          "status": 200,
+          "language": "Cantonese",
+          "text": "你好我而家讲紧广东话今日天气几好我想出去饮茶你有冇时间一齐去下",
+          "request_id": "7c0f00e8-12fe-40c7-a85f-e573c2c2b2b2"
+        },
+        "explicit": {
+          "status": 200,
+          "language": "Cantonese",
+          "text": "你好我而家讲紧广东话今日天气几好我想出去饮茶你有冇时间一齐去下",
+          "request_id": "ce71b741-3f04-4fc1-b7d1-26b7eb8dba1b"
+        }
+      }
+    ]
+  },
+  "recheck": {
+    "testedAt": "2026-09-17T09:50:00.000Z",
+    "note": "Two documents were compared on 2026-09-17. 'SenseNova ASR 2609 流式.docx' is byte-identical to the 2026-09-15 reading and the office gateway still answers exactly as recorded then. The new 'ASR_API.docx' moves the service to a hosted gateway under a path prefix and makes app_id mandatory on both entry points; that migration is recorded under hostedService below.",
+    "languagesEndpoint": {
+      "languages": [
+        "Chinese",
+        "English",
+        "Cantonese",
+        "Arabic",
+        "Japanese",
+        "Korean"
+      ],
+      "auto_detect": true
+    },
+    "streamingStartFields": {
+      "baseline": "started chunk_seconds=2 max_audio_seconds=60",
+      "app_id": "error:invalid_start",
+      "max_completion_tokens": "error:invalid_start",
+      "app_id+max_completion_tokens": "error:invalid_start",
+      "language_full_name": "started",
+      "language_short_code": "started",
+      "language_null": "started",
+      "language_empty": "started",
+      "language_japanese": "started",
+      "language_arabic": "started",
+      "language_korean": "started"
+    },
+    "languageIdentification": {
+      "note": "The English automatic-detection regression first recorded on 2026-09-15 is still present; naming the language still returns the right label and the right words.",
+      "english_1_automatic": {
+        "language": "Chinese",
+        "text": "Hello, this is a test of automatic speech recognition. 请转 my voice into text."
+      },
+      "english_1_explicit": {
+        "language": "English",
+        "text": "Hello, this is a test of automatic speech recognition. Please turn my voice into text."
+      },
+      "english_2_automatic": {
+        "language": "Chinese",
+        "text": "The meeting has moved to three o'clock tomorrow afternoon, please arrive ten minutes early."
+      },
+      "english_2_explicit": {
+        "language": "English",
+        "text": "The meeting has moved to three o'clock tomorrow afternoon, please arrive ten minutes early."
+      }
+    },
+    "localDeployment": {
+      "note": "npm run build, then npm start on 127.0.0.1:5173. End-to-end through the browser WebSocket at real-time speed with 100 ms / 3200-byte packets. Saved audio matched the input byte for byte in every run. Re-run against the hosted service after the migration with the same results plus a 51-second continuous segment.",
+      "runs": [
+        {
+          "sample": "mandarin_1",
+          "lock": "auto",
+          "languages": ["Chinese", "Chinese"],
+          "text": "你好今天我们测试普通话语音识别请把我说的话转换成文字。",
+          "firstPartialSeconds": 3.07,
+          "segments": 1,
+          "warnings": []
+        },
+        {
+          "sample": "cantonese_1",
+          "lock": "auto",
+          "languages": ["Cantonese", "Cantonese"],
+          "text": "你好我而家讲紧广东话今日天气几好我想出去饮茶你有冇时间一齐去下。",
+          "firstPartialSeconds": 3.09,
+          "segments": 1,
+          "warnings": []
+        },
+        {
+          "sample": "english_1",
+          "lock": "English",
+          "languages": ["English", "English"],
+          "text": "Hello, this is a test of automatic speech recognition. Please turn my voice into text.",
+          "firstPartialSeconds": 3.21,
+          "segments": 1,
+          "warnings": []
+        },
+        {
+          "sample": "english_1",
+          "lock": "auto",
+          "languages": ["Chinese", "Chinese"],
+          "text": "Hello, this is a test of automatic speech recognition. 请转 my voice into text.",
+          "firstPartialSeconds": 7.89,
+          "segments": 1,
+          "warnings": []
+        }
+      ]
+    },
+    "hostedService": {
+      "document": "ASR_API.docx, 2026-09-17",
+      "publicBase": "https://api-gai-volc.sensetime.com/agent-5o/signpost/v0/prod-agent-5o-sensenova-filabs-asr-v1",
+      "intranetBase": "https://api-gai-volc-internal.sensetime.com/agent-5o/signpost/v0/prod-agent-5o-sensenova-filabs-asr-v1",
+      "intranetReachable": false,
+      "intranetNote": "No DNS resolution from this machine; the request timed out after 25 s.",
+      "publicProbes": {
+        "GET /health without Authorization": "401",
+        "GET /health with Authorization": "200 {status: ok, model_loaded: true}",
+        "GET /languages with Authorization": "200 [Chinese, English, Cantonese, Arabic, Japanese, Korean] auto_detect true",
+        "POST /infer without app_id": "400 app_id field is required",
+        "POST /infer with unregistered app_id": "403 app_id is not authorized",
+        "WS start without app_id": "error invalid_start 'app_id is required', close 1008",
+        "WS start with unregistered app_id": "error unauthorized_app 'app_id is not authorized', close 1008",
+        "POST /infer with the issued app_id": "200, correct text; language=Chinese on auto, Cantonese and English when named",
+        "WS start with the issued app_id": "started chunk_seconds=2 max_audio_seconds=60, partials every ~2 s, final; tail latency 93 ms"
+      },
+      "appIdValuesTried": ["test_app", "abg-web", "asr", "sensenova", "ceibs"],
+      "conclusion": "With the issued app_id the hosted service works end to end for streaming and file recognition. It stays the default; the office gateway remains as a commented fallback because it is much faster but intranet-only.",
+      "appId": "Issued by the speech group on 2026-09-17 and verified end to end.",
+      "latency": {
+        "note": "The hosted gateway is far slower than the office node on the whole-file pass, which is what forced the file budget to follow segment length.",
+        "file_7s_clip": {
+          "hosted": "1.1–2.8 s",
+          "officeGateway": "0.20–0.22 s"
+        },
+        "file_57s_clip": {
+          "hosted": "22.8 s and 38.8 s",
+          "officeGateway": "1.0–1.1 s"
+        },
+        "streaming_first_partial": "~2.1 s after audio starts; tail latency 93 ms"
+      },
+      "outputLimit": "A 51-second stretch of continuous speech with no pause returned {type: error, code: output_limit} at 36 s of audio. The segment's saved WAV was re-recognised through /infer and produced the full punctuated text, so the recording and the transcript both survived. The office gateway's comparable bound was audio_limit at 60 s.",
+      "languageIdentification": "The English automatic-detection regression is present on the hosted service too: english_1 and english_2 both come back as Chinese on auto and correct when named. It is the same model behind both gateways."
+    }
   }
- },
- "languageIdentification": {
-  "note": "Both English samples are now labelled Chinese under automatic detection; on 2026-09-09 the same files returned English. Naming the language explicitly restores both the label and the words, so the English acoustic path still works and the regression is in automatic identification.",
-  "results": [
-   {
-    "sample": "tests/fixtures/english_1.wav",
-    "archived_2026_09_09": {
-     "language": "English",
-     "text": "Hello. This is a test of automatic speech recognition. Please turn my voice into text."
-    },
-    "automatic": {
-     "status": 200,
-     "language": "Chinese",
-     "text": "Hello, this is a test of automatic speech recognition. 请转 my voice into text.",
-     "request_id": "97e85a84-0889-4521-92e3-15f667b4928e"
-    },
-    "explicit": {
-     "status": 200,
-     "language": "English",
-     "text": "Hello, this is a test of automatic speech recognition. Please turn my voice into text.",
-     "request_id": "102d33d1-15d4-4efc-aeb5-447fec16faef"
-    }
-   },
-   {
-    "sample": "tests/fixtures/english_2.wav",
-    "archived_2026_09_09": {
-     "language": "English",
-     "text": "The meeting has moved to three o'clock tomorrow afternoon. Please arrive ten minutes early."
-    },
-    "automatic": {
-     "status": 200,
-     "language": "Chinese",
-     "text": "The meeting has moved to three o'clock tomorrow afternoon, please arrive ten minutes early.",
-     "request_id": "bb2dc976-d30a-40fe-99f0-ac073364eeae"
-    },
-    "explicit": {
-     "status": 200,
-     "language": "English",
-     "text": "The meeting has moved to three o'clock tomorrow afternoon, please arrive ten minutes early.",
-     "request_id": "b4e2a5cf-a999-4330-b108-de56fa4bfa40"
-    }
-   },
-   {
-    "sample": "tests/fixtures/mandarin_1.wav",
-    "archived_2026_09_09": {
-     "language": "Chinese",
-     "text": "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。"
-    },
-    "automatic": {
-     "status": 200,
-     "language": "Chinese",
-     "text": "你好今天我们测试普通话语音识别请把我说的话转换成文字",
-     "request_id": "78be2a85-2997-4e96-8acb-ee675d724fc6"
-    },
-    "explicit": {
-     "status": 200,
-     "language": "Chinese",
-     "text": "你好今天我们测试普通话语音识别请把我说的话转换成文字",
-     "request_id": "d3be0991-0fd1-4670-b2e0-1fe150782f8c"
-    }
-   },
-   {
-    "sample": "tests/fixtures/cantonese_1.wav",
-    "archived_2026_09_09": {
-     "language": "Cantonese",
-     "text": "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？"
-    },
-    "automatic": {
-     "status": 200,
-     "language": "Cantonese",
-     "text": "你好我而家讲紧广东话今日天气几好我想出去饮茶你有冇时间一齐去下",
-     "request_id": "7c0f00e8-12fe-40c7-a85f-e573c2c2b2b2"
-    },
-    "explicit": {
-     "status": 200,
-     "language": "Cantonese",
-     "text": "你好我而家讲紧广东话今日天气几好我想出去饮茶你有冇时间一齐去下",
-     "request_id": "ce71b741-3f04-4fc1-b7d1-26b7eb8dba1b"
-    }
-   }
-  ]
- }
 }

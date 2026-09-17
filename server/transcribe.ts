@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { BYTES_PER_SECOND } from '../shared/protocol.js';
 
 export interface FileTranscript {
   text: string;
@@ -11,8 +12,23 @@ export interface FileTranscriberOptions {
   key: string;
   appId?: string;
   language?: string;
+  // Both default to the segment's own length; see fileBudget below.
   timeoutMs?: number;
   attempts?: number;
+}
+// The hosted 2609 service decodes a whole segment in roughly half to three
+// quarters of its audio duration, where the office gateway answered a
+// 55-second segment in about a second. A fixed 10-second budget would drop
+// the punctuation pass for every long segment on the hosted service, so the
+// budget follows the segment length. Everything has to land inside the
+// browser's stop window, so a segment large enough to need more than 20
+// seconds is given one attempt rather than two.
+export function fileBudget(audioSeconds: number) {
+  const timeoutMs = Math.min(
+    40_000,
+    Math.max(10_000, Math.round(audioSeconds * 1000)),
+  );
+  return { timeoutMs, attempts: timeoutMs > 20_000 ? 1 : 2 };
 }
 // The streaming pass decodes 2-second chunks and frequently returns text with
 // no punctuation at all. The same audio sent as a file is decoded with full
@@ -23,7 +39,6 @@ export async function transcribeFile(
   filename: string,
   signal?: AbortSignal,
 ): Promise<FileTranscript | undefined> {
-  const attempts = options.attempts ?? 2;
   let audio: Buffer;
   try {
     audio = await readFile(filename);
@@ -31,6 +46,8 @@ export async function transcribeFile(
     return undefined;
   }
   if (audio.length <= 44) return undefined;
+  const budget = fileBudget((audio.length - 44) / BYTES_PER_SECOND);
+  const attempts = options.attempts ?? budget.attempts;
   for (let attempt = 0; attempt < attempts; attempt++) {
     if (signal?.aborted) return undefined;
     if (attempt) await delay(400 * attempt, signal);
@@ -49,8 +66,8 @@ export async function transcribeFile(
         headers: { Authorization: 'Bearer ' + options.key },
         body,
         signal: AbortSignal.any([
-          // Two attempts must still fit inside the browser's stop timeout.
-          AbortSignal.timeout(options.timeoutMs ?? 10_000),
+          // Every attempt must still fit inside the browser's stop timeout.
+          AbortSignal.timeout(options.timeoutMs ?? budget.timeoutMs),
           ...(signal ? [signal] : []),
         ]),
       });
