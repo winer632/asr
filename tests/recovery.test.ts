@@ -30,7 +30,7 @@ async function flakyStream() {
           return;
         }
         ws.send(JSON.stringify({ type: 'started', chunk_seconds: 2 }));
-      } else if (event.type === 'end')
+      } else if (event.type === 'end') {
         ws.send(
           JSON.stringify({
             type: 'final',
@@ -38,6 +38,8 @@ async function flakyStream() {
             language: 'Chinese',
           }),
         );
+        ws.close(1000);
+      }
     });
   });
   return {

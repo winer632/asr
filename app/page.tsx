@@ -249,6 +249,22 @@ export default function Home() {
                   ))}
                 </NativeSelect>
               </label>
+              <label className="language-choice" htmlFor="tradition-choice">
+                <span>文字输出</span>
+                <NativeSelect
+                  id="tradition-choice"
+                  value={String(r.tradition)}
+                  disabled={active || busy}
+                  onChange={(event) =>
+                    r.setTradition(event.target.value === 'true')
+                  }
+                >
+                  <NativeSelectOption value="false">
+                    默认文字
+                  </NativeSelectOption>
+                  <NativeSelectOption value="true">繁体中文</NativeSelectOption>
+                </NativeSelect>
+              </label>
               <span>{locked ? '已锁定语种' : '自动检测语种'}</span>
               <strong>
                 {locked

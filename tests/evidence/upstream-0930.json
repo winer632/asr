@@ -1,0 +1,154 @@
+{
+  "interface": "SenseNova ASR 0930",
+  "documentUpdatedAt": "2026-10-10",
+  "testedAt": "2026-10-10T09:37:19.510Z",
+  "scope": "Public production upstream through an isolated local application; repository synthetic audio fixtures. No overall accuracy claim.",
+  "directPublicStream": {
+    "sample": "cantonese_1 + 1.5 seconds silence + cantonese_2 + 1.5 seconds silence",
+    "inputSeconds": 18.4636875,
+    "options": {
+      "language": "Cantonese",
+      "server_vad": true,
+      "vad_interval": 800,
+      "tradition": true,
+      "gain": 1
+    },
+    "finals": [
+      {
+        "start_audio_seconds": 0.03,
+        "audio_seconds": 8.51,
+        "text": "你好，我而家講緊廣東話。今日天氣幾好，我想出去飲茶，你有冇時間一齊去下？"
+      },
+      {
+        "start_audio_seconds": 10.04,
+        "audio_seconds": 16.99,
+        "text": "唔該，幫我睇下呢個網頁可唔可以一路錄音，一路將我講嘅嘢變成文字？"
+      }
+    ],
+    "normalClose": true
+  },
+  "observedSequenceReuse": {
+    "sample": "english_1 saved 6.12 second VAD segment",
+    "lastPartialSequence": 6,
+    "finalSequence": 6,
+    "finalAudioSeconds": 5.4,
+    "fix": "Deduplicate final sequences independently from partial sequences."
+  },
+  "application": [
+    {
+      "name": "english_1",
+      "inputSeconds": 7.4065,
+      "options": {},
+      "finalLanguages": [
+        "English"
+      ],
+      "finalTexts": [
+        "Hello, this is a test of automatic speech recognition. Please turn my voice into text.",
+        "Hello, this is a test of automatic speech recognition. Please turn my voice into text."
+      ],
+      "savedPairs": 1,
+      "exactFullAudioMatch": true,
+      "warnings": [],
+      "firstPartialSeconds": 3.7748000000000004
+    },
+    {
+      "name": "mandarin_1",
+      "inputSeconds": 8.3570625,
+      "options": {},
+      "finalLanguages": [
+        "Chinese"
+      ],
+      "finalTexts": [
+        "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+        "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。"
+      ],
+      "savedPairs": 1,
+      "exactFullAudioMatch": true,
+      "warnings": [],
+      "firstPartialSeconds": 3.8291999999999997
+    },
+    {
+      "name": "cantonese_1",
+      "inputSeconds": 10.5205,
+      "options": {},
+      "finalLanguages": [
+        "Cantonese"
+      ],
+      "finalTexts": [
+        "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？",
+        "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？"
+      ],
+      "savedPairs": 1,
+      "exactFullAudioMatch": true,
+      "warnings": [],
+      "firstPartialSeconds": 3.7912
+    },
+    {
+      "name": "cantonese_default",
+      "inputSeconds": 10.5205,
+      "options": {
+        "language": "Cantonese",
+        "tradition": false
+      },
+      "finalLanguages": [
+        "Cantonese"
+      ],
+      "finalTexts": [
+        "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？",
+        "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？"
+      ],
+      "savedPairs": 1,
+      "exactFullAudioMatch": true,
+      "warnings": [],
+      "firstPartialSeconds": 3.7414
+    },
+    {
+      "name": "cantonese_traditional",
+      "inputSeconds": 10.5205,
+      "options": {
+        "language": "Cantonese",
+        "tradition": true
+      },
+      "finalLanguages": [
+        "Cantonese"
+      ],
+      "finalTexts": [
+        "你好，我而家講緊廣東話。今日天氣幾好，我想出去飲茶，你有冇時間一齊去下？",
+        "你好，我而家講緊廣東話。今日天氣幾好，我想出去飲茶，你有冇時間一齊去下？"
+      ],
+      "savedPairs": 1,
+      "exactFullAudioMatch": true,
+      "warnings": [],
+      "firstPartialSeconds": 3.8522
+    },
+    {
+      "name": "continuous_language_switch",
+      "inputSeconds": 23.324,
+      "options": {},
+      "finalLanguages": [
+        "Chinese",
+        "Cantonese",
+        "English"
+      ],
+      "finalTexts": [
+        "会议改到明天下午三点，请提前十分钟到场。",
+        "会议改到明天下午三点，请提前十分钟到场。",
+        "唔该，帮我睇下呢个网页可唔可以一路录音，一路将我讲嘅嘢变成文字？",
+        "唔该帮我睇下呢个网页可唔可以一路录音，一路将我讲嘅嘢变成文字？",
+        "The meeting has moved to three o'clock to morrow afternoon. Please arrive ten minutes early.",
+        "The meeting has moved to three o'clock to morrow afternoon. Please arrive ten minutes early."
+      ],
+      "savedPairs": 3,
+      "exactFullAudioMatch": true,
+      "warnings": [],
+      "firstPartialSeconds": 3.8341999999999996
+    }
+  ],
+  "checks": {
+    "unitTests": 35,
+    "typecheck": true,
+    "lint": true,
+    "productionBuild": true
+  },
+  "limits": "Other file containers, long-duration endurance and real mobile microphone capture were not retested."
+}

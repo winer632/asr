@@ -39,6 +39,7 @@ export interface SavedRecording {
   endedAt?: string;
   // Language the browser locked for this recording; empty means automatic.
   requestedLanguage?: string;
+  requestedTradition?: boolean;
   status: 'recording' | 'complete' | 'interrupted';
   samples: number;
   audioFile: string;
@@ -98,7 +99,11 @@ export class RecordingArchive {
   private full: WavWriter;
   private writers = new Map<string, WavWriter>();
   private finished = false;
-  constructor(root: string, requestedLanguage = '') {
+  constructor(
+    root: string,
+    requestedLanguage = '',
+    requestedTradition = false,
+  ) {
     const startedAt = new Date().toISOString();
     const id = startedAt.replace(/[:.]/g, '-') + '-' + randomUUID().slice(0, 8);
     this.directory = path.join(root, id);
@@ -108,6 +113,7 @@ export class RecordingArchive {
     });
     this.full = new WavWriter(path.join(this.directory, 'recording.wav'));
     this.metadata = {
+      requestedTradition,
       id,
       startedAt,
       ...(requestedLanguage ? { requestedLanguage } : {}),

@@ -37,10 +37,12 @@ async function startCollector(maxAudioSeconds?: number) {
             ...(maxAudioSeconds ? { max_audio_seconds: maxAudioSeconds } : {}),
           }),
         );
-      } else if (event.type === 'end')
+      } else if (event.type === 'end') {
         ws.send(
           JSON.stringify({ type: 'final', text: '文字', language: 'Chinese' }),
         );
+        ws.close(1000);
+      }
     });
   });
   return {
@@ -52,7 +54,9 @@ async function startCollector(maxAudioSeconds?: number) {
     },
   };
 }
-async function recordOnce(extra: { appId?: string; language?: string } = {}) {
+async function recordOnce(
+  extra: { appId?: string; language?: string; tradition?: boolean } = {},
+) {
   const upstream = await startCollector();
   const archive = new RecordingArchive(
     mkdtempSync(path.join(tmpdir(), 'asr-start-test-')),
@@ -108,25 +112,34 @@ void test('the declared languages match the service and resolve by name, code an
   assert.equal(findLanguage('Klingon'), undefined);
 });
 
-void test('app_id is sent only once configured, because the gateway rejects unknown start fields', async () => {
+void test('0930 start sends VAD defaults and a configured app_id', async () => {
   const withoutId = await recordOnce();
   assert.equal(withoutId.length, 1);
   assert.deepEqual(Object.keys(withoutId[0]).sort(), [
     'channels',
     'format',
+    'gain',
     'sample_rate',
+    'server_vad',
     'session_id',
+    'tradition',
     'type',
+    'vad_interval',
   ]);
   const withId = await recordOnce({ appId: 'office-app' });
   assert.equal(withId[0].app_id, 'office-app');
+  assert.equal(withId[0].server_vad, true);
+  assert.equal(withId[0].vad_interval, 800);
+  assert.equal(withId[0].tradition, false);
+  assert.equal(withId[0].gain, 1);
 });
 
 void test('a locked language reaches both the streaming start and the file pass', async () => {
   const automatic = await recordOnce();
   assert.equal('language' in automatic[0], false);
-  const locked = await recordOnce({ language: 'Cantonese' });
+  const locked = await recordOnce({ language: 'Cantonese', tradition: true });
   assert.equal(locked[0].language, 'Cantonese');
+  assert.equal(locked[0].tradition, true);
 
   let received = '';
   const server = http.createServer((request, response) => {
@@ -151,12 +164,14 @@ void test('a locked language reaches both the streaming start and the file pass'
         url: 'http://127.0.0.1:' + port + '/infer',
         key: 'test-only',
         language: 'Cantonese',
+        tradition: true,
       },
       wav,
     );
     assert.equal(result?.language, 'Cantonese');
     assert.match(received, /name="language"/);
     assert.match(received, /Cantonese/);
+    assert.match(received, /name="tradition"\r\n\r\ntrue/);
   } finally {
     await new Promise<void>((resolve) => server.close(() => resolve()));
   }

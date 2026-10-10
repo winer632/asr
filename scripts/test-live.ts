@@ -18,7 +18,8 @@ try {
 } catch {
   /* CI can inject the key. */
 }
-if (!process.env.ASR_API_KEY)
+const externalBase = process.env.ASR_TEST_APP_URL;
+if (!externalBase && !process.env.ASR_API_KEY)
   throw new Error('ASR_API_KEY is required for live ASR validation.');
 const reservation = net.createServer();
 reservation.listen(0, '127.0.0.1');
@@ -26,25 +27,27 @@ await once(reservation, 'listening');
 const port = (reservation.address() as net.AddressInfo).port;
 await new Promise<void>((resolve) => reservation.close(() => resolve()));
 const destination = mkdtempSync(path.join(tmpdir(), 'asr-live-validation-'));
-const server = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
-  env: {
-    ...process.env,
-    PORT: String(port),
-    HOST: '127.0.0.1',
-    RECORDINGS_DIR: destination,
-    TLS_KEY_FILE: '',
-    TLS_CERT_FILE: '',
-  },
-  stdio: ['ignore', 'pipe', 'pipe'],
-});
+const server = externalBase
+  ? undefined
+  : spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
+      env: {
+        ...process.env,
+        PORT: String(port),
+        HOST: '127.0.0.1',
+        RECORDINGS_DIR: destination,
+        TLS_KEY_FILE: '',
+        TLS_CERT_FILE: '',
+      },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
 let serverLog = '';
-server.stdout.on('data', (b) => {
+server?.stdout.on('data', (b) => {
   serverLog += b.toString();
 });
-server.stderr.on('data', (b) => {
+server?.stderr.on('data', (b) => {
   serverLog += b.toString();
 });
-const base = 'http://127.0.0.1:' + port;
+const base = (externalBase || 'http://127.0.0.1:' + port).replace(/\/$/, '');
 const results: unknown[] = [];
 async function downloadBytes(url: string): Promise<Buffer> {
   const response = await fetch(url);
@@ -52,9 +55,14 @@ async function downloadBytes(url: string): Promise<Buffer> {
   const data: ArrayBuffer = await response.arrayBuffer();
   return Buffer.from(data);
 }
-async function run(name: string, pcm: Buffer, expectedLanguages: string[]) {
-  const ws = new WebSocket(base.replace('http:', 'ws:') + '/api/live', {
-    origin: base,
+async function run(
+  name: string,
+  pcm: Buffer,
+  expectedLanguages: string[],
+  options: { language?: string; tradition?: boolean } = {},
+) {
+  const ws = new WebSocket(base.replace(/^http/, 'ws') + '/api/live', {
+    origin: process.env.ASR_TEST_ORIGIN || new URL(base).origin,
   });
   const messages: { seconds: number; event: ServerEvent }[] = [],
     started = performance.now();
@@ -64,9 +72,9 @@ async function run(name: string, pcm: Buffer, expectedLanguages: string[]) {
         ws.terminate();
         reject(new Error(name + ': timed out'));
       },
-      (pcm.length / 32000) * 1000 + 45000,
+      (pcm.length / 32000) * 1000 + 75000,
     );
-    ws.on('open', () => ws.send(JSON.stringify({ type: 'start' })));
+    ws.on('open', () => ws.send(JSON.stringify({ type: 'start', ...options })));
     ws.on('error', reject);
     ws.on('message', async (bytes) => {
       const event = JSON.parse(rawText(bytes)) as ServerEvent;
@@ -134,6 +142,10 @@ async function run(name: string, pcm: Buffer, expectedLanguages: string[]) {
   )!;
   assert.ok(recording, name + ': saved recording missing');
   assert.equal(recording.status, 'complete');
+  if (options.tradition !== undefined)
+    assert.equal(recording.requestedTradition, options.tradition);
+  if (options.tradition)
+    assert.match(finals.map((f) => f.text).join('\n'), /廣東話|網頁|變成文字/);
   const fullAudio = await downloadBytes(
     base + '/api/recordings/' + recording.id + '/audio',
   );
@@ -162,6 +174,7 @@ async function run(name: string, pcm: Buffer, expectedLanguages: string[]) {
   }
   const result = {
     name,
+    options,
     recordingId: recording.id,
     inputSeconds: pcm.length / 32000,
     finals,
@@ -174,6 +187,11 @@ async function run(name: string, pcm: Buffer, expectedLanguages: string[]) {
     savedPairs: recording.segments.length,
     messages,
   };
+  assert.deepEqual(
+    result.warnings,
+    [],
+    name + ': recognition warnings: ' + JSON.stringify(messages),
+  );
   results.push(result);
   console.log(
     JSON.stringify({
@@ -187,7 +205,7 @@ async function run(name: string, pcm: Buffer, expectedLanguages: string[]) {
 }
 try {
   for (let i = 0; i < 50; i++) {
-    if (server.exitCode !== null) throw new Error(serverLog);
+    if (server && server.exitCode !== null) throw new Error(serverLog);
     try {
       if ((await fetch(base + '/api/status')).ok) break;
     } catch {
@@ -211,6 +229,20 @@ try {
       ),
     ),
   );
+  await Promise.all(
+    [false, true].map((tradition) =>
+      run(
+        'cantonese_' + (tradition ? 'traditional' : 'default'),
+        Buffer.concat([
+          silence,
+          readWav('tests/fixtures/cantonese_1.wav').pcm,
+          silence,
+        ]),
+        ['Cantonese'],
+        { language: 'Cantonese', tradition },
+      ),
+    ),
+  );
   const mixed = Buffer.concat([
     silence,
     ...['mandarin_2', 'cantonese_2', 'english_2'].flatMap((name) => [
@@ -224,13 +256,19 @@ try {
     'English',
   ]);
   mkdirSync('test-output', { recursive: true });
-  cpSync(destination, 'test-output/recordings', { recursive: true });
+  if (!externalBase)
+    cpSync(destination, 'test-output/recordings', { recursive: true });
   writeFileSync(
     'test-output/live-results.json',
     JSON.stringify(
       {
         testedAt: new Date().toISOString(),
-        recordingsDirectory: path.resolve('test-output/recordings'),
+        target: externalBase
+          ? 'deployed application'
+          : 'isolated local application',
+        recordingsDirectory: externalBase
+          ? undefined
+          : path.resolve('test-output/recordings'),
         results,
       },
       null,
@@ -238,11 +276,13 @@ try {
     ),
   );
   console.log(
-    'Live validation passed; audio/text pairs saved in test-output/recordings',
+    'Live validation passed; results saved in test-output/live-results.json',
   );
 } finally {
-  server.kill('SIGTERM');
-  const forced = setTimeout(() => server.kill('SIGKILL'), 5000);
-  await once(server, 'exit');
-  clearTimeout(forced);
+  if (server && server.exitCode === null) {
+    server.kill('SIGTERM');
+    const forced = setTimeout(() => server.kill('SIGKILL'), 5000);
+    await once(server, 'exit');
+    clearTimeout(forced);
+  }
 }

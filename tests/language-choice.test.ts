@@ -118,6 +118,18 @@ void test('the browser can lock a declared language and nothing else', async () 
       assert.equal(event.type === 'error' && event.code, 'invalid_language');
       assert.equal(event.type === 'error' && event.fatal, true);
     }
+    assert.equal(
+      (await begin(server.base, { type: 'start', tradition: true })).type,
+      'ready',
+    );
+    assert.equal(
+      (await begin(server.base, { type: 'start', tradition: false })).type,
+      'ready',
+    );
+    for (const tradition of ['true', 1, null]) {
+      const event = await begin(server.base, { type: 'start', tradition });
+      assert.equal(event.type === 'error' && event.code, 'invalid_tradition');
+    }
   } finally {
     await server.stop();
   }

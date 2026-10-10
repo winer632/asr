@@ -12,6 +12,7 @@ export interface FileTranscriberOptions {
   key: string;
   appId?: string;
   language?: string;
+  tradition?: boolean;
   // Both default to the segment's own length; see fileBudget below.
   timeoutMs?: number;
   attempts?: number;
@@ -60,6 +61,7 @@ export async function transcribeFile(
     );
     if (options.appId) body.append('app_id', options.appId);
     if (options.language) body.append('language', options.language);
+    body.append('tradition', String(options.tradition ?? false));
     try {
       const response = await fetch(options.url, {
         method: 'POST',

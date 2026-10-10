@@ -1,6 +1,8 @@
 # 声迹 ASR
 
-TypeScript 连续录音网页：使用用户提供的 ONNX VAD 检测说话与停顿，通过内网 ASR WebSocket 自动检测语种并转写文字。完整录音与每段音频、文本均保存到本地磁盘。
+TypeScript 连续录音网页：使用用户提供的 ONNX VAD 检测说话与停顿，通过 SenseNova ASR 公网流式接口转写文字，同时启用上游服务端 VAD。完整录音与每段音频、文本均保存到本地磁盘。
+
+已适配《SenseNova ASR 0930 流式/离线接口对接说明》（2026-10-10）：实时限速发送、同一连接接收多个 VAD 分段 final、繁体中文输出、服务端 VAD 静音阈值与增益配置。页面“文字输出”可选择默认文字或繁体中文，选择同时作用于流式和离线重识别，录音开始后保持不变。默认文字表示不要求繁体转换，不承诺将模型原文转换为简体。
 
 界面已收录实测可自动识别的 12 种语言：普通话、粤语、英语、日语、韩语、阿拉伯语、德语、法语、西班牙语、葡萄牙语、泰语、越南语。语种标签会随识别结果自动高亮，历史记录和新生成的文本文件使用相同的中文标签。
 
@@ -31,7 +33,7 @@ npm run dev
 
 打开 <http://127.0.0.1:5173>。点击“开始录音”并授权麦克风，持续说话即可。停顿会自动完成当前语音段；点击“停止录音”后会提交尾段音频并等待最终结果。
 
-录音面板上的“识别语种”默认是自动检测，也可以锁定为服务声明支持的六种之一：普通话、粤语、英语、日语、韩语、阿拉伯语。锁定后整段录音都按该语种识别，流式与整段重识别都会带上这个语种，不再自动切换；录音进行中不能改，停止后可以改回自动检测。会议中会混说多种语言时保持自动检测；只说一种语言、尤其是纯英语时，锁定语种更准（当前上游的英语自动识别存在退化，见下文）。
+录音面板上的“识别语种”默认是自动检测，也可以锁定为服务声明支持的六种之一：普通话、粤语、英语、日语、韩语、阿拉伯语。锁定后整段录音都按该语种识别，流式与整段重识别都会带上这个语种，不再自动切换；录音进行中不能改，停止后可以改回自动检测。会议中会混说多种语言时保持自动检测；只说一种语言、尤其是纯英语时，锁定语种更准（9 月版本曾存在英语自动检测退化，0930 本次样本已通过）。
 
 生产方式在同一台内网机器上构建并启动：
 
@@ -83,7 +85,11 @@ WAV 为 16 kHz、单声道、PCM16 小端。每段 TXT 在收到最终识别后�
 | -------------------------------- | -------------------- | -------------------------------------------------- |
 | `ASR_BASE_URL`                   | 见 `.env.example`    | ASR 服务地址，服务路由拼在它的路径之后             |
 | `ASR_API_KEY`                    | 无                   | 仅由 Node.js 服务读取                              |
-| `ASR_APP_ID`                     | 无                   | 托管服务两个入口都必填，老网关必须留空，见下方说明 |
+| `ASR_APP_ID`                     | 无                   | 公网服务两个入口都必须填写授权值 |
+| `ASR_SERVER_VAD`                 | `1`                  | 上游服务端 VAD，建议开启以避免过长语音报错 |
+| `ASR_VAD_INTERVAL_MS`            | `800`                | 上游 VAD 静音截断阈值，范围 100–2000 ms |
+| `ASR_TRADITION`                  | `0`                  | 客户端省略 tradition 时的默认值；网页自行选择 |
+| `ASR_GAIN`                       | `1`                  | 上游音频增益，必须是有限正数 |
 | `VAD_MODEL_PATH`                 | `models/net.onnx`    | 用户提供的 VAD 模型                                |
 | `VAD_SILENCE_MS`                 | `600`                | 停顿阈值，范围 300–2000 ms                         |
 | `VAD_SOFT_SPLIT_SECONDS`         | `12`                 | 长句收句的最短时长，`0` 关闭，其余取 5–55 s        |
@@ -109,23 +115,25 @@ WAV 为 16 kHz、单声道、PCM16 小端。每段 TXT 在收到最终识别后�
 - 分段结束后把该段 WAV 再发一次 `POST /infer`，用整段上下文取回标点；流式段失败时同一次调用即是补救。超时预算按该段音频时长计算，因为托管网关的整段识别耗时接近音频时长的一半。
 - 服务对整段也没给出标点时，按测得的停顿补一个句末标点：句中停顿用「，」，一句结束用「。」。`manifest.json` 中 `text` 始终是服务原样返回的文字，补的标点单独记在 `mark`。
 - 语种锁定在服务端按声明列表校验后，同时用于流式 `start` 和整段重识别；`manifest.json` 记录 `requestedLanguage`，文字稿标注“识别语种”。
-- partial 替换当前段暂定文字；final 固定该段，通过段 ID 关联，避免网络乱序导致文字错位。
+- 0930 的 partial 只替换当前上游 VAD 语音段，所有上游 final 按顺序保留。客户端发送 end 后，等待服务端 end 或正常关闭才把合并结果作为本地 final；提前关闭或未收到 final 会报告该段失败。上游 sequence 用于过滤重复和过期结果。
+- 上游收到 started 后按实时速度发送最多 100 ms 的 PCM 包，启动预留音频与积压音频也经过限速；尾包按实际长度发送，队列排空后只发送一次 end。
+- 繁体输出以 tradition 布尔值传入 start，并以字符串 true/false 传入离线表单。录音清单 requestedTradition 记录本次选择，离线补救不会覆盖为不同的文字模式。
 - 单段识别失败只标记该段并继续录音；仅麦克风、浏览器连接、磁盘等会话级故障才停止采集。系统暂停音频或切换麦克风时自动恢复。
 - 同源 WebSocket 校验、有限缓冲、活动会话上限、握手及最终响应超时、断线与保存失败反馈。
 - 音频与文字保存在本地文件系统，不把 ASR key、录音、证书提交到仓库。
 
-### 两套上游地址
+### 公网与内网上游地址
 
-`ASR_API.docx`（2026-09-17）把服务迁到了托管网关，地址带路径前缀：
+0930 文档的正式环境地址带路径前缀：
 
 - 公网 `https://api-gai-volc.sensetime.com/agent-5o/signpost/v0/prod-agent-5o-sensenova-filabs-asr-v1`
 - 内网 `https://api-gai-volc-internal.sensetime.com/agent-5o/signpost/v0/prod-agent-5o-sensenova-filabs-asr-v1`
 
 `/infer`、`/infer/stream`、`/health` 都拼在这个路径之后，不是拼在域名根上；`ASR_BASE_URL` 末尾带不带 `/infer` 都可以。托管服务的 `/health` 也要带 `Authorization`。
 
-托管服务**两个入口都必须带 `app_id`**：不带返回 `invalid_start: app_id is required`，带未授权的值返回 `unauthorized_app`（文件接口 HTTP 403，流式 close 1008）。app_id 向商汤语音组申请，填进 `ASR_APP_ID` 即可，默认已指向托管服务。
+公网服务**两个入口都必须带 `app_id`**，向商汤语音组申请后填入 `ASR_APP_ID`。未授权 app_id 的文件接口返回 HTTP 403；新版流式数字错误码包括 106（缺少 APP ID）、201（APP ID 未授权）、202（其他鉴权失败）、401（发送过快）。程序保留错误码，并隐藏上游内部错误详情和凭据。
 
-老的办公网网关 `http://10.210.1.23:19003` 仍然可用且不需要 app_id，它的流式 `start` 是严格白名单，带上 `app_id` 会返回 `invalid_start`，所以切回它时 `ASR_APP_ID` 必须留空。`.env.example` 里两套配置都写了。
+本次实现以 0930 流式协议为准；文档列为 TODO 的 itn、punctuation、context 不发送。原 ONNX VAD 继续控制本地分段、保存与语音指示，上游 server_vad 负责同一连接内部的语音截断。两个静音阈值分别由 VAD_SILENCE_MS 和 ASR_VAD_INTERVAL_MS 控制。
 
 托管网关整段重识别比办公网网关慢很多：7 秒音频 1.1–2.8 秒对 0.2 秒，57 秒音频 22.8/38.8 秒对 1.0 秒。因此整段重识别的超时按分段时长计算（10–40 秒，超过 20 秒只试一次），浏览器等待最终文字的窗口相应放宽到 75 秒。
 
@@ -147,7 +155,9 @@ npm run test:live
 
 测试启动独立临时端口与录音目录，实测三种语言及同一次连续录音中切换三种语言。它核对完整下载 WAV 与输入 PCM 逐字节一致，分段 TXT 与 final 一致。结果在 `test-output/live-results.json`，音频与文本副本保存在 `test-output/recordings/`。测试音频来自本机语音合成，不代表真实噪声、口音或手机效果。
 
-`tests/fixtures/fbank-reference.f32` 由原 C++ 前端生成。复现方式见 `tests/reference-native/README.md`。最新补测中，WAV/FLAC/MP3/MPGA/OGG 文件已成功；MP4/M4A/MPEG/WebM 的代表编码仍报错。本应用使用 `/infer/stream`。协议边界、真人噪声与混语差异均已更新到 HTML 文档。
+测试还会锁定粤语，分别验证默认文字与繁体输出。可用 `ASR_TEST_APP_URL=http://127.0.0.1:5173 npm run test:live` 直接复测运行中的部署；需要反向代理来源时设置 `ASR_TEST_ORIGIN`。这会创建新的测试录音，并验证部署的下载接口，不会启动第二个应用进程。
+
+`tests/fixtures/fbank-reference.f32` 由原 C++ 前端生成。复现方式见 `tests/reference-native/README.md`。9 月历史补测中，WAV/FLAC/MP3/MPGA/OGG 成功，部分其他容器样本报错；0930 文档已声明支持这些容器，但本次未逐一重测。本应用使用 `/infer/stream`。
 
 ## 目录
 
@@ -165,7 +175,13 @@ tests/                   自动验证与合成语音样本
 
 模型和原工程的权属保持不变。第三方来源与许可说明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
+## 0930 功能验证
+
+2026-10-10：普通话、粤语、英语自动识别，粤语默认/繁体输出，以及连续切换三语共 6 组端到端测试均通过，没有识别告警。下载的完整音频与输入 PCM 逐字节一致，所有分段 TXT 与最终文字一致。公网同一连接返回两段 VAD final 已验证；实测 final 可与 前一条 partial 共用 sequence，去重分别按消息类型处理。35 项回归测试、类型检查、lint 和生产构建全部通过。结果见 [tests/evidence/upstream-0930.json](tests/evidence/upstream-0930.json)。
+
 ## 边界与真人样本补测
+
+以下为 2026 年 9 月的历史结果，不能视作 0930 公网接口的现行限制。新版文档规定离线单次默认最长 60 秒，流式以 started.max_audio_seconds 为准；最新功能验证见 tests/evidence/upstream-0930.json。
 
 - WS：60.0 秒成功、60.1 秒 audio_limit；65,536 字节帧成功、65,538 字节 1009；首条 start 等待约 10 秒、启动后无应用消息约 30 秒超时。
 - 8 路实时识别均成功；9 个空会话可同时启动，不据此推断最大推理配额。
@@ -194,4 +210,4 @@ npm run build
 npx tsx scripts/test-endurance.ts
 ```
 
-原始测试音频与文本在 `test-output/`，不提交到 Git。`tests/evidence/` 保存精简响应与来源；`scripts/update-reference.py` 可根据这些证据更新 HTML 文档。接口文档以本仓库的 `docs/index.html` 和 `public/asr-api.html` 为准，不再通过相邻的 `asr-docs-site/` 发布目录托管。
+原始测试音频与文本在 `test-output/`，不提交到 Git。`tests/evidence/` 保存精简响应与来源；旧 scripts/update-reference.py 面向 9 月历史报告，不能用于覆盖 0930 文档。接口文档以本仓库的 `docs/index.html` 和构建生成的 `public/asr-api.html` 为准。

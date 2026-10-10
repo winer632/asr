@@ -47,7 +47,16 @@ if (softSplitSeconds && softSplitSeconds < 5)
 const softSplitPauseMs = integer('VAD_SOFT_SPLIT_PAUSE_MS', 200, 100, 600);
 const fileRecognition = flag('ASR_FILE_RECOGNITION', true);
 const pausePunctuation = flag('PAUSE_PUNCTUATION', true);
-const baseUrl = new URL(process.env.ASR_BASE_URL || 'http://10.210.1.23:19003');
+const serverVad = flag('ASR_SERVER_VAD', true);
+const vadInterval = integer('ASR_VAD_INTERVAL_MS', 800, 100, 2000);
+const defaultTradition = flag('ASR_TRADITION', false);
+const gain = Number(process.env.ASR_GAIN || 1);
+if (!Number.isFinite(gain) || gain <= 0)
+  throw new Error('ASR_GAIN must be a positive finite number.');
+const baseUrl = new URL(
+  process.env.ASR_BASE_URL ||
+    'https://api-gai-volc.sensetime.com/agent-5o/signpost/v0/prod-agent-5o-sensenova-filabs-asr-v1',
+);
 if (
   !['http:', 'https:'].includes(baseUrl.protocol) ||
   baseUrl.username ||
@@ -58,10 +67,9 @@ if (
   );
 const { fileUrl, streamUrl, healthUrl } = resolveEndpoints(baseUrl);
 const key = process.env.ASR_API_KEY || '';
-// The 2609 hosted service requires app_id on both entry points and answers
-// unauthorized_app without it. The older office gateway rejects the field, so
-// it stays unset there and is only added to requests once configured.
+// The public 0930 service requires an authorised app_id on both entry points.
 const appId = (process.env.ASR_APP_ID || '').trim();
+const requiresAppId = baseUrl.hostname.endsWith('.sensetime.com');
 if (appId && !/^[A-Za-z0-9_-]{1,128}$/.test(appId))
   throw new Error('ASR_APP_ID must be 1–128 letters, digits, _ or -.');
 const capacity = new Capacity(maxAsr);
@@ -303,8 +311,11 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse) {
     res.end(
       JSON.stringify({
         vadReady: true,
-        configured: !!key,
+        configured: !!key && (!requiresAppId || !!appId),
         upstreamHealthy: upstream,
+        serverVad,
+        vadIntervalMs: vadInterval,
+        tradition: defaultTradition,
         activeAsrSessions: capacity.active,
         maxAsrSessions: maxAsr,
       }),
@@ -469,7 +480,7 @@ wss.on('connection', (ws) => {
         });
       return;
     }
-    let message: { type?: string; language?: unknown };
+    let message: { type?: string; language?: unknown; tradition?: unknown };
     try {
       message = JSON.parse(bytes.toString());
       if (!message || Array.isArray(message)) throw new Error();
@@ -507,17 +518,42 @@ wss.on('connection', (ws) => {
         );
         return;
       }
+      if (requiresAppId && !appId) {
+        fail('not_configured', '服务端尚未配置授权的 ASR_APP_ID。');
+        return;
+      }
+      if (
+        message.tradition !== undefined &&
+        typeof message.tradition !== 'boolean'
+      ) {
+        fail('invalid_tradition', '繁体输出选项必须是布尔值。');
+        return;
+      }
+      const tradition = message.tradition ?? defaultTradition;
       try {
         session = new RecordingSession(
           factory.create(silenceMs),
-          { url: streamUrl.toString(), key, appId, language, capacity, emit },
+          {
+            url: streamUrl.toString(),
+            key,
+            appId,
+            language,
+            tradition,
+            serverVad,
+            vadInterval,
+            gain,
+            capacity,
+            emit,
+          },
           55,
-          new RecordingArchive(recordingsRoot, language),
+          new RecordingArchive(recordingsRoot, language, tradition),
           {
             softSplitSeconds,
             softSplitPauseFrames: Math.round(softSplitPauseMs / 10),
             pausePunctuation,
-            file: fileRecognition ? { ...fileOptions, language } : undefined,
+            file: fileRecognition
+              ? { ...fileOptions, language, tradition }
+              : undefined,
           },
         );
       } catch {

@@ -83,14 +83,16 @@ void test('long speech rotates without losing samples, waits for final, and save
           }),
         );
         setTimeout(
-          () =>
+          () => {
             ws.send(
               JSON.stringify({
                 type: 'final',
                 text: '最终文字',
                 language: 'Chinese',
               }),
-            ),
+            );
+            ws.close(1000);
+          },
           received.length === 1 ? 30 : 5,
         );
       }

@@ -40,6 +40,8 @@ export function useRecorder() {
   // '' asks the service to detect the language; anything else locks it.
   const [language, setLanguageState] = useState(''),
     languageRef = useRef('');
+  const [tradition, setTraditionState] = useState(false),
+    traditionRef = useRef(false);
   const resources = useRef<Resources | undefined>(undefined),
     mounted = useRef(true);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -53,6 +55,11 @@ export function useRecorder() {
       return;
     languageRef.current = value;
     setLanguageState(value);
+  };
+  const setTradition = (value: boolean) => {
+    if (statusRef.current !== 'idle' && statusRef.current !== 'error') return;
+    traditionRef.current = value;
+    setTraditionState(value);
   };
   const releaseAudio = (r: Resources) => {
     clearTimeout(r.recovery);
@@ -260,6 +267,7 @@ export function useRecorder() {
         ws.send(
           JSON.stringify({
             type: 'start',
+            tradition: traditionRef.current,
             ...(languageRef.current ? { language: languageRef.current } : {}),
           }),
         );
@@ -407,6 +415,8 @@ export function useRecorder() {
     copied,
     language,
     setLanguage,
+    tradition,
+    setTradition,
     bottomRef,
     start,
     stop,

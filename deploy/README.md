@@ -9,16 +9,16 @@
 ```text
 同事浏览器 -- HTTPS/WSS :443 --> 办公网 HTTPS 网关
            -- HTTP/WS TCP :5173 --> L40S 应用
-           -- HTTP/WS TCP :19003 --> ASR 服务
+           -- HTTPS/WSS TCP :443 --> SenseNova ASR 公网服务
 ```
 
 | 路径                           | 需要的端口                            | 用途                                  |
 | ------------------------------ | ------------------------------------- | ------------------------------------- |
 | 办公网网关 → L40S              | TCP 5173                              | 网页、`/api/live`、状态查询和文件下载 |
 | 同事浏览器 → 办公网 HTTPS 网关 | TCP 443，或选定的 HTTPS 端口          | 浏览器录音入口                        |
-| L40S → ASR 地址                | TCP 19003，或 `ASR_BASE_URL` 指定端口 | 健康检查和模型推理                    |
+| L40S → ASR 地址                | TCP 443，或 `ASR_BASE_URL` 指定端口 | 鉴权健康检查和模型推理                    |
 
-无需向同事映射 ASR 原始接口、SSH 或 VAD 端口，也无需 UDP 端口。ASR 的 TCP 19003 是应用的出站依赖，网页端口映射不会自动打通这条路径。
+无需向同事映射 ASR 原始接口、SSH 或 VAD 端口，也无需 UDP 端口。ASR 公网接口的 TCP 443 是应用的出站依赖，网页端口映射不会自动打通这条路径。
 
 浏览器在普通局域网 HTTP IP 地址下无法使用麦克风。需要可信 HTTPS，证书名称要覆盖同事实际访问的域名或 IP；直接忽略自签名证书警告不能作为统一可用的部署方案。规则见 [MDN getUserMedia](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia)。
 
@@ -48,7 +48,7 @@ HTTP 响应头、CORS 设置或删除前端安全连接检查都不能让普通 
 
 如果没有域名，Let's Encrypt 已提供 [IP 证书](https://letsencrypt.org/2026/01/15/6day-and-ip-general-availability)，但需要从公网完成 HTTP-01（TCP 80）或 TLS-ALPN-01（TCP 443）验证，当前 18005 映射不能替代这些验证端口。IP 证书有效期为六天，需要同时配置自动续期并保留验证路径。也可使用公司已向测试设备分发信任的内部 CA 签发证书。
 
-HTTPS 解决浏览器录音权限；模型连通性需要独立满足。若 `/api/status` 的 `upstreamHealthy` 为 `false`，应放通 L40S 到 `10.210.1.23:19003` 的路径，或将 `ASR_BASE_URL` 改成 L40S 可访问的 ASR 映射地址。
+HTTPS 解决浏览器录音权限；模型连通性需要独立满足。若 `/api/status` 的 `upstreamHealthy` 为 `false`，应检查 L40S 到 `ASR_BASE_URL` 的 HTTPS 出站连接与 API key。公网基础地址包含 `/agent-5o/signpost/v0/prod-agent-5o-sensenova-filabs-asr-v1` 路径前缀，路由不能丢失此前缀。
 
 ## systemd 安装
 
@@ -68,13 +68,17 @@ sudo install -m 0600 .env.example /etc/asr/asr.env
 sudoedit /etc/asr/asr.env
 ```
 
-必须填写真实 `ASR_API_KEY`，将以下值设置为：
+必须填写真实 `ASR_API_KEY` 与已授权的 `ASR_APP_ID`，将以下值设置为：
 
 ```dotenv
 HOST=0.0.0.0
 PORT=5173
 RECORDINGS_DIR=/var/lib/asr/recordings
 VAD_MODEL_PATH=/srv/asr/app/models/net.onnx
+ASR_SERVER_VAD=1
+ASR_VAD_INTERVAL_MS=800
+ASR_TRADITION=0
+ASR_GAIN=1
 # 反向代理就绪后填写同事实际访问的来源，包括非默认外部端口：
 # PUBLIC_ORIGIN=https://asr.office.example
 ```
@@ -104,3 +108,5 @@ sudo systemctl stop asr-web
 ```
 
 更新时先确认没有正在录音的用户，再拉取代码、安装依赖、构建并重启。更新前备份代码版本和配置；录音目录独立保留。`npm run test:live` 会调用真实上游并生成测试音频与文字，要求测试进程有正确环境变量；systemd 的配置不会自动传给交互式 shell。
+
+0930 升级后，检查 `/api/status` 返回 `serverVad: true`、`vadIntervalMs: 800`。使用 `ASR_TEST_APP_URL=http://127.0.0.1:5173 npm run test:live` 可以直接测试已运行的部署，包括三语识别、粤语默认/繁体输出、连续语种切换，以及下载的音频和文字配对。测试会留下新录音，原有历史记录不会删除。

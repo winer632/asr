@@ -46,7 +46,7 @@ async function streamService(finalText: string) {
       const event = JSON.parse(rawText(data));
       if (event.type === 'start')
         ws.send(JSON.stringify({ type: 'started', chunk_seconds: 2 }));
-      else if (event.type === 'end')
+      else if (event.type === 'end') {
         ws.send(
           JSON.stringify({
             type: 'final',
@@ -54,6 +54,8 @@ async function streamService(finalText: string) {
             language: 'Chinese',
           }),
         );
+        ws.close(1000);
+      }
     });
   });
   return {
