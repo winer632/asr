@@ -1,0 +1,192 @@
+{
+  "testedAt": "2026-10-10T09:43:45.580Z",
+  "source": {
+    "dataset": "google/fleurs",
+    "config": "yue_hant_hk",
+    "split": "validation",
+    "rowIndex": 0,
+    "id": 1514,
+    "license": "CC-BY-4.0"
+  },
+  "server": [
+    {
+      "name": "real_cantonese_repeated_800ms",
+      "vadIntervalMs": 800,
+      "inputSeconds": 35.46,
+      "speechFinals": 2,
+      "finals": [
+        {
+          "text": "傷員送往醫院後，打鬥停止，這時剩下的囚犯中，約有四十人留在庭院中，拒絕回去自己的牢房。",
+          "startSeconds": 2.08,
+          "endSeconds": 14.75,
+          "receivedSeconds": 16.434
+        },
+        {
+          "text": "傷員送往醫院後，打鬥停止，這時剩下的囚犯中，約有四十人留在庭院中，拒絕回去自己的牢房。",
+          "startSeconds": 19.07,
+          "endSeconds": 31.74,
+          "receivedSeconds": 34.525
+        }
+      ]
+    },
+    {
+      "name": "real_cantonese_repeated_100ms",
+      "vadIntervalMs": 100,
+      "inputSeconds": 35.46,
+      "speechFinals": 12,
+      "finals": [
+        {
+          "text": "傷員送往醫院後。",
+          "startSeconds": 2.08,
+          "endSeconds": 4.25,
+          "receivedSeconds": 6.172
+        },
+        {
+          "text": "打鬥停止。",
+          "startSeconds": 4.64,
+          "endSeconds": 6.14,
+          "receivedSeconds": 8.256
+        },
+        {
+          "text": "這時剩下的囚犯中，",
+          "startSeconds": 6.36,
+          "endSeconds": 8.99,
+          "receivedSeconds": 10.278
+        },
+        {
+          "text": "約有四十人。",
+          "startSeconds": 9.08,
+          "endSeconds": 10.46,
+          "receivedSeconds": 12.227
+        },
+        {
+          "text": "留在庭院中。",
+          "startSeconds": 10.59,
+          "endSeconds": 12.25,
+          "receivedSeconds": 14.251
+        },
+        {
+          "text": "拒絕回去自己的牢房。",
+          "startSeconds": 12.38,
+          "endSeconds": 14.75,
+          "receivedSeconds": 16.293
+        },
+        {
+          "text": "傷員送往醫院後。",
+          "startSeconds": 19.07,
+          "endSeconds": 21.21,
+          "receivedSeconds": 22.422
+        },
+        {
+          "text": "打鬥停止。",
+          "startSeconds": 21.6,
+          "endSeconds": 23.1,
+          "receivedSeconds": 24.438
+        },
+        {
+          "text": "這時剩下的囚犯中，",
+          "startSeconds": 23.32,
+          "endSeconds": 25.98,
+          "receivedSeconds": 28.404
+        },
+        {
+          "text": "約有四十人。",
+          "startSeconds": 26.08,
+          "endSeconds": 27.42,
+          "receivedSeconds": 28.449
+        },
+        {
+          "text": "留在庭院中。",
+          "startSeconds": 27.58,
+          "endSeconds": 29.21,
+          "receivedSeconds": 30.481
+        },
+        {
+          "text": "拒絕回去自己的牢房。",
+          "startSeconds": 29.37,
+          "endSeconds": 31.74,
+          "receivedSeconds": 32.553
+        }
+      ]
+    },
+    {
+      "name": "real_cantonese_snr10",
+      "vadIntervalMs": 800,
+      "inputSeconds": 15.48,
+      "speechFinals": 1,
+      "finals": [
+        {
+          "text": "將袁送往醫院後，打鬥停止。這時剩下的囚犯中，約有四十人留在庭院中，拒絕回去自己的牢房。",
+          "startSeconds": 1.18,
+          "endSeconds": 13.76,
+          "receivedSeconds": 15.753
+        }
+      ]
+    },
+    {
+      "name": "pure_silence",
+      "vadIntervalMs": 800,
+      "inputSeconds": 5,
+      "speechFinals": 0,
+      "finals": []
+    },
+    {
+      "name": "pure_noise",
+      "vadIntervalMs": 800,
+      "inputSeconds": 10,
+      "speechFinals": 0,
+      "finals": []
+    }
+  ],
+  "offlineText": "傷員送往醫院後，打鬥停止。這時剩下的囚犯中，約有四十人留在庭院中，拒絕回去自己的牢房。",
+  "repeatedDefaultStreamMatchesOffline": true,
+  "local": [
+    {
+      "name": "real_repeat",
+      "segments": 2,
+      "boundaries": [
+        {
+          "type": "start",
+          "seconds": 2.03
+        },
+        {
+          "type": "end",
+          "seconds": 14.87
+        },
+        {
+          "type": "start",
+          "seconds": 19.01
+        },
+        {
+          "type": "end",
+          "seconds": 31.85
+        }
+      ],
+      "ended": true
+    },
+    {
+      "name": "pure_silence",
+      "segments": 0,
+      "boundaries": [],
+      "ended": true
+    },
+    {
+      "name": "pure_noise",
+      "segments": 1,
+      "boundaries": [
+        {
+          "type": "start",
+          "seconds": 0.7
+        },
+        {
+          "type": "end",
+          "seconds": 10
+        }
+      ],
+      "ended": true
+    }
+  ],
+  "limitations": "One real Cantonese speaker, artificial Gaussian noise, no real meeting/background-noise or mobile microphone test. Local ONNX VAD can trigger on noise even when ASR returns no words.",
+  "noisyOfflineText": "傷員送往醫院後，打鬥停止。這時，剩下的囚犯中，約有四十人留在庭院中，拒絕回去自己的牢房。",
+  "noisyStreamDifference": "At 10 dB synthetic noise, streaming recognised 傷員 as 將袁; the offline pass recovered 傷員. The full opening and closing phrases remained present."
+}

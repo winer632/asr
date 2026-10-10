@@ -1,0 +1,140 @@
+{
+  "testedAt": "2026-10-10T09:45:09.665Z",
+  "target": "Existing L40S systemd deployment",
+  "service": "asr-web",
+  "applicationCommit": "5741290fc8906bb766034a2ecf1c0bec1689d2ad",
+  "upstreamServerVad": true,
+  "upstreamVadIntervalMs": 800,
+  "existingRecordingsPreserved": true,
+  "checks": {
+    "linuxTypecheck": true,
+    "linuxLint": true,
+    "linuxUnitTests": 35,
+    "linuxProductionBuild": true,
+    "browserLanguageAndTraditionSelectors": true,
+    "browserConsoleErrors": 0
+  },
+  "results": [
+    {
+      "name": "english_1",
+      "inputSeconds": 7.4065,
+      "options": {},
+      "finalLanguages": [
+        "English"
+      ],
+      "finalTexts": [
+        "Hello, this is a test of automatic speech recognition. Please turn my voice into text.",
+        "Hello, this is a test of automatic speech recognition. Please turn my voice into text."
+      ],
+      "savedPairs": 1,
+      "exactFullAudioMatch": true,
+      "warnings": []
+    },
+    {
+      "name": "mandarin_1",
+      "inputSeconds": 8.3570625,
+      "options": {},
+      "finalLanguages": [
+        "Chinese"
+      ],
+      "finalTexts": [
+        "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。",
+        "你好，今天我们测试普通话语音识别，请把我说的话转换成文字。"
+      ],
+      "savedPairs": 1,
+      "exactFullAudioMatch": true,
+      "warnings": []
+    },
+    {
+      "name": "cantonese_1",
+      "inputSeconds": 10.5205,
+      "options": {},
+      "finalLanguages": [
+        "Cantonese"
+      ],
+      "finalTexts": [
+        "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？",
+        "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？"
+      ],
+      "savedPairs": 1,
+      "exactFullAudioMatch": true,
+      "warnings": []
+    },
+    {
+      "name": "cantonese_traditional",
+      "inputSeconds": 10.5205,
+      "options": {
+        "language": "Cantonese",
+        "tradition": true
+      },
+      "finalLanguages": [
+        "Cantonese"
+      ],
+      "finalTexts": [
+        "你好，我而家講緊廣東話。今日天氣幾好，我想出去飲茶，你有冇時間一齊去下？",
+        "你好，我而家講緊廣東話。今日天氣幾好，我想出去飲茶，你有冇時間一齊去下？"
+      ],
+      "savedPairs": 1,
+      "exactFullAudioMatch": true,
+      "warnings": []
+    },
+    {
+      "name": "cantonese_default",
+      "inputSeconds": 10.5205,
+      "options": {
+        "language": "Cantonese",
+        "tradition": false
+      },
+      "finalLanguages": [
+        "Cantonese"
+      ],
+      "finalTexts": [
+        "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？",
+        "你好，我而家讲紧广东话。今日天气几好，我想出去饮茶，你有冇时间一齐去下？"
+      ],
+      "savedPairs": 1,
+      "exactFullAudioMatch": true,
+      "warnings": []
+    },
+    {
+      "name": "continuous_language_switch",
+      "inputSeconds": 23.324,
+      "options": {},
+      "finalLanguages": [
+        "Chinese",
+        "Cantonese",
+        "English"
+      ],
+      "finalTexts": [
+        "会议改到明天下午三点，请提前十分钟到场。",
+        "会议改到明天下午三点，请提前十分钟到场。",
+        "唔该，帮我睇下呢个网页可唔可以一路录音，一路将我讲嘅嘢变成文字？",
+        "唔该帮我睇下呢个网页可唔可以一路录音，一路将我讲嘅嘢变成文字？",
+        "The meeting has moved to three o'clock to morrow afternoon. Please arrive ten minutes early.",
+        "The meeting has moved to three o'clock to morrow afternoon. Please arrive ten minutes early."
+      ],
+      "savedPairs": 3,
+      "exactFullAudioMatch": true,
+      "warnings": []
+    },
+    {
+      "name": "real_cantonese_vad",
+      "inputSeconds": 18.48,
+      "options": {
+        "language": "Cantonese",
+        "tradition": true
+      },
+      "finalLanguages": [
+        "Cantonese"
+      ],
+      "finalTexts": [
+        "將員送往醫院後，打鬥停止，這時剩下的囚犯中，約有四十人留在庭院中，拒絕回去自己的牢房。",
+        "傷員送往醫院後，打鬥停止，這時剩下的囚犯中，約有四十人留在庭院中，拒絕回去自己的牢房。"
+      ],
+      "savedPairs": 1,
+      "exactFullAudioMatch": true,
+      "warnings": []
+    }
+  ],
+  "limitations": "Test audio was sent over the application WebSocket; live browser microphone and real mobile devices were not tested."
+}

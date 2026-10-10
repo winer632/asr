@@ -145,7 +145,10 @@ async function run(
   if (options.tradition !== undefined)
     assert.equal(recording.requestedTradition, options.tradition);
   if (options.tradition)
-    assert.match(finals.map((f) => f.text).join('\n'), /廣東話|網頁|變成文字/);
+    assert.match(
+      finals.map((f) => f.text).join('\n'),
+      /廣東話|網頁|變成文字|醫院/,
+    );
   const fullAudio = await downloadBytes(
     base + '/api/recordings/' + recording.id + '/audio',
   );
@@ -255,6 +258,18 @@ try {
     'Cantonese',
     'English',
   ]);
+  if (process.env.ASR_TEST_REAL_AUDIO) {
+    await run(
+      'real_cantonese_vad',
+      Buffer.concat([
+        silence,
+        readWav(process.env.ASR_TEST_REAL_AUDIO).pcm,
+        Buffer.alloc(64000),
+      ]),
+      ['Cantonese'],
+      { language: 'Cantonese', tradition: true },
+    );
+  }
   mkdirSync('test-output', { recursive: true });
   if (!externalBase)
     cpSync(destination, 'test-output/recordings', { recursive: true });

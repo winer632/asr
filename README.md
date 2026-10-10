@@ -179,6 +179,10 @@ tests/                   自动验证与合成语音样本
 
 2026-10-10：普通话、粤语、英语自动识别，粤语默认/繁体输出，以及连续切换三语共 6 组端到端测试均通过，没有识别告警。下载的完整音频与输入 PCM 逐字节一致，所有分段 TXT 与最终文字一致。公网同一连接返回两段 VAD final 已验证；实测 final 可与 前一条 partial 共用 sequence，去重分别按消息类型处理。35 项回归测试、类型检查、lint 和生产构建全部通过。结果见 [tests/evidence/upstream-0930.json](tests/evidence/upstream-0930.json)。
 
+真人 VAD 专项测试：FLEURS 粤语样本重复两次，800 ms 上游阈值返回 2 段，100 ms 返回 12 段；默认阈值合并文本与离线文本一致（去除标点并统一数字形式后比较）。纯静音与本次纯噪声样本没有输出文字。本地 ONNX VAD 对纯噪声会误触发 1 段；10 dB 人工噪声的流式出现个别错字，离线重识别可以更正。只验证了一个真人样本，不能据此保证所有背景噪声或口音表现。证据见 [tests/evidence/server-vad-0930.json](tests/evidence/server-vad-0930.json)。
+
+L40S 部署已更新，7 组部署端到端测试通过（含真人粤语），音频与文字下载一致。证据见 [tests/evidence/deployment-0930.json](tests/evidence/deployment-0930.json)。可通过 ASR_TEST_REAL_AUDIO 指定本地的真人粤语 WAV，追加到 test:live 验证；独立服务端 VAD 测试为 npx tsx scripts/test-server-vad.ts，需先准备保留的 FLEURS 样本。
+
 ## 边界与真人样本补测
 
 以下为 2026 年 9 月的历史结果，不能视作 0930 公网接口的现行限制。新版文档规定离线单次默认最长 60 秒，流式以 started.max_audio_seconds 为准；最新功能验证见 tests/evidence/upstream-0930.json。
