@@ -2,6 +2,8 @@
 
 TypeScript 连续录音网页：使用用户提供的 ONNX VAD 检测说话与停顿，通过 SenseNova ASR 公网流式接口转写文字，同时启用上游服务端 VAD。完整录音与每段音频、文本均保存到本地磁盘。
 
+当前在线入口为 <https://asr.bizoe.tech>，部署在阿里云 Linux 服务器，通过 Nginx 提供 HTTPS 和访问认证。
+
 已适配《SenseNova ASR 0930 流式/离线接口对接说明》（2026-10-10）：实时限速发送、同一连接接收多个 VAD 分段 final、繁体中文输出、服务端 VAD 静音阈值与增益配置。页面“文字输出”可选择默认文字或繁体中文，选择同时作用于流式和离线重识别，录音开始后保持不变。默认文字表示不要求繁体转换，不承诺将模型原文转换为简体。
 
 界面已收录实测可自动识别的 12 种语言：普通话、粤语、英语、日语、韩语、阿拉伯语、德语、法语、西班牙语、葡萄牙语、泰语、越南语。语种标签会随识别结果自动高亮，历史记录和新生成的文本文件使用相同的中文标签。
@@ -9,23 +11,23 @@ TypeScript 连续录音网页：使用用户提供的 ONNX VAD 检测说话与�
 SenseNova ASR 2609 起，服务声明的显式语种为普通话、粤语、英语、阿拉伯语、日语、韩语六种，全称和缩写（zh/yue/en/ar/ja/ko）在流式与文件两个入口都接受；其余六种根据端到端测试加入展示，使用自动检测，不新增显式指定参数。“已实测 12 种”不代表模型支持语言的完整上限。
 
 - [独立响应式 HTML 接口文档](docs/index.html)：手机可阅读，无外部字体、样式或脚本依赖。
-- 独立 Sites 文档站已于 2026-09-15 关闭并删除；接口文档请通过上述仓库文件或内网应用阅读。
+- 独立 Sites 文档站已于 2026-09-15 关闭并删除；接口文档请通过上述仓库文件或[在线应用](https://asr.bizoe.tech/asr-api.html)阅读。
 - [原始接口测试记录](tests/evidence/)：已验证部分与服务尚未公开的部分分开说明。
 - 公开仓库：<https://github.com/winer632/asr>。
-- [Linux 服务器部署与办公网端口映射](deploy/README.md)。
+- [Linux 服务器部署与 HTTPS 接入](deploy/README.md)。
 
 上游流式识别的 `session_id` 统一使用 `abg-web-<UUID>`，每个语音片段生成一个唯一 ID。语音组可按 `abg-` 前缀筛选本项目的日志；本地 `manifest.json` 中的 `segments[].id` 与该 ID 一致，可用于定位具体片段。命令行示例使用 `abg-example-<UUID>`，探测脚本也使用 `abg-` 前缀。
 
 ## 本地运行
 
-需要 Node.js 22.13 或更新版本（建议 Node.js 22 LTS）、npm，以及到 ASR 内网地址的网络连通性。
+需要 Node.js 22.13 或更新版本（建议 Node.js 22 LTS）、npm，以及到所配置 ASR 服务的网络连通性。
 
 ```bash
 npm ci
 cp .env.example .env
 ```
 
-在 `.env` 中填写 `ASR_API_KEY` 后启动：
+在 `.env` 中填写 `ASR_API_KEY` 和授权的 `ASR_APP_ID` 后启动：
 
 ```bash
 npm run dev
@@ -35,7 +37,7 @@ npm run dev
 
 录音面板上的“识别语种”默认是自动检测，也可以锁定为服务声明支持的六种之一：普通话、粤语、英语、日语、韩语、阿拉伯语。锁定后整段录音都按该语种识别，流式与整段重识别都会带上这个语种，不再自动切换；录音进行中不能改，停止后可以改回自动检测。会议中会混说多种语言时保持自动检测；只说一种语言、尤其是纯英语时，锁定语种更准（9 月版本曾存在英语自动检测退化，0930 本次样本已通过）。
 
-生产方式在同一台内网机器上构建并启动：
+生产方式在可访问 ASR 服务的机器上构建并启动：
 
 ```bash
 npm run build
@@ -147,7 +149,7 @@ npm run build
 
 `npm test` 不调用远端 API，验证原 C++ 特征对照、重采样和包边界、真实 ONNX 三语语音检测、静音、流式长句切换、乱序 final、完整文件及分段配对、异常录音恢复、单段失败后继续录音并从 WAV 补救、整段重识别取回标点、长句在停顿处收句且音频不重不漏。
 
-有内网连接和有效 `.env` 时，可以运行真实 ASR 端到端测试：
+配置有效 `.env` 且能够访问上游时，可以运行真实 ASR 端到端测试：
 
 ```bash
 npm run test:live
@@ -177,11 +179,11 @@ tests/                   自动验证与合成语音样本
 
 ## 0930 功能验证
 
-2026-10-10：普通话、粤语、英语自动识别，粤语默认/繁体输出，以及连续切换三语共 6 组端到端测试均通过，没有识别告警。下载的完整音频与输入 PCM 逐字节一致，所有分段 TXT 与最终文字一致。公网同一连接返回两段 VAD final 已验证；实测 final 可与 前一条 partial 共用 sequence，去重分别按消息类型处理。35 项回归测试、类型检查、lint 和生产构建全部通过。结果见 [tests/evidence/upstream-0930.json](tests/evidence/upstream-0930.json)。
+2026-10-10：普通话、粤语、英语自动识别，粤语默认/繁体输出，以及连续切换三语共 6 组端到端测试均通过，没有识别告警。下载的完整音频与输入 PCM 逐字节一致，所有分段 TXT 与最终文字一致。公网同一连接返回两段 VAD final 已验证；实测 final 可与前一条 partial 共用 sequence，去重分别按消息类型处理。35 项回归测试、类型检查、lint 和生产构建全部通过。结果见 [tests/evidence/upstream-0930.json](tests/evidence/upstream-0930.json)。
 
 真人 VAD 专项测试：FLEURS 粤语样本重复两次，800 ms 上游阈值返回 2 段，100 ms 返回 12 段；默认阈值合并文本与离线文本一致（去除标点并统一数字形式后比较）。纯静音与本次纯噪声样本没有输出文字。本地 ONNX VAD 对纯噪声会误触发 1 段；10 dB 人工噪声的流式出现个别错字，离线重识别可以更正。只验证了一个真人样本，不能据此保证所有背景噪声或口音表现。证据见 [tests/evidence/server-vad-0930.json](tests/evidence/server-vad-0930.json)。
 
-L40S 部署已更新，7 组部署端到端测试通过（含真人粤语），音频与文字下载一致。证据见 [tests/evidence/deployment-0930.json](tests/evidence/deployment-0930.json)。可通过 ASR_TEST_REAL_AUDIO 指定本地的真人粤语 WAV，追加到 test:live 验证；独立服务端 VAD 测试为 npx tsx scripts/test-server-vad.ts，需先准备保留的 FLEURS 样本。
+阿里云在线部署已更新，7 组部署端到端测试通过（含真人粤语），音频与文字下载一致，原有录音文件的完整性校验通过。证据见 [tests/evidence/aliyun-deployment-0930.json](tests/evidence/aliyun-deployment-0930.json)。可通过 `ASR_TEST_REAL_AUDIO` 指定本地的真人粤语 WAV，追加到 `test:live` 验证；独立服务端 VAD 测试为 `npx tsx scripts/test-server-vad.ts`，需先准备保留的 FLEURS 样本。
 
 ## 边界与真人样本补测
 
